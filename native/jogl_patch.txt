@@ -1,0 +1,66 @@
+--- ./jogl_orig/src/newt/native/X11Window.c 2017-03-16 00:30:46.273713168 +0100
++++ ./jogl/src/newt/native/X11Window.c  2017-03-16 22:13:05.517985743 +0100
+@@ -33,6 +33,8 @@
+  */
+ 
+ #include "X11Common.h"
++#include <X11/extensions/Xfixes.h>
++#include <X11/extensions/shape.h>
+ 
+ #ifdef VERBOSE_ON
+     #define DUMP_VISUAL_INFO(a,b) _dumpVisualInfo((a),(b))
+@@ -834,7 +836,7 @@
+ 
+     attrMask  = ( CWBackingStore | CWBackingPlanes | CWBackingPixel | 
+                   CWBackPixmap | CWBackPixel | CWBorderPixel | CWColormap | 
+-                  CWOverrideRedirect | CWEventMask ) ;
++                  CWOverrideRedirect | CWEventMask | CWEventMask | CWWinGravity | CWBitGravity | CWSaveUnder | CWDontPropagate ) ;
+ 
+     memset(&xswa, 0, sizeof(xswa));
+     xswa.backing_store=NotUseful;  /* NotUseful, WhenMapped, Always */
+@@ -844,12 +846,20 @@
+     xswa.background_pixel = BlackPixel(dpy, scrn_idx);
+     xswa.border_pixel = 0;
+     xswa.colormap = XCreateColormap(dpy, windowParent, visual, AllocNone);
+-    xswa.override_redirect = False; // use the window manager, always (default)
++    xswa.override_redirect = 1; // use the window manager, always (default)
++
++
+     xswa.event_mask  = X11_MOUSE_EVENT_MASK;
+     xswa.event_mask |= KeyPressMask | KeyReleaseMask ;
+     xswa.event_mask |= FocusChangeMask | SubstructureNotifyMask | StructureNotifyMask | ExposureMask;
+     // xswa.event_mask |= VisibilityChangeMask;
+ 
++    xswa.save_under = 1;
++    xswa.event_mask = StructureNotifyMask|ExposureMask|PropertyChangeMask|EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask|KeymapStateMask;
++    xswa.do_not_propagate_mask = KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|ButtonMotionMask;
++    xswa.win_gravity = NorthWestGravity;
++    xswa.bit_gravity = ForgetGravity;
++
+     {
+         int _x = x, _y = y; // pos for CreateWindow, might be tweaked
+         if( TST_FLAG_IS_AUTOPOSITION(flags) ) {
+@@ -930,7 +940,7 @@
+         DBG_PRINT("X11: [CreateWindow]: top-level: %d/%d\n", x, y);
+         NewtWindows_setPosSize(dpy, javaWindow, x, y, width, height);
+ 
+-        if( TST_FLAG_IS_ALWAYSONTOP(flags) ) {
++        /*if( TST_FLAG_IS_ALWAYSONTOP(flags) ) {
+             NewtWindows_setStackingEWMHFlags(dpy, root, javaWindow, _MASK_NET_WM_STATE_ABOVE, True);
+         } else if( TST_FLAG_IS_ALWAYSONBOTTOM(flags) ) {
+             NewtWindows_setStackingEWMHFlags(dpy, root, javaWindow, _MASK_NET_WM_STATE_BELOW, True);
+@@ -950,7 +960,13 @@
+         }
+         if( !TST_FLAG_IS_RESIZABLE(flags) ) {
+             NewtWindows_setMinMaxSize(dpy, javaWindow, width, height, width, height);
+-        }
++        }*/
++
++        XserverRegion region = XFixesCreateRegion (dpy, NULL, 0);
++    XFixesSetWindowShapeRegion (dpy, window, ShapeBounding, 0, 0, 0);
++    XFixesSetWindowShapeRegion (dpy, window, ShapeInput, 0, 0, region);
++    XFixesDestroyRegion (dpy, region);
++
+     }
+     XFlush(dpy);
+     handles[0] = (jlong)(intptr_t)window;
