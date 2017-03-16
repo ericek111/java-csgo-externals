@@ -14,22 +14,12 @@ public class ModuleManager {
 	}
 
 	public void registerModules() {
-		/*
-		 * registerModule(new ClickGui(Keyboard.KEY_Y)); registerModule(new
-		 * Console(Keyboard.KEY_C)); registerModule(new
-		 * FastPlace(Keyboard.KEY_PERIOD)); registerModule(new
-		 * Flight(Keyboard.KEY_R)); registerModule(new FreeCam(Keyboard.KEY_M));
-		 * registerModule(new FullBright(Keyboard.KEY_F)); registerModule(new
-		 * Reach(Keyboard.KEY_H)); //registerModule(new
-		 * EntityRadar(Keyboard.KEY_I)); registerModule(new
-		 * Sneak(Keyboard.KEY_Z)); registerModule(new Sprint(Keyboard.KEY_K));
-		 * registerModule(new Step(Keyboard.KEY_P));
-		 */
-		registerModule(new RecoilCross());
 		registerModule(new Bunnyhop());
+		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());
 		registerModule(new Glow());
 		registerModule(new Module());
+		registerModule(new RecoilCross());
 	}
 
 	public void reloadManager() {
@@ -40,8 +30,6 @@ public class ModuleManager {
 
 	public void registerModule(Module module) {
 		this.activeModules.add(module);
-		// System.out.println("[LixkoPack] Registering module " +
-		// module.getName());
 		module.onRegister();
 	}
 

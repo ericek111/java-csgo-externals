@@ -40,7 +40,11 @@ public class RecoilCross extends Module {
 					needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}
@@ -58,11 +62,6 @@ public class RecoilCross extends Module {
 	    DrawUtils.setColor(1.0f, 1.0f, 1.0f, crossalpha);
 	    DrawUtils.drawLine(crosshairX - 5, crosshairY+1, crosshairX + 5, crosshairY+1);
 	    DrawUtils.drawLine(crosshairX+1, crosshairY + 5, crosshairX+1, crosshairY - 5);
-	    
-	    /*DrawUtils.setColor(0, 0, 0, 150);
-	    DrawUtils.fillRectanglew(sx-2, sy-2, 4, 4);
-	    DrawUtils.setColor(0x00FFFFFF);
-	    DrawUtils.fillRectanglew(sx-1, sy-1, 2, 2);*/
 	}
 	
 	@Override
