@@ -14,6 +14,7 @@ public class ModuleManager {
 	}
 
 	public void registerModules() {
+		registerModule(new BoxESP());
 		registerModule(new Bunnyhop());
 		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());

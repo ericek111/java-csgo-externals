@@ -1,5 +1,6 @@
 package me.lixko.csgoexternals.modules;
 
+import com.jogamp.opengl.GL2;
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.Client;
@@ -104,6 +105,9 @@ public class Module {
 	}
 
 	public void onEngineLoaded() {		
+	}
+
+	public void onWorldRender(GL2 gl) {		
 	}
 
 }

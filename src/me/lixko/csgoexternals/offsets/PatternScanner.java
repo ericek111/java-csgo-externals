@@ -97,12 +97,4 @@ public final class PatternScanner {
 		return data;
 	}
 
-	public static String hex(int n) {
-		return String.format("0x%8s", Integer.toHexString(n)).replace(' ', '0');
-	}
-
-	public static String hex(long n) {
-		return String.format("0x%8s", Long.toHexString(n)).replace(' ', '0');
-	}
-
 }

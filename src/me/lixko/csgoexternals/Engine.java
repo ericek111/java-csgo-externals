@@ -11,6 +11,7 @@ import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.offsets.PatternScanner;
+import me.lixko.csgoexternals.util.StringFormat;
 
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
@@ -106,8 +107,8 @@ public final class Engine {
 		waitUntilFound("client module", () -> (clientModule = process.findModule(clientName)) != null);
 		waitUntilFound("engine module", () -> (engineModule = process.findModule(engineName)) != null);
 		System.out.println("process: " + processName);
-		System.out.println("client: " + PatternScanner.hex(clientModule.start()));
-		System.out.println("engine: " + PatternScanner.hex(engineModule.start()));
+		System.out.println("client: " + StringFormat.hex(clientModule.start()));
+		System.out.println("engine: " + StringFormat.hex(engineModule.start()));
 		loadOffsets();
 
 		System.out.println("Engine initialization complete! Starting client...");
@@ -121,8 +122,14 @@ public final class Engine {
 			last_tick = System.nanoTime();
 			
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
+			if(Offsets.m_dwLocalPlayer < 1) continue;
+			try {
+				Client.theClient.eventHandler.onLoop();
+			} catch(Exception ex) {
+				ex.printStackTrace();
+				Thread.sleep(100);
+			}
 			
-			Client.theClient.eventHandler.onLoop();
 			if (tps_sleep > 0)
 				Thread.sleep(tps_sleep);
 
@@ -147,14 +154,14 @@ public final class Engine {
 	public static void loadOffsets() {
 		Offsets.load();
 		System.out.println();
-		System.out.println("m_dwGlowObject: " + PatternScanner.hex(Offsets.m_dwGlowObject));
-		System.out.println("m_iAlt1: " + PatternScanner.hex(Offsets.m_dw_iAlt1));
-		System.out.println("m_dwForceJump: " + PatternScanner.hex(Offsets.m_dwForceJump));
-		System.out.println("m_dw_bOverridePostProcessingDisable: " + PatternScanner.hex(Offsets.m_dw_bOverridePostProcessingDisable));
-		System.out.println("m_dwPlayerResources: " + PatternScanner.hex(Offsets.m_dwPlayerResources));
-		System.out.println("m_dwForceAttack: " + PatternScanner.hex(Offsets.m_dwForceAttack));
-		System.out.println("m_dwEntityList: " + PatternScanner.hex(Offsets.m_dwEntityList));
-		System.out.println("m_dwLocalPlayerPointer: " + PatternScanner.hex(Offsets.m_dwLocalPlayerPointer));
+		System.out.println("m_dwGlowObject: " + StringFormat.hex(Offsets.m_dwGlowObject));
+		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.m_dw_iAlt1));
+		System.out.println("m_dwForceJump: " + StringFormat.hex(Offsets.m_dwForceJump));
+		System.out.println("m_dw_bOverridePostProcessingDisable: " + StringFormat.hex(Offsets.m_dw_bOverridePostProcessingDisable));
+		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResources));
+		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.m_dwForceAttack));
+		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
+		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
 		System.out.println();
 	}
 

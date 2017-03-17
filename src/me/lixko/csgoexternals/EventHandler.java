@@ -2,6 +2,7 @@ package me.lixko.csgoexternals;
 
 import javax.script.ScriptException;
 
+import com.jogamp.opengl.GL2;
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.modules.Module;
@@ -63,11 +64,39 @@ public class EventHandler {
 
 	public void onUIRender() {
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
-			eventModule.onUIRender();
+			try {
+				eventModule.onUIRender();	
+			} catch(Exception ex) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		try {
 			if (Client.theClient.jsinitialized)
 				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onUIRender");
+		} catch (NoSuchMethodException | ScriptException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void onWorldRender(GL2 gl) {
+		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
+			try {
+				eventModule.onWorldRender(gl);	
+			} catch(Exception ex) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		try {
+			if (Client.theClient.jsinitialized)
+				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onWorldRender");
 		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
 		}

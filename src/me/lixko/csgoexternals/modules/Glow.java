@@ -14,6 +14,7 @@ import me.lixko.csgoexternals.structs.CGlowObjectManager;
 import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.TextAlign;
 
 public class Glow extends Module {
 
@@ -45,9 +46,11 @@ public class Glow extends Module {
 	@Override
 	public void onUIRender() {
 		if(!glowEnabled) return;
-		DrawUtils.textRenderer.setColor(0.0f, 1.0f, 1.0f, 0.8f);
-		DrawUtils.setColor(0.1f, 0.2f, 0.3f, 0.8f);
-		DrawUtils.drawCenteredStringWithBackground(DrawUtils.drawable.getSurfaceWidth()/2, 15, glowOthers ? "GLOW All" : "GLOW Players");
+		DrawUtils.setTextColor(0.0f, 1.0f, 1.0f, 0.8f);
+		DrawUtils.setAlign(TextAlign.CENTER);
+		DrawUtils.enableStringBackground();
+		DrawUtils.drawString(DrawUtils.drawable.getSurfaceWidth()/2, 15, glowOthers ? "GLOW All" : "GLOW Players");
+		DrawUtils.setAlign(TextAlign.LEFT);
 	}
 
 	public void onLoop() {
@@ -58,7 +61,7 @@ public class Glow extends Module {
 		// glowman.m_GlowObjectDefinitions.offset() + cvec.x.offset(), but m_GlowObjectDefinitions offset = 0
 		objcount = cglowobjmanbuf.getInt(cvec.Count.offset());
 		data_ptr = cglowobjmanbuf.getLong(cvec.DataPtr.offset());
-		
+				
 		Engine.clientModule().read(data_ptr, objcount * glowobj.size(), g_glow);
 
 		int writeCount = 0;
@@ -67,11 +70,11 @@ public class Glow extends Module {
 			long entityaddr = glowobj.m_pEntity.getLong();
 			if (entityaddr < 1)
 				continue;
-			int team = Engine.clientModule().readInt(entityaddr + 0x128);
-			int health = Engine.clientModule().readInt(entityaddr + 0x134);
+			int team = Engine.clientModule().readInt(entityaddr + Offsets.m_iTeamNum);
+			int health = Engine.clientModule().readInt(entityaddr + Offsets.m_iHealth);
 
 			// Radar
-			Engine.clientModule().writeBoolean(entityaddr + 0xECD, true);
+			Engine.clientModule().writeBoolean(entityaddr + Offsets.m_bSpotted, true);
 			
 			glowobj.m_bRenderWhenOccluded.set(true);
 			glowobj.m_bRenderWhenUnoccluded.set(false);
@@ -150,13 +153,6 @@ public class Glow extends Module {
 		} else if (sym.intValue() == X11.XK_Control_R) {
 			glowOthers = !glowOthers;
 		}
-	}
-	
-	static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
-	    for(int i = 0; i < arr.length; i++) {
-	        arr[i] = supp.get();
-	    }
-	    return arr;
 	}
 
 }

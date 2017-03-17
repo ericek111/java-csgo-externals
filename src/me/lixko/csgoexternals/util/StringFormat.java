@@ -1,5 +1,7 @@
 package me.lixko.csgoexternals.util;
 
+import java.util.function.Supplier;
+
 public class StringFormat {
 	public static String stringprefix = ChatColor.GOLD + "[LixkoPack] " + ChatColor.RESET;
 	public static MsgPriority priority = MsgPriority.ALL;
@@ -247,6 +249,21 @@ public class StringFormat {
 		}
 
 		return out;
+	}
+	
+	public static String hex(int n) {
+		return String.format("0x%8s", Integer.toHexString(n)).replace(' ', '0');
+	}
+
+	public static String hex(long n) {
+		return String.format("0x%8s", Long.toHexString(n)).replace(' ', '0');
+	}
+	
+	public static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
+	    for(int i = 0; i < arr.length; i++) {
+	        arr[i] = supp.get();
+	    }
+	    return arr;
 	}
 
 }
