@@ -3,19 +3,14 @@ package me.lixko.csgoexternals.modules;
 import java.util.ArrayList;
 
 import com.github.jonatino.misc.MemoryBuffer;
-import com.jogamp.opengl.GL2;
 import com.sun.javafx.geom.Vec3f;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.structs.CEntInfo;
-import me.lixko.csgoexternals.structs.CGlowObjectManager;
-import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
 import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.StringFormat;
 
 public class BoxESP extends Module {
 
@@ -26,8 +21,6 @@ public class BoxESP extends Module {
 
 	GlowObjectDefinition glowobj = new GlowObjectDefinition();
 	MemoryBuffer g_glow = new MemoryBuffer(glowobj.size() * 64);
-
-	private float rquad = 0.0f;
 
 	Thread updateLoop = new Thread(new Runnable() {
 		@Override
@@ -102,13 +95,12 @@ public class BoxESP extends Module {
 	}
 
 	@Override
-	public void onWorldRender(GL2 gl) {
-		if (!Client.theClient.isRunning || this.needsDataUpdate)
+	public void onWorldRender() {
+		/*if (!Client.theClient.isRunning || this.needsDataUpdate)
 			return;
 		DrawUtils.setColor(0x00FFFF80);
 		DrawUtils.drawCube();
-		rquad -= 0.15f;
-		this.needsDataUpdate = true;
+		this.needsDataUpdate = true;*/
 	}
 
 	@Override

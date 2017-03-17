@@ -16,6 +16,16 @@ public class StructField {
 		this.offset = memstr.SIZE;
 		memstr.SIZE += size;
 	}
+	
+	public StructField(MemStruct memstr, int size, int offset) {
+		this.memstr = memstr;
+		this.size = size;
+		this.offset = offset;
+		memstr.SIZE += size;
+		if(memstr.SIZE < offset+size) {
+			memstr.SIZE = offset+size;
+		}
+	}
 
 	public int offset() {
 		return this.offset;

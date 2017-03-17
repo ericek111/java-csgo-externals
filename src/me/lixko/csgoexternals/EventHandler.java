@@ -2,7 +2,6 @@ package me.lixko.csgoexternals;
 
 import javax.script.ScriptException;
 
-import com.jogamp.opengl.GL2;
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.modules.Module;
@@ -82,10 +81,10 @@ public class EventHandler {
 		}
 	}
 
-	public void onWorldRender(GL2 gl) {
+	public void onWorldRender() {
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			try {
-				eventModule.onWorldRender(gl);
+				eventModule.onWorldRender();
 			} catch (Exception ex) {
 				try {
 					Thread.sleep(100);

@@ -4,18 +4,15 @@ import java.awt.DisplayMode;
 import java.awt.Font;
 
 import com.github.jonatino.misc.MemoryBuffer;
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.Flags;
 
 public class JOGL2Renderer implements GLEventListener {
 
@@ -68,7 +65,7 @@ public class JOGL2Renderer implements GLEventListener {
 		final GL2 gl = drawable.getGL().getGL2();
 
 		init3D(drawable, gl);
-		Client.theClient.eventHandler.onWorldRender(gl);
+		Client.theClient.eventHandler.onWorldRender();
 		gl.glFlush();
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();

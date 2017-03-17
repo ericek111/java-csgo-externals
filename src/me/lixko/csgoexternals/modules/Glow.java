@@ -1,7 +1,5 @@
 package me.lixko.csgoexternals.modules;
 
-import java.util.function.Supplier;
-
 import com.github.jonatino.misc.MemoryBuffer;
 import com.github.jonatino.natives.unix.unixc;
 import com.sun.jna.Pointer;

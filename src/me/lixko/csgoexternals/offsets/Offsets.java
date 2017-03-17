@@ -19,6 +19,7 @@ public final class Offsets {
 	public static long m_dwGlowObject;
 	public static long m_dw_iAlt1;
 	public static long m_dw_bOverridePostProcessingDisable;
+	public static long m_dwPlayerResourcesPointer;
 	public static long m_dwPlayerResources;
 	public static long m_dwForceJump;
 	public static long m_dwForceAttack;
@@ -79,7 +80,7 @@ public final class Offsets {
 		m_dw_bOverridePostProcessingDisable = Engine.clientModule().GetAbsoluteAddress(overridepostprocessingdisablemov, 2, 7);
 
 		long playerresourcemov = PatternScanner.getAddressForPattern(Engine.clientModule(), PLAYERRESOURCES_SIGNATURE);
-		m_dwPlayerResources = Engine.clientModule().GetAbsoluteAddress(playerresourcemov, 3, 7);
+		m_dwPlayerResourcesPointer = Engine.clientModule().GetAbsoluteAddress(playerresourcemov, 3, 7);
 
 		long foundattackmov = PatternScanner.getAddressForPattern(Engine.clientModule(), FORCEATTACK_SIGNATURE);
 		m_dwForceAttack = Engine.clientModule().GetCallAddress(foundattackmov + 19);

@@ -10,7 +10,6 @@ import com.sun.jna.platform.unix.X11.Display;
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.offsets.PatternScanner;
 import me.lixko.csgoexternals.util.StringFormat;
 
 import com.jogamp.newt.event.WindowAdapter;
@@ -125,6 +124,8 @@ public final class Engine {
 			last_tick = System.nanoTime();
 
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
+			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
+			
 			if (Offsets.m_dwLocalPlayer < 1)
 				continue;
 			try {
@@ -164,7 +165,7 @@ public final class Engine {
 		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.m_dw_iAlt1));
 		System.out.println("m_dwForceJump: " + StringFormat.hex(Offsets.m_dwForceJump));
 		System.out.println("m_dw_bOverridePostProcessingDisable: " + StringFormat.hex(Offsets.m_dw_bOverridePostProcessingDisable));
-		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResources));
+		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResourcesPointer));
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.m_dwForceAttack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
 		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
