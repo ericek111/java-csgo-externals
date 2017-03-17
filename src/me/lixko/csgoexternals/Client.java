@@ -90,7 +90,7 @@ public class Client {
 		this.jsinvocable = null;
 		startJS();
 	}
-	
+
 	public void shutdownClient() {
 		this.isRunning = false;
 	}

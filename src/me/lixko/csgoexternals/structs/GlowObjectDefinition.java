@@ -18,7 +18,7 @@ public class GlowObjectDefinition extends MemStruct {
 	public final StructField m_nSplitScreenSlot = new StructField(this, Integer.BYTES);
 	public final StructField m_nNextFreeSlot = new StructField(this, Integer.BYTES);
 	public final StructField unk2 = new StructField(this, 8);
-    
+
 	static final int END_OF_FREE_LIST = -1;
 	static final int ENTRY_IN_USE = -2;
 

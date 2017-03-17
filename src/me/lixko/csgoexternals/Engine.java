@@ -78,7 +78,7 @@ public final class Engine {
 
 					if (dpy == null)
 						throw new Error("Can't open X Display");
-					
+
 					lib.XQueryKeymap(dpy, keys);
 
 					for (int i = 0; i < keys.length; ++i) {
@@ -87,7 +87,10 @@ public final class Engine {
 								if (((keys[i] & test) > 0) && ((keys[i] & test) != (lastkeys[i] & test))) {
 									int code = i * 8 + j;
 									KeySym sym = lib.XKeycodeToKeysym(dpy, (byte) code, 0);
-									//System.out.println("Key: " + lib.XKeysymToString(sym) + " / " + PatternScanner.hex(lib.XKeysymToKeycode(dpy, sym)) + " / " + sym.intValue());
+									// System.out.println("Key: " +
+									// lib.XKeysymToString(sym) + " / " +
+									// PatternScanner.hex(lib.XKeysymToKeycode(dpy,
+									// sym)) + " / " + sym.intValue());
 									Client.theClient.eventHandler.onKeyPress(sym);
 								}
 							}
@@ -97,7 +100,7 @@ public final class Engine {
 				}
 				lib.XCloseDisplay(dpy);
 			}
-		});				
+		});
 
 		String processName = "csgo_linux64";
 		String clientName = "client_client.so";
@@ -114,22 +117,23 @@ public final class Engine {
 		System.out.println("Engine initialization complete! Starting client...");
 		Client.theClient.startClient();
 		keyLoop.start();
-		
+
 		Client.theClient.commandManager.executeCommand("bind set kp_end disablepp toggle");
 		Client.theClient.eventHandler.onEngineLoaded();
 
 		while (Client.theClient.isRunning) {
 			last_tick = System.nanoTime();
-			
+
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
-			if(Offsets.m_dwLocalPlayer < 1) continue;
+			if (Offsets.m_dwLocalPlayer < 1)
+				continue;
 			try {
 				Client.theClient.eventHandler.onLoop();
-			} catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 				Thread.sleep(100);
 			}
-			
+
 			if (tps_sleep > 0)
 				Thread.sleep(tps_sleep);
 
@@ -140,7 +144,9 @@ public final class Engine {
 			if (tps_sleep < 1)
 				tps_sleep = 1;
 
-			//System.out.println("Looping! " + Math.floor(adjust*1e5)/1e5 + " / " + tps_sleep + " - " + (System.nanoTime() - last_tick) + " > " + ((System.nanoTime() - last_tick) / 1e9));
+			// System.out.println("Looping! " + Math.floor(adjust*1e5)/1e5 + " /
+			// " + tps_sleep + " - " + (System.nanoTime() - last_tick) + " > " +
+			// ((System.nanoTime() - last_tick) / 1e9));
 
 		}
 

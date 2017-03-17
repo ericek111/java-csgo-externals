@@ -65,8 +65,8 @@ public class EventHandler {
 	public void onUIRender() {
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			try {
-				eventModule.onUIRender();	
-			} catch(Exception ex) {
+				eventModule.onUIRender();
+			} catch (Exception ex) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -81,12 +81,12 @@ public class EventHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void onWorldRender(GL2 gl) {
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			try {
-				eventModule.onWorldRender(gl);	
-			} catch(Exception ex) {
+				eventModule.onWorldRender(gl);
+			} catch (Exception ex) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {

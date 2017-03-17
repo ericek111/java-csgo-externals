@@ -24,18 +24,16 @@ public final class Offsets {
 	public static long m_dwForceAttack;
 	public static long m_dwEntityList;
 	public static long m_dwLocalPlayer;
-	public static long m_dwLocalPlayerPointer;	// < dereference!
+	public static long m_dwLocalPlayerPointer; // < dereference!
 
 	public static long m_iAlt2;
-	
+
 	/*
 	 * Static offsets
 	 */
-	
-	
+
 	public static long m_dwEntityLoopDistance = 0x20;
-	
-	
+
 	public static long m_viewPunchAngle = 0x68;
 	public static long m_aimPunchAngle = 0x74;
 	public static long m_iTeamNum = 0x128;
@@ -47,9 +45,9 @@ public final class Offsets {
 	public static long m_angRotation = 0x160;
 	public static long m_vecOrigin = 0x16c;
 	public static long m_bSpotted = 0xECD;
-	
+
 	public static long m_angEyeAngles = 0xb310;
-	
+
 	public static long m_Local = 0x36f0;
 
 	public static void load() {
@@ -91,9 +89,9 @@ public final class Offsets {
 
 		long localplayerlea = PatternScanner.getAddressForPattern(Engine.clientModule(), LOCALPLAYER_SIGNATURE);
 		m_dwLocalPlayerPointer = Engine.clientModule().GetCallAddress(localplayerlea + 7);
-		
+
 		m_dwLocalPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
-		
+
 		/**
 		 * Engine.dll offsets
 		 */

@@ -9,34 +9,35 @@ import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.DrawUtils;
 
 public class RecoilCross extends Module {
-	
+
 	boolean needsDataUpdate = false;
 	VectorMem punchvec = new VectorMem();
 	MemoryBuffer lpvecbuf = new MemoryBuffer(punchvec.size());
-	
+
 	private final int fov = 90;
-    private final int sx = (int) (DrawUtils.getWidth() * 0.5f);
-    private final int sy = (int) (DrawUtils.getHeight() * 0.5f);
-    private final int dx = DrawUtils.getWidth() / fov;
-    private final int dy = DrawUtils.getHeight() / fov;
-    private int crosshairX = sx;
-    private int crosshairY = sy;
-    private float crossalpha = 0.0f;
-	
+	private final int sx = (int) (DrawUtils.getWidth() * 0.5f);
+	private final int sy = (int) (DrawUtils.getHeight() * 0.5f);
+	private final int dx = DrawUtils.getWidth() / fov;
+	private final int dy = DrawUtils.getHeight() / fov;
+	private int crosshairX = sx;
+	private int crosshairY = sy;
+	private float crossalpha = 0.0f;
+
 	Thread updateLoop = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(1);
-					if(!needsDataUpdate) continue;
+					if (!needsDataUpdate)
+						continue;
 
 					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
 					float pvecy = punchvec.z.getFloat();
 					float pvecx = punchvec.x.getFloat();
 					crosshairX = (int) (sx - (dx * pvecy));
-				    crosshairY = (int) (sy - (dy * pvecx));
-				    crossalpha = (float) Math.min(((Math.abs(pvecx) + Math.abs(pvecy)) * 0.7f), 1.0f);
+					crosshairY = (int) (sy - (dy * pvecx));
+					crossalpha = (float) Math.min(((Math.abs(pvecx) + Math.abs(pvecy)) * 0.7f), 1.0f);
 					needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -49,25 +50,26 @@ public class RecoilCross extends Module {
 			}
 		}
 	});
-	
+
 	@Override
 	public void onUIRender() {
-		if(!Client.theClient.isRunning || this.needsDataUpdate) return;
+		if (!Client.theClient.isRunning || this.needsDataUpdate)
+			return;
 		this.needsDataUpdate = true;
-	    
-	    DrawUtils.setColor(0, 0, 0, Math.max(crossalpha - 0.2f, 0.0f));
-	    DrawUtils.fillRectanglew(crosshairX-6, crosshairY-1, 12, 3);
-	    DrawUtils.fillRectanglew(crosshairX-1, crosshairY-6, 3, 12);
-	    
-	    DrawUtils.setColor(1.0f, 1.0f, 1.0f, crossalpha);
-	    DrawUtils.drawLine(crosshairX - 5, crosshairY+1, crosshairX + 5, crosshairY+1);
-	    DrawUtils.drawLine(crosshairX+1, crosshairY + 5, crosshairX+1, crosshairY - 5);
+
+		DrawUtils.setColor(0, 0, 0, Math.max(crossalpha - 0.2f, 0.0f));
+		DrawUtils.fillRectanglew(crosshairX - 6, crosshairY - 1, 12, 3);
+		DrawUtils.fillRectanglew(crosshairX - 1, crosshairY - 6, 3, 12);
+
+		DrawUtils.setColor(1.0f, 1.0f, 1.0f, crossalpha);
+		DrawUtils.drawLine(crosshairX - 5, crosshairY + 1, crosshairX + 5, crosshairY + 1);
+		DrawUtils.drawLine(crosshairX + 1, crosshairY + 5, crosshairX + 1, crosshairY - 5);
 	}
-	
+
 	@Override
 	public void onEngineLoaded() {
 		punchvec.setSource(lpvecbuf);
-		updateLoop.start();		
+		updateLoop.start();
 	}
 
 }

@@ -17,19 +17,19 @@ public class MemStruct {
 		this.membuf = membuf;
 		this.OFFSET = offset;
 	}
-	
+
 	public MemStruct(MemoryBuffer membuf) {
 		this.membuf = membuf;
 	}
 
 	public MemStruct() {
 	}
-	
+
 	public void setSource(MemoryBuffer membuf) {
 		this.membuf = membuf;
 		this.OFFSET = 0;
 	}
-	
+
 	public void setSource(MemoryBuffer membuf, int offset) {
 		this.membuf = membuf;
 		this.OFFSET = offset;
@@ -38,7 +38,7 @@ public class MemStruct {
 	public long off() {
 		return this.OFFSET;
 	}
-	
+
 	public int size() {
 		return SIZE;
 	}

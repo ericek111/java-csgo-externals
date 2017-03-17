@@ -19,22 +19,24 @@ public class ConfigManager extends FileUtil {
 	ConfigManager() {
 		configpath = FileUtil.formatPath("config.txt");
 
-		/*GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		try {
-			Font r = Font.createFont(Font.TRUETYPE_FONT, new File(FileUtil.formatPath("LiberationMono-Regular.ttf")));
-			Font b = Font.createFont(Font.TRUETYPE_FONT, new File(FileUtil.formatPath("LiberationMono-Bold.ttf")));
-			Font bi = Font.createFont(Font.TRUETYPE_FONT, new File(FileUtil.formatPath("LiberationMono-BoldItalic.ttf")));
-			Font i = Font.createFont(Font.TRUETYPE_FONT, new File(FileUtil.formatPath("LiberationMono-Italic.ttf")));
-			ge.registerFont(r);
-			ge.registerFont(b);
-			ge.registerFont(bi);
-			ge.registerFont(i);
-			
-			DrawUtils.textRenderer = new TextRenderer(b.deriveFont(Font.TRUETYPE_FONT, 16));
-		} catch (FontFormatException | IOException e) {
-			e.printStackTrace();
-		}*/
-		
+		/*
+		 * GraphicsEnvironment ge =
+		 * GraphicsEnvironment.getLocalGraphicsEnvironment(); try { Font r =
+		 * Font.createFont(Font.TRUETYPE_FONT, new
+		 * File(FileUtil.formatPath("LiberationMono-Regular.ttf"))); Font b =
+		 * Font.createFont(Font.TRUETYPE_FONT, new
+		 * File(FileUtil.formatPath("LiberationMono-Bold.ttf"))); Font bi =
+		 * Font.createFont(Font.TRUETYPE_FONT, new
+		 * File(FileUtil.formatPath("LiberationMono-BoldItalic.ttf"))); Font i =
+		 * Font.createFont(Font.TRUETYPE_FONT, new
+		 * File(FileUtil.formatPath("LiberationMono-Italic.ttf")));
+		 * ge.registerFont(r); ge.registerFont(b); ge.registerFont(bi);
+		 * ge.registerFont(i);
+		 * 
+		 * DrawUtils.textRenderer = new
+		 * TextRenderer(b.deriveFont(Font.TRUETYPE_FONT, 16)); } catch
+		 * (FontFormatException | IOException e) { e.printStackTrace(); }
+		 */
 
 		// configfile = readFile(configpath);
 		if (!isConfigured()) {

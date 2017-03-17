@@ -250,7 +250,7 @@ public class StringFormat {
 
 		return out;
 	}
-	
+
 	public static String hex(int n) {
 		return String.format("0x%8s", Integer.toHexString(n)).replace(' ', '0');
 	}
@@ -258,12 +258,12 @@ public class StringFormat {
 	public static String hex(long n) {
 		return String.format("0x%8s", Long.toHexString(n)).replace(' ', '0');
 	}
-	
+
 	public static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
-	    for(int i = 0; i < arr.length; i++) {
-	        arr[i] = supp.get();
-	    }
-	    return arr;
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = supp.get();
+		}
+		return arr;
 	}
 
 }

@@ -221,12 +221,13 @@ public class CommandManager {
 				System.out.println(args[1]);
 				int bindkey = 0;
 				try {
-					//bindkey = X11.INSTANCE.XStringToKeysym(args[1]).intValue();
+					// bindkey =
+					// X11.INSTANCE.XStringToKeysym(args[1]).intValue();
 					bindkey = XKeySym.find(args[1]);
 				} catch (NullPointerException ex) {
-					 
+
 				}
-				
+
 				if (args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("delete")) {
 					if (bindkey < 1) {
 						StringFormat.error(ChatColor.RED + "Invalid key " + ChatColor.GRAY + ChatColor.ITALIC + args[1] + ChatColor.RED + "!");

@@ -104,10 +104,10 @@ public class Module {
 	public void onKeyPress(KeySym key) {
 	}
 
-	public void onEngineLoaded() {		
+	public void onEngineLoaded() {
 	}
 
-	public void onWorldRender(GL2 gl) {		
+	public void onWorldRender(GL2 gl) {
 	}
 
 }
