@@ -14,5 +14,6 @@ public class BasicTheme {
 
 	// Liberation Mono
 	public TextRenderer textRenderer = new TextRenderer(new Font("Lucida Console", Font.BOLD, 13));
+	public TextRenderer textRendererLarge = new TextRenderer(new Font("Lucida Console", Font.BOLD, 18));
 
 }

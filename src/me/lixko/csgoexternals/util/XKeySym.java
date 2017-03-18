@@ -2,6 +2,10 @@ package me.lixko.csgoexternals.util;
 
 import java.lang.reflect.Field;
 
+import com.sun.jna.platform.unix.X11;
+
+import me.lixko.csgoexternals.Engine;
+
 public class XKeySym {
 
 	public static int find(String keycode) {
@@ -23,6 +27,45 @@ public class XKeySym {
 			return keyf.getInt(null);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static boolean isPressed(int keysym) {
+		X11 lib = X11.INSTANCE;
+		if (Engine.dpy.get() == null) {
+			throw new Error("Can't open X Display");
+		}
+		byte[] keys = new byte[32];
+		// Ignore the return value
+		lib.XQueryKeymap(Engine.dpy.get(), keys);
+		for (int code = 5; code < 256; code++) {
+			int idx = code / 8;
+			int shift = code % 8;
+			if ((keys[idx] & (1 << shift)) != 0) {
+				int sym = lib.XKeycodeToKeysym(Engine.dpy.get(), (byte) code, 0).intValue();
+				if (sym == keysym)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public static int getPressedKey() {
+		X11 lib = X11.INSTANCE;
+		if (Engine.dpy.get() == null) {
+			throw new Error("Can't open X Display");
+		}
+		byte[] keys = new byte[32];
+		// Ignore the return value
+		lib.XQueryKeymap(Engine.dpy.get(), keys);
+		for (int code = 5; code < 256; code++) {
+			int idx = code / 8;
+			int shift = code % 8;
+			if ((keys[idx] & (1 << shift)) != 0) {
+				int sym = lib.XKeycodeToKeysym(Engine.dpy.get(), (byte) code, 0).intValue();
+				return sym;
+			}
 		}
 		return 0;
 	}

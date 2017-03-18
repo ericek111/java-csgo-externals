@@ -1,6 +1,7 @@
 package me.lixko.csgoexternals;
 
 import java.io.IOException;
+
 import com.github.jonatino.process.Module;
 import com.github.jonatino.process.Process;
 import com.github.jonatino.process.Processes;
@@ -27,6 +28,9 @@ public final class Engine {
 	private static final int TARGET_TPS = 200;
 	private long tps_sleep = (long) ((1f / TARGET_TPS) * 1000);
 	private long last_tick = 0;
+	
+	public static X11 lib = X11.INSTANCE;
+	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial( ()-> lib.XOpenDisplay(null) );
 
 	public void init() throws InterruptedException, IOException {
 		GLProfile glp = GLProfile.getDefault();
@@ -65,8 +69,6 @@ public final class Engine {
 			public void run() {
 				byte[] keys = new byte[32];
 				byte[] lastkeys = new byte[32];
-				X11 lib = X11.INSTANCE;
-				Display dpy = lib.XOpenDisplay(null);
 
 				while (Client.theClient.isRunning) {
 					try {
@@ -78,14 +80,14 @@ public final class Engine {
 					if (dpy == null)
 						throw new Error("Can't open X Display");
 
-					lib.XQueryKeymap(dpy, keys);
+					lib.XQueryKeymap(dpy.get(), keys);
 
 					for (int i = 0; i < keys.length; ++i) {
 						if (keys[i] != lastkeys[i]) {
 							for (int j = 0, test = 1; j < 8; ++j, test *= 2) {
 								if (((keys[i] & test) > 0) && ((keys[i] & test) != (lastkeys[i] & test))) {
 									int code = i * 8 + j;
-									KeySym sym = lib.XKeycodeToKeysym(dpy, (byte) code, 0);
+									KeySym sym = lib.XKeycodeToKeysym(dpy.get(), (byte) code, 0);
 									// System.out.println("Key: " +
 									// lib.XKeysymToString(sym) + " / " +
 									// PatternScanner.hex(lib.XKeysymToKeycode(dpy,
@@ -97,7 +99,7 @@ public final class Engine {
 						lastkeys[i] = keys[i];
 					}
 				}
-				lib.XCloseDisplay(dpy);
+				lib.XCloseDisplay(dpy.get());
 			}
 		});
 

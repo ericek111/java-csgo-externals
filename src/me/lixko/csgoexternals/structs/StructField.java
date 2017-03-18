@@ -98,6 +98,10 @@ public class StructField {
 	public byte getByte() {
 		return memstr.membuf.getByte(memstr.OFFSET + this.offset);
 	}
+	
+	public boolean getBoolean() {
+		return memstr.membuf.getByte(memstr.OFFSET + this.offset) > 0;
+	}
 
 	public char getChar() {
 		return memstr.membuf.getChar(memstr.OFFSET + this.offset);

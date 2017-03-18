@@ -20,6 +20,7 @@ public class ModuleManager {
 		registerModule(new DisablePP());
 		registerModule(new Glow());
 		registerModule(new Module());
+		registerModule(new RankReveal());
 		registerModule(new RecoilCross());
 	}
 
