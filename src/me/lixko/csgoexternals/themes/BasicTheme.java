@@ -16,10 +16,12 @@ public class BasicTheme {
 
 	public final FontRenderer fontRenderer = new FontRenderer(new TextRenderer(new Font("Verdana", Font.BOLD, 13)));
 	public final FontRenderer fontRendererLarge = new FontRenderer(new TextRenderer(new Font("Verdana", Font.BOLD, 18)));
-	
-	/*static {
-		fontRenderer.textRenderer.setSmoothing(true);
-		fontRenderer.textRenderer.setSmoothing(true);
-	}*/
+
+	/*
+	 * static {
+	 * fontRenderer.textRenderer.setSmoothing(true);
+	 * fontRenderer.textRenderer.setSmoothing(true);
+	 * }
+	 */
 
 }

@@ -1,13 +1,10 @@
 package me.lixko.csgoexternals.util;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -28,6 +25,7 @@ public class DrawUtils {
 	private static Graphics2D tTextureGraphics2D;
 
 	public static TextAlign align = TextAlign.LEFT;
+	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
@@ -35,8 +33,12 @@ public class DrawUtils {
 	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
 
 	static {
-		addTexture("defuser", new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/icons/defuser.png"));
-		addTexture("bomb", new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/icons/bomb.png"));
+		String texturespath = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/textures/";
+		for (File rankimg : (new File(texturespath + "ranks")).listFiles()) {
+			addTexture(rankimg.getName().substring(0, rankimg.getName().lastIndexOf(".")), rankimg);
+		}
+		addTexture("defuser", new File(texturespath + "defuser.png"));
+		addTexture("bomb", new File(texturespath + "bomb.png"));
 		loadTextures();
 	}
 
@@ -90,6 +92,10 @@ public class DrawUtils {
 
 	public static void setAlign(TextAlign ta) {
 		align = ta;
+	}
+
+	public static void setLineWidth(float w) {
+		gl.glLineWidth(w);
 	}
 
 	public static void setColor(int color) {
@@ -217,6 +223,8 @@ public class DrawUtils {
 	public static void drawString(int x, int y, String str) {
 		if (textBackground)
 			setColor(theme.stringBackgroundColor);
+		if (str.length() < 1)
+			return;
 		float txtw = fontRenderer.getStringWidth(str);
 		float txth = fontRenderer.getStringHeight(str);
 		int xoffset = 0;
@@ -236,6 +244,26 @@ public class DrawUtils {
 		fontRenderer.textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
 		fontRenderer.textRenderer.draw(str, x - xoffset, y);
 		fontRenderer.textRenderer.endRendering();
+	}
+
+	public static void drawRectangleAroundString(String str, int x, int y) {
+		float txtw = DrawUtils.fontRenderer.getStringWidth(str);
+		float txth = DrawUtils.fontRenderer.getStringHeight(str);
+
+		int xoffset = 0;
+		switch (DrawUtils.align) {
+		case LEFT:
+			xoffset = 0;
+			break;
+		case CENTER:
+			xoffset = (int) (txtw) / 2;
+			break;
+		case RIGHT:
+			xoffset = (int) txtw;
+			break;
+		}
+
+		drawRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
 	}
 
 	public static int getScreenWidth() {

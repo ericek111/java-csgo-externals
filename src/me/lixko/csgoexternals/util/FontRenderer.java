@@ -5,12 +5,12 @@ import java.awt.font.LineMetrics;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class FontRenderer {
-	
+
 	public TextRenderer textRenderer;
 	private float[] charWidth = new float[Character.MAX_VALUE];
 	private float[] charHeight = new float[Character.MAX_VALUE];
 	private float[] charDescender = new float[Character.MAX_VALUE];
-	
+
 	public FontRenderer(TextRenderer textRenderer) {
 		this.textRenderer = textRenderer;
 	}

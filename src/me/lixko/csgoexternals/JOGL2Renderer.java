@@ -40,7 +40,7 @@ public class JOGL2Renderer implements GLEventListener {
 					Thread.sleep(1);
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
-					
+
 					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvec.size(), lpvecbuf);
 					cx = lpvec.x.getFloat();
 					cy = lpvec.y.getFloat();

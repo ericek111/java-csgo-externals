@@ -70,7 +70,7 @@ public class StructField {
 	public ByteBuffer get() {
 		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset, this.size);
 	}
-	
+
 	public ByteBuffer get(int offset, int size) {
 		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset + offset, size);
 	}
@@ -109,8 +109,8 @@ public class StructField {
 
 	public char getChar() {
 		return memstr.membuf.getChar(memstr.OFFSET + this.offset);
-	}	
-	
+	}
+
 	public int getInt(int offset) {
 		return memstr.membuf.getInt(memstr.OFFSET + this.offset + offset);
 	}
