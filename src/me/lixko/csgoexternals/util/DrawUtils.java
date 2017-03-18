@@ -1,27 +1,92 @@
 package me.lixko.csgoexternals.util;
 
-import java.awt.font.LineMetrics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.awt.TextureRenderer;
 
 import me.lixko.csgoexternals.themes.BasicTheme;
 
+@SuppressWarnings("static-access")
 public class DrawUtils {
 
 	public static GL2 gl;
 
 	public static GLAutoDrawable drawable;
 	public static BasicTheme theme = new BasicTheme();
-	public static TextRenderer textRenderer = theme.textRenderer; // theme.textRenderer;
+	public static FontRenderer fontRenderer = theme.fontRenderer;
+
+	public static TextureRenderer mTextureRenderer;
+	private static Graphics2D tTextureGraphics2D;
+
 	public static TextAlign align = TextAlign.LEFT;
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
-	private static float[] charWidth = new float[Character.MAX_VALUE];
-	private static float[] charHeight = new float[Character.MAX_VALUE];
-	private static float[] charDescender = new float[Character.MAX_VALUE];
+
+	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
+
+	static {
+		addTexture("defuser", new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/icons/defuser.png"));
+		addTexture("bomb", new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/icons/bomb.png"));
+		loadTextures();
+	}
+
+	public static void addTexture(String key, File imgfile) {
+		try {
+			textures.put(key, new Texture(imgfile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void loadTextures() {
+		int totalwidth = 0;
+		int maxheight = 0;
+		for (Map.Entry<String, Texture> entry : textures.entrySet()) {
+			Texture tex = entry.getValue();
+			maxheight = Math.max(maxheight, tex.height);
+			tex.texx = totalwidth;
+			totalwidth += tex.width;
+		}
+		mTextureRenderer = new TextureRenderer(totalwidth, maxheight, true);
+		tTextureGraphics2D = mTextureRenderer.createGraphics();
+		for (Map.Entry<String, Texture> entry : textures.entrySet()) {
+			Texture tex = entry.getValue();
+			tTextureGraphics2D.drawImage(tex.img, tex.texx, 0, null);
+		}
+		tTextureGraphics2D.dispose();
+		mTextureRenderer.markDirty(0, 0, totalwidth, maxheight);
+	}
+
+	public static void drawTexture(String key, int x, int y) {
+		Texture tex = textures.get(key);
+
+		mTextureRenderer.beginOrthoRendering(getScreenWidth() * 1, getScreenHeight() * 1);
+		mTextureRenderer.drawOrthoRect(x, y, tex.texx, mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
+		mTextureRenderer.endOrthoRendering();
+	}
+
+	public static void drawTexture(String key, int x, int y, int width, int height) {
+		Texture tex = textures.get(key);
+		float ratx = (tex.width / width);
+		float raty = 0f;
+		if (height > 0)
+			raty = (tex.height / height);
+		else
+			raty = ratx;
+		mTextureRenderer.beginOrthoRendering((int) (getScreenWidth() * ratx), (int) (getScreenHeight() * raty));
+		mTextureRenderer.drawOrthoRect((int) (x * ratx), (int) (y * raty), tex.texx, mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
+		mTextureRenderer.endOrthoRendering();
+	}
 
 	public static void setAlign(TextAlign ta) {
 		align = ta;
@@ -56,23 +121,23 @@ public class DrawUtils {
 	}
 
 	public static void setTextColor(int color) {
-		textRenderer.setColor((color >> 24) & 0xFF / 255, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color >> 0) & 0xFF);
+		fontRenderer.textRenderer.setColor((color >> 24) & 0xFF / 255, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color >> 0) & 0xFF);
 	}
 
 	public static void setTextColor(float r, float g, float b) {
-		textRenderer.setColor(r, g, b, 1.0f);
+		fontRenderer.textRenderer.setColor(r, g, b, 1.0f);
 	}
 
 	public static void setTextColor(float r, float g, float b, float a) {
-		textRenderer.setColor(r, g, b, a);
+		fontRenderer.textRenderer.setColor(r, g, b, a);
 	}
 
 	public static void setTextColor(int ir, int ig, int ib) {
-		textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, 1.0f);
+		fontRenderer.textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, 1.0f);
 	}
 
 	public static void setTextColor(int ir, int ig, int ib, int ia) {
-		textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
+		fontRenderer.textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
 	}
 
 	public static void enableStringBackground() {
@@ -152,8 +217,8 @@ public class DrawUtils {
 	public static void drawString(int x, int y, String str) {
 		if (textBackground)
 			setColor(theme.stringBackgroundColor);
-		float txtw = getStringWidth(str);
-		float txth = getStringHeight(str);
+		float txtw = fontRenderer.getStringWidth(str);
+		float txth = fontRenderer.getStringHeight(str);
 		int xoffset = 0;
 		switch (align) {
 		case LEFT:
@@ -163,65 +228,14 @@ public class DrawUtils {
 			xoffset = (int) (txtw) / 2;
 			break;
 		case RIGHT:
-			xoffset = (int) (txtw) / 2;
+			xoffset = (int) txtw;
 			break;
 		}
 
-		fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
-
-		textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
-		textRenderer.draw(str, x - xoffset, y);
-		textRenderer.endRendering();
-	}
-
-	public static float getStringWidth(String str) {
-		char chari;
-		float strw = 0;
-		for (int i = 0; i < str.length(); i++) {
-			chari = str.charAt(i);
-			if (charWidth[chari] == 0) {
-				charWidth[chari] = textRenderer.getCharWidth(chari);
-				if (charWidth[chari] == 0)
-					charWidth[chari] = -1;
-			}
-			strw += Math.max(0f, charWidth[chari]);
-		}
-		return strw;
-	}
-
-	public static float getStringHeight(String str) {
-		char chari;
-		float strh = 0;
-		for (int i = 0; i < str.length(); i++) {
-			chari = str.charAt(i);
-
-			if (charHeight[chari] == 0) {
-				charHeight[chari] = textRenderer.getFont().getLineMetrics(String.valueOf(chari), textRenderer.getFontRenderContext()).getHeight();
-				if (charHeight[chari] == 0)
-					charHeight[chari] = -1;
-
-			}
-			strh = Math.max(strh, charHeight[chari]);
-		}
-		return strh;
-	}
-
-	public static float getStringMinDescend(String str) {
-		char chari;
-		float strh = 0;
-		for (int i = 0; i < str.length(); i++) {
-			chari = str.charAt(i);
-
-			if (charDescender[chari] == 0) {
-				charDescender[chari] = textRenderer.getFont().getLineMetrics(String.valueOf(chari), textRenderer.getFontRenderContext()).getDescent();
-			}
-			strh = Math.max(strh, charDescender[chari]);
-		}
-		return strh;
-	}
-
-	public static LineMetrics getLineMetrics(String str) {
-		return textRenderer.getFont().getLineMetrics(str, textRenderer.getFontRenderContext());
+		fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
+		fontRenderer.textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+		fontRenderer.textRenderer.draw(str, x - xoffset, y);
+		fontRenderer.textRenderer.endRendering();
 	}
 
 	public static int getScreenWidth() {
@@ -234,7 +248,6 @@ public class DrawUtils {
 
 	/*
 	 * 6----7 /| /| 3----2 | | 5--|-4 |/ |/ 0----1
-	 * 
 	 */
 	// float x1[], float x2[], float[] x3, float[] x4, float[] x5, float[] x6,
 	// float x7, float[] x8

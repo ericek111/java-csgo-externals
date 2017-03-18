@@ -29,7 +29,7 @@ public class RecoilCross extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(1);
-					if (!needsDataUpdate)
+					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
 					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);

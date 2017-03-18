@@ -18,15 +18,11 @@ public class RankReveal extends Module {
 	boolean needsDataUpdate = false;
 	CSPlayerResource res = new CSPlayerResource();
 	MemoryBuffer resbuf = new MemoryBuffer(res.size());
-	private Map<Integer, Integer> tbs_scoreboardPlayersT = new HashMap<Integer, Integer>(); // to
-																							// be
-																							// sorted
+	private Map<Integer, Integer> tbs_scoreboardPlayersT = new HashMap<Integer, Integer>(); // to // sorted
 	private Map<Integer, Integer> tbs_scoreboardPlayersCT = new HashMap<Integer, Integer>(); // to
-																								// be
-																								// sorted
 	private Map<Integer, Integer> scoreboardPlayersT = new HashMap<Integer, Integer>();
 	private Map<Integer, Integer> scoreboardPlayersCT = new HashMap<Integer, Integer>();
-
+	private int lpteamnum;
 	boolean shouldDraw = false;
 
 	private final int SCOREBOARD_PLAYER_HEIGHT = 29;
@@ -65,6 +61,8 @@ public class RankReveal extends Module {
 					scoreboardPlayersT = StringFormat.sortByValueReverse(tbs_scoreboardPlayersT, true);
 					scoreboardPlayersCT = StringFormat.sortByValueReverse(tbs_scoreboardPlayersCT, true);
 
+					lpteamnum = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iTeamNum);
+
 					needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -82,7 +80,7 @@ public class RankReveal extends Module {
 		if (!Client.theClient.isRunning || this.needsDataUpdate || !shouldDraw)
 			return;
 
-		DrawUtils.textRenderer = DrawUtils.theme.textRendererLarge;
+		DrawUtils.fontRenderer = DrawUtils.theme.fontRendererLarge;
 		DrawUtils.enableStringBackground();
 		DrawUtils.setTextColor(0x00FFFFFF);
 		DrawUtils.setAlign(TextAlign.LEFT);
@@ -98,21 +96,27 @@ public class RankReveal extends Module {
 		}
 
 		int iter = 0;
+		drawHeader(DrawUtils.getScreenHeight() - ctyoffset + SCOREBOARD_PLAYER_HEIGHT);
+		DrawUtils.fontRenderer = DrawUtils.theme.fontRendererLarge;
 		DrawUtils.setTextColor(0.54f, 0.72f, 1.0f);
 		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersCT.entrySet()) {
-			drawEntity(entry.getKey(), DrawUtils.getScreenHeight() - ctyoffset - iter * SCOREBOARD_PLAYER_HEIGHT);
+			drawEntity(entry.getKey(), DrawUtils.getScreenHeight() - ctyoffset - iter * SCOREBOARD_PLAYER_HEIGHT, 3);
 			iter++;
 		}
 
 		iter = 0;
+		drawHeader(DrawUtils.getScreenHeight() - tyoffset + SCOREBOARD_PLAYER_HEIGHT);
+		DrawUtils.fontRenderer = DrawUtils.theme.fontRendererLarge;
 		DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
 		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersT.entrySet()) {
-			drawEntity(entry.getKey(), DrawUtils.getScreenHeight() - tyoffset - iter * SCOREBOARD_PLAYER_HEIGHT);
+			int ypos = DrawUtils.getScreenHeight() - tyoffset - iter * SCOREBOARD_PLAYER_HEIGHT;
+			drawEntity(entry.getKey(), ypos, 2);
 			iter++;
 		}
 
-		DrawUtils.textRenderer = DrawUtils.theme.textRenderer;
+		DrawUtils.fontRenderer = DrawUtils.theme.fontRenderer;
 		this.needsDataUpdate = true;
+
 	}
 
 	@Override
@@ -121,8 +125,29 @@ public class RankReveal extends Module {
 		updateLoop.start();
 	}
 
-	private void drawEntity(int resid, int y) {
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3, y, resid + "");
+	private void drawEntity(int resid, int y, int team) {
+		DrawUtils.setAlign(TextAlign.RIGHT);
+		if (res.m_iHealth.getInt(resid * Integer.BYTES) > 0)
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 8, y, res.m_iHealth.getInt(resid * Integer.BYTES) + "");
+		if (res.m_iArmor.getInt(resid * Integer.BYTES) > 0)
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 - 40, y, res.m_iArmor.getInt(resid * Integer.BYTES) + "");
+
+		if (res.m_iPlayerC4.getInt() == resid && lpteamnum != 2) {
+			DrawUtils.drawTexture("bomb", DrawUtils.getScreenWidth() / 4 + 60, y - 8, 25, -1);
+		}
+
+		if (res.m_bHasDefuser.getBoolean(resid) && lpteamnum != 3) {
+			DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
+		}
+	}
+
+	private void drawHeader(int y) {
+		DrawUtils.fontRenderer = DrawUtils.theme.fontRenderer;
+		DrawUtils.setTextColor(1.0f, 0.4f, 0.4f);
+		DrawUtils.setAlign(TextAlign.RIGHT);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 8, y, "+");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 - 40, y, "Arm");
+
 	}
 
 }

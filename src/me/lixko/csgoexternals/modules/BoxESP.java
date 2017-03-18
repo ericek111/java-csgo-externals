@@ -65,13 +65,15 @@ public class BoxESP extends Module {
 		}
 	});
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void onUIRender() {
-		if (!Client.theClient.isRunning)
+		if (true || !Client.theClient.isRunning)
 			return;
 		VectorMem toread = lporigin;
 
 		DrawUtils.enableStringBackground();
+		DrawUtils.setTextColor(DrawUtils.theme.textColor);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvecbuf.size(), lpvecbuf);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 

@@ -38,9 +38,9 @@ public class JOGL2Renderer implements GLEventListener {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(1);
-					if (!needsDataUpdate)
+					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
-
+					
 					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvec.size(), lpvecbuf);
 					cx = lpvec.x.getFloat();
 					cy = lpvec.y.getFloat();
@@ -90,7 +90,7 @@ public class JOGL2Renderer implements GLEventListener {
 		DrawUtils.gl = drawable.getGL().getGL2();
 		DrawUtils.drawable = drawable;
 		lpvec.setSource(lpvecbuf);
-		DrawUtils.textRenderer.setSmoothing(true);
+		DrawUtils.fontRenderer.textRenderer.setSmoothing(true);
 		needsDataUpdate = true;
 		updateLoop.start();
 	}

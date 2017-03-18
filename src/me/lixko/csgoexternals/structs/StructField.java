@@ -70,6 +70,10 @@ public class StructField {
 	public ByteBuffer get() {
 		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset, this.size);
 	}
+	
+	public ByteBuffer get(int offset, int size) {
+		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset + offset, size);
+	}
 
 	public int getInt() {
 		return memstr.membuf.getInt(memstr.OFFSET + this.offset);
@@ -105,6 +109,42 @@ public class StructField {
 
 	public char getChar() {
 		return memstr.membuf.getChar(memstr.OFFSET + this.offset);
+	}	
+	
+	public int getInt(int offset) {
+		return memstr.membuf.getInt(memstr.OFFSET + this.offset + offset);
+	}
+
+	public long getLong(int offset) {
+		return memstr.membuf.getLong(memstr.OFFSET + this.offset + offset);
+	}
+
+	public float getFloat(int offset) {
+		return memstr.membuf.getFloat(memstr.OFFSET + this.offset + offset);
+	}
+
+	public double getDouble(int offset) {
+		return memstr.membuf.getDouble(memstr.OFFSET + this.offset + offset);
+	}
+
+	public Pointer getPointer(int offset) {
+		return memstr.membuf.getPointer(memstr.OFFSET + this.offset + offset);
+	}
+
+	public short getShort(int offset) {
+		return memstr.membuf.getShort(memstr.OFFSET + this.offset + offset);
+	}
+
+	public byte getByte(int offset) {
+		return memstr.membuf.getByte(memstr.OFFSET + this.offset + offset);
+	}
+
+	public boolean getBoolean(int offset) {
+		return memstr.membuf.getByte(memstr.OFFSET + this.offset + offset) > 0;
+	}
+
+	public char getChar(int offset) {
+		return memstr.membuf.getChar(memstr.OFFSET + this.offset + offset);
 	}
 
 	public int[] getIntArray() {
