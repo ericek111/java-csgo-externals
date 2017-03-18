@@ -15,10 +15,10 @@ public class RecoilCross extends Module {
 	MemoryBuffer lpvecbuf = new MemoryBuffer(punchvec.size());
 
 	private final int fov = 90;
-	private final int sx = (int) (DrawUtils.getWidth() * 0.5f);
-	private final int sy = (int) (DrawUtils.getHeight() * 0.5f);
-	private final int dx = DrawUtils.getWidth() / fov;
-	private final int dy = DrawUtils.getHeight() / fov;
+	private final int sx = (int) (DrawUtils.getScreenWidth() * 0.5f);
+	private final int sy = (int) (DrawUtils.getScreenHeight() * 0.5f);
+	private final int dx = DrawUtils.getScreenWidth() / fov;
+	private final int dy = DrawUtils.getScreenHeight() / fov;
 	private int crosshairX = sx;
 	private int crosshairY = sy;
 	private float crossalpha = 0.0f;

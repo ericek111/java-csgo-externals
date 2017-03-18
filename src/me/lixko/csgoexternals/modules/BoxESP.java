@@ -1,5 +1,7 @@
 package me.lixko.csgoexternals.modules;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import com.github.jonatino.misc.MemoryBuffer;
@@ -21,6 +23,7 @@ public class BoxESP extends Module {
 
 	GlowObjectDefinition glowobj = new GlowObjectDefinition();
 	MemoryBuffer g_glow = new MemoryBuffer(glowobj.size() * 64);
+	NumberFormat f = new DecimalFormat("#.000");
 
 	Thread updateLoop = new Thread(new Runnable() {
 		@Override
@@ -70,19 +73,19 @@ public class BoxESP extends Module {
 
 		DrawUtils.enableStringBackground();
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getWidth() / 2, 50, String.format("%.03f", toread.x.getFloat()) + ", " + String.format("%.03f", toread.y.getFloat()) + ", " + String.format("%.03f", toread.z.getFloat()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getWidth() / 2, 50 + 1 * 18, String.format("%.03f", toread.x.getFloat()) + ", " + String.format("%.03f", toread.y.getFloat()) + ", " + String.format("%.03f", toread.z.getFloat()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 1 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getWidth() / 2, 50 + 2 * 18, String.format("%.03f", toread.x.getFloat()) + ", " + String.format("%.03f", toread.y.getFloat()) + ", " + String.format("%.03f", toread.z.getFloat()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 2 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecVelocity, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getWidth() / 2, 50 + 3 * 18, String.format("%.03f", toread.x.getFloat()) + ", " + String.format("%.03f", toread.y.getFloat()) + ", " + String.format("%.03f", toread.z.getFloat()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 3 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getWidth() / 2, 50 + 4 * 18, String.format("%.03f", toread.x.getFloat()) + ", " + String.format("%.03f", toread.y.getFloat()) + ", " + String.format("%.03f", toread.z.getFloat()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
 		// this.needsDataUpdate = true;
 
@@ -96,11 +99,11 @@ public class BoxESP extends Module {
 
 	@Override
 	public void onWorldRender() {
-		/*if (!Client.theClient.isRunning || this.needsDataUpdate)
-			return;
-		DrawUtils.setColor(0x00FFFF80);
-		DrawUtils.drawCube();
-		this.needsDataUpdate = true;*/
+		/*
+		 * if (!Client.theClient.isRunning || this.needsDataUpdate) return;
+		 * DrawUtils.setColor(0x00FFFF80); DrawUtils.drawCube();
+		 * this.needsDataUpdate = true;
+		 */
 	}
 
 	@Override

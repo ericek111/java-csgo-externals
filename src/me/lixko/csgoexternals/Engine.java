@@ -28,9 +28,9 @@ public final class Engine {
 	private static final int TARGET_TPS = 200;
 	private long tps_sleep = (long) ((1f / TARGET_TPS) * 1000);
 	private long last_tick = 0;
-	
+
 	public static X11 lib = X11.INSTANCE;
-	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial( ()-> lib.XOpenDisplay(null) );
+	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial(() -> lib.XOpenDisplay(null));
 
 	public void init() throws InterruptedException, IOException {
 		GLProfile glp = GLProfile.getDefault();
@@ -127,7 +127,7 @@ public final class Engine {
 
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
-			
+
 			if (Offsets.m_dwLocalPlayer < 1)
 				continue;
 			try {

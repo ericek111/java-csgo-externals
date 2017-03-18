@@ -12,8 +12,7 @@ public class BasicTheme {
 	// ================== DIMENSIONS ================== //
 	public final int[] stringBackgroundPadding = new int[] { 2 };
 
-	// Liberation Mono
-	public TextRenderer textRenderer = new TextRenderer(new Font("Lucida Console", Font.BOLD, 13));
-	public TextRenderer textRendererLarge = new TextRenderer(new Font("Lucida Console", Font.BOLD, 18));
+	public TextRenderer textRenderer = new TextRenderer(new Font("Verdana", Font.BOLD, 13));
+	public TextRenderer textRendererLarge = new TextRenderer(new Font("Verdana", Font.BOLD, 18));
 
 }

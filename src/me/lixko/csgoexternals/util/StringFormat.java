@@ -269,17 +269,10 @@ public class StringFormat {
 		}
 		return arr;
 	}
-	
+
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueReverse(Map<K, V> map, boolean reverse) {
-	    return map.entrySet()
-	              .stream()
-	              .sorted(reverse ? Map.Entry.comparingByValue(Collections.reverseOrder()) : Map.Entry.comparingByValue(/*Collections.reverseOrder()*/))
-	              .collect(Collectors.toMap(
-	                Map.Entry::getKey, 
-	                Map.Entry::getValue, 
-	                (e1, e2) -> e1, 
-	                LinkedHashMap::new
-	              ));
+		return map.entrySet().stream().sorted(reverse ? Map.Entry.comparingByValue(Collections.reverseOrder())
+				: Map.Entry.comparingByValue(/* Collections.reverseOrder() */)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
 }

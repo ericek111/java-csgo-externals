@@ -4,8 +4,8 @@ import me.lixko.csgoexternals.util.DrawUtils;
 
 public class CrosshairDot extends Module {
 
-	private final int sx = (int) (DrawUtils.getWidth() * 0.5f);
-	private final int sy = (int) (DrawUtils.getHeight() * 0.5f);
+	private final int sx = (int) (DrawUtils.getScreenWidth() * 0.5f);
+	private final int sy = (int) (DrawUtils.getScreenHeight() * 0.5f);
 
 	@Override
 	public void onUIRender() {

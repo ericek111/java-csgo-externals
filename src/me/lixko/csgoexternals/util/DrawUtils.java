@@ -1,6 +1,6 @@
 package me.lixko.csgoexternals.util;
 
-import java.awt.geom.Rectangle2D;
+import java.awt.font.LineMetrics;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -18,29 +18,41 @@ public class DrawUtils {
 	public static TextAlign align = TextAlign.LEFT;
 
 	private static boolean textBackground = true;
+	private static float[] color = new float[4];
+	private static float[] charWidth = new float[Character.MAX_VALUE];
+	private static float[] charHeight = new float[Character.MAX_VALUE];
+	private static float[] charDescender = new float[Character.MAX_VALUE];
 
 	public static void setAlign(TextAlign ta) {
 		align = ta;
 	}
 
 	public static void setColor(int color) {
-		gl.glColor4f((float) ((color >> 24) & 0xFF) / 255, (float) ((color >> 16) & 0xFF) / 255, (float) ((color >> 8) & 0xFF) / 255, (float) ((color >> 0) & 0xFF) / 255);
+		setColor((float) ((color >> 24) & 0xFF) / 255, (float) ((color >> 16) & 0xFF) / 255, (float) ((color >> 8) & 0xFF) / 255, (float) ((color >> 0) & 0xFF) / 255);
 	}
 
 	public static void setColor(float r, float g, float b) {
 		gl.glColor3f(r, g, b);
+		color[0] = r;
+		color[1] = g;
+		color[2] = b;
+		color[3] = 1f;
 	}
 
 	public static void setColor(float r, float g, float b, float a) {
 		gl.glColor4f(r, g, b, a);
+		color[0] = r;
+		color[1] = g;
+		color[2] = b;
+		color[3] = a;
 	}
 
 	public static void setColor(int ir, int ig, int ib) {
-		gl.glColor3f((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
+		setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
 	}
 
 	public static void setColor(int ir, int ig, int ib, int ia) {
-		gl.glColor4f((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
+		setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
 	}
 
 	public static void setTextColor(int color) {
@@ -71,6 +83,10 @@ public class DrawUtils {
 	public static void disableStringBackground() {
 		textBackground = false;
 		setColor(0);
+	}
+
+	public static boolean isNoColor() {
+		return (color[0] == 0 && color[1] == 0 && color[2] == 0 && color[3] == 0);
 	}
 
 	public static void drawRectangle(float x1, float y1, float x2, float y2) {
@@ -136,41 +152,92 @@ public class DrawUtils {
 	public static void drawString(int x, int y, String str) {
 		if (textBackground)
 			setColor(theme.stringBackgroundColor);
-		Rectangle2D txtbounds = textRenderer.getBounds(str);
+		float txtw = getStringWidth(str);
+		float txth = getStringHeight(str);
 		int xoffset = 0;
 		switch (align) {
 		case LEFT:
 			xoffset = 0;
 			break;
 		case CENTER:
-			xoffset = (int) (txtbounds.getMinX() + txtbounds.getMaxX()) / 2;
+			xoffset = (int) (txtw) / 2;
 			break;
 		case RIGHT:
-			xoffset = (int) (txtbounds.getMinX() + txtbounds.getMaxX()) / 2;
+			xoffset = (int) (txtw) / 2;
 			break;
 		}
 
-		fillRectangle((float) txtbounds.getMinX() + x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - (float) txtbounds.getMinY() + theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length], (float) txtbounds.getMaxX() + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y - (float) txtbounds.getMaxY() - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
+		fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
+
 		textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
 		textRenderer.draw(str, x - xoffset, y);
 		textRenderer.endRendering();
 	}
 
-	public static int getWidth() {
+	public static float getStringWidth(String str) {
+		char chari;
+		float strw = 0;
+		for (int i = 0; i < str.length(); i++) {
+			chari = str.charAt(i);
+			if (charWidth[chari] == 0) {
+				charWidth[chari] = textRenderer.getCharWidth(chari);
+				if (charWidth[chari] == 0)
+					charWidth[chari] = -1;
+			}
+			strw += Math.max(0f, charWidth[chari]);
+		}
+		return strw;
+	}
+
+	public static float getStringHeight(String str) {
+		char chari;
+		float strh = 0;
+		for (int i = 0; i < str.length(); i++) {
+			chari = str.charAt(i);
+
+			if (charHeight[chari] == 0) {
+				charHeight[chari] = textRenderer.getFont().getLineMetrics(String.valueOf(chari), textRenderer.getFontRenderContext()).getHeight();
+				if (charHeight[chari] == 0)
+					charHeight[chari] = -1;
+
+			}
+			strh = Math.max(strh, charHeight[chari]);
+		}
+		return strh;
+	}
+
+	public static float getStringMinDescend(String str) {
+		char chari;
+		float strh = 0;
+		for (int i = 0; i < str.length(); i++) {
+			chari = str.charAt(i);
+
+			if (charDescender[chari] == 0) {
+				charDescender[chari] = textRenderer.getFont().getLineMetrics(String.valueOf(chari), textRenderer.getFontRenderContext()).getDescent();
+			}
+			strh = Math.max(strh, charDescender[chari]);
+		}
+		return strh;
+	}
+
+	public static LineMetrics getLineMetrics(String str) {
+		return textRenderer.getFont().getLineMetrics(str, textRenderer.getFontRenderContext());
+	}
+
+	public static int getScreenWidth() {
 		return drawable.getSurfaceWidth();
 	}
 
-	public static int getHeight() {
+	public static int getScreenHeight() {
 		return drawable.getSurfaceHeight();
 	}
 
 	/*
-	 * 3----2 /| /| 4----1 | | 7--|-6 |/ |/ 8----5
+	 * 6----7 /| /| 3----2 | | 5--|-4 |/ |/ 0----1
 	 * 
 	 */
 	// float x1[], float x2[], float[] x3, float[] x4, float[] x5, float[] x6,
 	// float x7, float[] x8
-	// -1
 
 	public static void drawCube() {
 		gl.glPushMatrix();

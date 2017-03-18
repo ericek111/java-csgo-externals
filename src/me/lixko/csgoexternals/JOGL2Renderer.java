@@ -66,10 +66,10 @@ public class JOGL2Renderer implements GLEventListener {
 
 		init3D(drawable, gl);
 		Client.theClient.eventHandler.onWorldRender();
-		//gl.glFlush();
+		// gl.glFlush();
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
-		//gl.glFlush();
+		// gl.glFlush();
 
 		needsDataUpdate = true;
 		try {
