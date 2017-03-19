@@ -79,6 +79,7 @@ function downloadstart {
 		exit 1;
 	else
 		echo "Downloaded the start script!"
+		chmod +x "$ABSPATH/start.sh"
 	fi
 }
 
