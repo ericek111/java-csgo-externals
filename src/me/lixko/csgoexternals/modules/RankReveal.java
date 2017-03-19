@@ -25,6 +25,7 @@ public class RankReveal extends Module {
 	private int lpteamnum;
 	boolean shouldDraw = false;
 	boolean isCompetitive = false;
+	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "sem", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
 
 	private final int SCOREBOARD_PLAYER_HEIGHT = 29;
 
@@ -164,8 +165,8 @@ public class RankReveal extends Module {
 		if (isCompetitive) {
 			int rank = res.m_iCompetitiveRanking.getInt(resid * Integer.BYTES);
 			int wins = res.m_iCompetitiveWins.getInt(resid * Integer.BYTES);
-			if (rank > 0 && rank <= DrawUtils.csgoranks.length)
-				DrawUtils.drawTexture(DrawUtils.csgoranks[rank], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
+			if (rank > 0 && rank <= csgoranks.length)
+				DrawUtils.drawTexture(csgoranks[rank], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
 			if (wins > 1)
 				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
 		}

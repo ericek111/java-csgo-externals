@@ -20,17 +20,14 @@ public class DrawUtils {
 	public static GLAutoDrawable drawable;
 	public static BasicTheme theme = new BasicTheme();
 	public static FontRenderer fontRenderer = theme.fontRenderer;
-
+	public static TextAlign align = TextAlign.LEFT;
+	
 	public static TextureRenderer mTextureRenderer;
 	private static Graphics2D tTextureGraphics2D;
-
-	public static TextAlign align = TextAlign.LEFT;
-	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "sem", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
-
+	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
+	
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
-
-	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
 
 	static {
 		String texturespath = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/textures/";
