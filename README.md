@@ -2,10 +2,14 @@
 External Linux Java cheats for CS:GO with OpenGL overlay.
 
 ## Download:
+Create a directory and run this inside:
 ```
-wget -O - https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh | bash
+mkdir java-csgo-externals
+cd java-csgo-externals
+wget -q https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh | bash
+chmod +x download.sh
+./download.sh
 ```
-
 
 
 ## Dependencies
