@@ -152,10 +152,11 @@ public class RankReveal extends Module {
 
 		if (res.m_bHasDefuser.getBoolean(resid) && lpteamnum != 3)
 			DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
-		
+
 		DrawUtils.fontRenderer = DrawUtils.theme.fontRenderer;
 		DrawUtils.setTextColor(0.9f, 0.9f, 0.9f);
-		
+		DrawUtils.setAlign(TextAlign.LEFT);
+
 		int com_t = res.m_nPersonaDataPublicCommendsTeacher.getInt(resid * Integer.BYTES);
 		int com_l = res.m_nPersonaDataPublicCommendsLeader.getInt(resid * Integer.BYTES);
 		int com_f = res.m_nPersonaDataPublicCommendsFriendly.getInt(resid * Integer.BYTES);
@@ -163,17 +164,15 @@ public class RankReveal extends Module {
 		if (isCompetitive) {
 			int rank = res.m_iCompetitiveRanking.getInt(resid * Integer.BYTES);
 			int wins = res.m_iCompetitiveWins.getInt(resid * Integer.BYTES);
-			if (rank > 0 && rank <= DrawUtils.csgoranks.length) {
-				DrawUtils.drawTexture(DrawUtils.csgoranks[rank-1], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
-			}
-			DrawUtils.setAlign(TextAlign.LEFT);
-			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
+			if (rank > 0 && rank <= DrawUtils.csgoranks.length)
+				DrawUtils.drawTexture(DrawUtils.csgoranks[rank - 1], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
+			if (wins > 1)
+				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
 		}
-		
-		
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 80 : -8), y + 2, (com_t > 0 ? com_t + "" : ""));
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 80 : -8) + 30, y + 2, (com_l > 0 ? com_l + "" : ""));
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 80 : -8) + 60, y + 2, (com_f > 0 ? com_f + "" : ""));
+
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y + 2, (com_t > 0 ? com_t + "" : ""));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 30, y + 2, (com_l > 0 ? com_l + "" : ""));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 60, y + 2, (com_f > 0 ? com_f + "" : ""));
 
 		int cashspent = res.m_iCashSpentThisRound.getInt(resid * Integer.BYTES);
 		DrawUtils.setAlign(TextAlign.RIGHT);
@@ -194,7 +193,7 @@ public class RankReveal extends Module {
 		if (isCompetitive)
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 8, y, "Rank  Wins");
 
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 80 : -8), y, "Tea Lea Fri");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y, "Tea Lea Fri");
 
 	}
 
