@@ -6,11 +6,10 @@ Create a directory and run this inside:
 ```
 mkdir java-csgo-externals
 cd java-csgo-externals
-wget -q https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh | bash
+wget -q https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh
 chmod +x download.sh
 ./download.sh
 ```
-
 
 ## Dependencies
 - [**Java Memory Manipulation**](https://github.com/ericek111/Java-Memory-Manipulation) - Memory library for reading, parsing and writing to the process memory. [Download JAR and dependencies.](https://github.com/ericek111/Java-Memory-Manipulation/releases/tag/2.0)
