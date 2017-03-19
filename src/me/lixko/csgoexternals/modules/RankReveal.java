@@ -165,7 +165,7 @@ public class RankReveal extends Module {
 			int rank = res.m_iCompetitiveRanking.getInt(resid * Integer.BYTES);
 			int wins = res.m_iCompetitiveWins.getInt(resid * Integer.BYTES);
 			if (rank > 0 && rank <= DrawUtils.csgoranks.length)
-				DrawUtils.drawTexture(DrawUtils.csgoranks[rank - 1], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
+				DrawUtils.drawTexture(DrawUtils.csgoranks[rank], DrawUtils.getScreenWidth() / 4 * 3 - 10, y - 6, 51, -1);
 			if (wins > 1)
 				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
 		}

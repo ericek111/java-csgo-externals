@@ -25,7 +25,7 @@ public class DrawUtils {
 	private static Graphics2D tTextureGraphics2D;
 
 	public static TextAlign align = TextAlign.LEFT;
-	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
+	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "sem", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
