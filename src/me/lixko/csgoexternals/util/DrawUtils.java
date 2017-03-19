@@ -10,6 +10,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.awt.TextureRenderer;
 
+import me.lixko.csgoexternals.Main;
 import me.lixko.csgoexternals.themes.BasicTheme;
 
 @SuppressWarnings("static-access")
@@ -30,7 +31,7 @@ public class DrawUtils {
 	private static float[] color = new float[4];
 
 	static {
-		String texturespath = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/textures/";
+		String texturespath = me.lixko.csgoexternals.Main.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "textures/";
 		for (File rankimg : (new File(texturespath + "ranks")).listFiles()) {
 			addTexture(rankimg.getName().substring(0, rankimg.getName().lastIndexOf(".")), rankimg);
 		}

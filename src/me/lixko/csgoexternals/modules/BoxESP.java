@@ -101,11 +101,13 @@ public class BoxESP extends Module {
 
 	@Override
 	public void onWorldRender() {
-		/*
-		 * if (!Client.theClient.isRunning || this.needsDataUpdate) return;
-		 * DrawUtils.setColor(0x00FFFF80); DrawUtils.drawCube();
-		 * this.needsDataUpdate = true;
-		 */
+
+		if (!Client.theClient.isRunning || this.needsDataUpdate)
+			return;
+		DrawUtils.setColor(0x00FFFF80);
+		DrawUtils.drawCube();
+		this.needsDataUpdate = true;
+
 	}
 
 	@Override

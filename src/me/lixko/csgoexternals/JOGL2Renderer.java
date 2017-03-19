@@ -64,8 +64,8 @@ public class JOGL2Renderer implements GLEventListener {
 			return;
 		final GL2 gl = drawable.getGL().getGL2();
 
-		init3D(drawable, gl);
-		Client.theClient.eventHandler.onWorldRender();
+		//init3D(drawable, gl);
+		//Client.theClient.eventHandler.onWorldRender();
 		// gl.glFlush();
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
@@ -100,7 +100,7 @@ public class JOGL2Renderer implements GLEventListener {
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		glu.gluPerspective(90.0f, (float) drawable.getSurfaceWidth() / (float) drawable.getSurfaceHeight(), 1.0, 8000.0);
+		glu.gluPerspective(73.0f, (float) drawable.getSurfaceWidth() / (float) drawable.getSurfaceHeight(), 1.0, 8000.0);
 
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
