@@ -5,7 +5,10 @@ RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/release
 
 self_update=true
 updated=false
-if [ "$1" == "-noup" ]; then self_update = false; fi
+
+if [ "$1" == "-noup" ]; then
+	self_update=false;
+fi
 
 if [ "$(whoami)" == 'root' ]; then
 	echo "WARNING: You should *NOT* run this script as root!"
@@ -21,20 +24,23 @@ fi
 ABSPATH=`pwd`
 mkdir -p "$ABSPATH/lib"
 
-wget_output=$(wget -4 -N -q -O "$ABSPATH/download_new.sh" "$DOWNLOAD_SCRIPT")
-if [ $? -ne 0 ]; then
-	rm "$ABSPATH/download_new.sh" 2> /dev/null
-	echo "$wget_output"
-	echo "WARNING: Failed to download the latest version of this script! Some libraries might be outdated."
-	read -p "> Continue? " -n 1 -r
-	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-	    exit 0;
+if [ "$self_update" == "true" ]; then
+	wget_output=$(wget -4 -N -q -O "$ABSPATH/download_new.sh" "$DOWNLOAD_SCRIPT")
+	if [ $? -ne 0 ]; then
+		rm "$ABSPATH/download_new.sh" 2> /dev/null
+		echo "$wget_output"
+		echo "WARNING: Failed to download the latest version of this script! Some libraries might be outdated."
+		read -p "> Continue? " -n 1 -r
+		if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+		    exit 0;
+		fi
+	else
+		chmod +x "$ABSPATH/download_new.sh"
+		updated=true
+		bash "$ABSPATH/download_new.sh"
 	fi
-else
-	chmod +x "$ABSPATH/download_new.sh"
-	updated=true
-	bash "$ABSPATH/download_new.sh"
 fi
+
 
 function downloaddep {
 	wget_output=$(wget -4 -q -N  -O "$1/$(basename "$2")" "$2")
