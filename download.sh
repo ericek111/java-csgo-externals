@@ -100,7 +100,8 @@ echo ">>> Dependencies downloaded!"
 downloadmain
 
 mkdir -p "$ABSPATH/scripts"
-touch "$ABSPATH/scripts/autoexec.txt"
+echo "bind set Alt_L glow toggle" >> "$ABSPATH/scripts/autoexec.txt"
+echo "bind set kp_end disablepp toggle" >> "$ABSPATH/scripts/autoexec.txt"
 
 downloadstart
 
