@@ -54,8 +54,8 @@ public class JOGL2Renderer implements GLEventListener {
 			return;
 		final GL2 gl = drawable.getGL().getGL2();
 
-		init3D(drawable, gl);
-		Client.theClient.eventHandler.onWorldRender();
+		//init3D(drawable, gl);
+		//Client.theClient.eventHandler.onWorldRender();
 		
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
@@ -112,6 +112,8 @@ public class JOGL2Renderer implements GLEventListener {
 	}
 
 	private void init2D(GLAutoDrawable drawable, GL2 gl) {
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_CULL_FACE);
