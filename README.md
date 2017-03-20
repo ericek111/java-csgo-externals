@@ -2,13 +2,13 @@
 External Linux Java cheats for CS:GO with OpenGL overlay.
 
 ### Download:
-Create a directory and run this inside. It downloads all dependencies.
+Create a directory and run this inside. **It downloads all dependencies** and the latest release.
 ```
 wget -q https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh
 chmod +x download.sh
 ./download.sh -noup
 ```
-Start using `./start.sh`
+Start by running `sudo ./start.sh` in the install folder.
 
 ### Commands:
 You can bind commands to keys using `bind set [key] [command]`. You can get the keycode from [XKeySym.java class](src/me/lixko/csgoexternals/util/XKeySym.java).
@@ -20,7 +20,7 @@ You can bind commands to keys using `bind set [key] [command]`. You can get the 
 `restart` - Restart the whole cheatpack without leaving game.  
 `restartjs` - Restart JavaScript engine (after changing JS modules).  
 
-Check out [me.lixko.lixkopack.CommandManager](src/minecraft/me/lixko/lixkopack/CommandManager.java) for the rest of commands.
+Check out [me.lixko.csgoexternals.CommandManager](src/minecraft/me/lixko/csgoexternals/CommandManager.java) for the rest of commands.
 
 ### Dependencies
 - [**Java Memory Manipulation**](https://github.com/ericek111/Java-Memory-Manipulation) - Memory library for reading, parsing and writing to the process memory. [Download JAR and dependencies.](https://github.com/ericek111/Java-Memory-Manipulation/releases/tag/2.0)
