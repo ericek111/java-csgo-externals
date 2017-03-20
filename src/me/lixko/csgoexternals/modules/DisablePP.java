@@ -31,5 +31,5 @@ public class DisablePP extends Module {
 	private void disablePP(boolean state) {
 		Engine.clientModule().writeBoolean(Offsets.m_dw_bOverridePostProcessingDisable, state);
 	}
-	
+
 }

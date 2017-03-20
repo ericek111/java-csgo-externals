@@ -19,6 +19,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 public class FileUtil {
+
+	public static String mainpath = me.lixko.csgoexternals.Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
 	public static void writeConfig(HashMap<String, String> map, String path) {
 		File dir = new File(path);
 		new File(dir.getParent()).mkdirs();
@@ -80,7 +83,7 @@ public class FileUtil {
 		// String path = Minecraft.getMinecraft().mcDataDir.getAbsolutePath() +
 		// File.separator + Client.theClient.configManager.folderName + (s !=
 		// ""? (File.separator + s) : "");
-		String path = "/home/erik/Dokumenty/Java/linux-csgo-externals/config" + (s != "" ? (File.separator + s) : "");
+		String path = mainpath + "/" + (s != "" ? (File.separator + s) : "");
 		// System.out.println(path);
 		path.replace("/", File.separator);
 		path.replace("//", File.separator);

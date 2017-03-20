@@ -18,7 +18,7 @@ public class JOGL2Renderer implements GLEventListener {
 
 	public static DisplayMode dm, dm_old;
 	private GLU glu = new GLU();
-	
+
 	private boolean needsDataUpdate = false;
 
 	Thread updateLoop = new Thread(new Runnable() {
@@ -36,9 +36,9 @@ public class JOGL2Renderer implements GLEventListener {
 					Thread.sleep(1);
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
-					
+
 					DrawUtils.lppos.updateData();
-					
+
 					needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,9 +54,9 @@ public class JOGL2Renderer implements GLEventListener {
 			return;
 		final GL2 gl = drawable.getGL().getGL2();
 
-		//init3D(drawable, gl);
-		//Client.theClient.eventHandler.onWorldRender();
-		
+		// init3D(drawable, gl);
+		// Client.theClient.eventHandler.onWorldRender();
+
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
 		// gl.glFlush();
@@ -67,7 +67,6 @@ public class JOGL2Renderer implements GLEventListener {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -113,7 +112,7 @@ public class JOGL2Renderer implements GLEventListener {
 
 	private void init2D(GLAutoDrawable drawable, GL2 gl) {
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-		
+
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glDisable(GL2.GL_CULL_FACE);

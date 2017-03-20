@@ -56,7 +56,7 @@ public class RecoilCross extends Module {
 		if (!Client.theClient.isRunning || this.needsDataUpdate)
 			return;
 		this.needsDataUpdate = true;
-		
+
 		DrawUtils.setLineWidth(1.0f);
 		DrawUtils.setColor(0, 0, 0, Math.max(crossalpha - 0.2f, 0.0f));
 		DrawUtils.fillRectanglew(crosshairX - 6, crosshairY - 1, 12, 3);

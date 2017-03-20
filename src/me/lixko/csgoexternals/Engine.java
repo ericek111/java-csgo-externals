@@ -118,10 +118,8 @@ public final class Engine {
 		System.out.println("Engine initialization complete! Starting client...");
 		Client.theClient.startClient();
 		keyLoop.start();
-		
-		
-		Client.theClient.commandManager.executeCommand("bind set kp_end disablepp toggle");
-		Client.theClient.commandManager.executeCommand("bind set Alt_L glow toggle");
+
+		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
 		Client.theClient.eventHandler.onEngineLoaded();
 
 		while (Client.theClient.isRunning) {

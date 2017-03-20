@@ -37,6 +37,8 @@ public class BoxESP extends Module {
 					long data_ptr = Engine.clientModule().readLong(Offsets.m_dwGlowObject);
 					Engine.clientModule().read(data_ptr, 64 * glowobj.size(), g_glow);
 
+					posarr.clear();
+
 					for (int i = 0; i < 64; i++) {
 						glowobj.setSource(g_glow, i * glowobj.size());
 						long entityaddr = glowobj.m_pEntity.getLong();
@@ -89,7 +91,7 @@ public class BoxESP extends Module {
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
-		// this.needsDataUpdate = true;
+		//
 
 	}
 
@@ -103,13 +105,15 @@ public class BoxESP extends Module {
 	public void onWorldRender() {
 		if (!Client.theClient.isRunning || this.needsDataUpdate)
 			return;
-		
-		//DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-		//DrawUtils.draw3DString("Hello, World!", 0f, 0f, 0f, DrawUtils.lppos.getOriginAngle(), DrawUtils.lppos.getOriginDistance() / 100000);
 
-		/*DrawUtils.setColor(0x00FFFF80);
-		DrawUtils.drawCube();
-		this.needsDataUpdate = true;*/
+		DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+		DrawUtils.draw3DString("Hello, World!", 5f, 0f, 0f, DrawUtils.lppos.getOriginAngle(), DrawUtils.lppos.getOriginDistance() / 100000);
+
+		/*
+		 * DrawUtils.setColor(0x00FFFF80);
+		 * DrawUtils.drawCube();
+		 */
+		this.needsDataUpdate = true;
 
 	}
 

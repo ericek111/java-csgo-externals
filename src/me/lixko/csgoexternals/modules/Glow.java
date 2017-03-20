@@ -152,16 +152,15 @@ public class Glow extends Module {
 			glowOthers = !glowOthers;
 		}
 	}
-	
+
 	@Override
 	public void onEnable() {
 		glowEnabled = true;
 	}
-	
+
 	@Override
 	public void onDisable() {
 		glowJustDisabled = true;
 	}
-	
 
 }
