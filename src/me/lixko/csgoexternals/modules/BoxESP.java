@@ -101,12 +101,15 @@ public class BoxESP extends Module {
 
 	@Override
 	public void onWorldRender() {
-
 		if (!Client.theClient.isRunning || this.needsDataUpdate)
 			return;
-		DrawUtils.setColor(0x00FFFF80);
+		
+		//DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+		//DrawUtils.draw3DString("Hello, World!", 0f, 0f, 0f, DrawUtils.lppos.getOriginAngle(), DrawUtils.lppos.getOriginDistance() / 100000);
+
+		/*DrawUtils.setColor(0x00FFFF80);
 		DrawUtils.drawCube();
-		this.needsDataUpdate = true;
+		this.needsDataUpdate = true;*/
 
 	}
 

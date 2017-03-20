@@ -3,7 +3,6 @@ package me.lixko.csgoexternals;
 import java.awt.DisplayMode;
 import java.awt.Font;
 
-import com.github.jonatino.misc.MemoryBuffer;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -11,7 +10,6 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.DrawUtils;
 
 public class JOGL2Renderer implements GLEventListener {
@@ -20,10 +18,8 @@ public class JOGL2Renderer implements GLEventListener {
 
 	public static DisplayMode dm, dm_old;
 	private GLU glu = new GLU();
-	private VectorMem lpvec = new VectorMem();
-	private MemoryBuffer lpvecbuf = new MemoryBuffer(lpvec.size());
+	
 	private boolean needsDataUpdate = false;
-	private float cx = 0f, cy = 0f, cz = 0f, pitch = 0f, yaw = 0f;
 
 	Thread updateLoop = new Thread(new Runnable() {
 		@Override
@@ -40,15 +36,9 @@ public class JOGL2Renderer implements GLEventListener {
 					Thread.sleep(1);
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
-
-					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvec.size(), lpvecbuf);
-					cx = lpvec.x.getFloat();
-					cy = lpvec.y.getFloat();
-					cz = -lpvec.z.getFloat();
-
-					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, lpvecbuf.size(), lpvecbuf);
-					yaw = 90 - lpvec.z.getFloat();
-					pitch = lpvec.x.getFloat();
+					
+					DrawUtils.lppos.updateData();
+					
 					needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -64,9 +54,9 @@ public class JOGL2Renderer implements GLEventListener {
 			return;
 		final GL2 gl = drawable.getGL().getGL2();
 
-		//init3D(drawable, gl);
-		//Client.theClient.eventHandler.onWorldRender();
-		// gl.glFlush();
+		init3D(drawable, gl);
+		Client.theClient.eventHandler.onWorldRender();
+		
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
 		// gl.glFlush();
@@ -77,6 +67,7 @@ public class JOGL2Renderer implements GLEventListener {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 
 	}
 
@@ -89,7 +80,6 @@ public class JOGL2Renderer implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		DrawUtils.gl = drawable.getGL().getGL2();
 		DrawUtils.drawable = drawable;
-		lpvec.setSource(lpvecbuf);
 		DrawUtils.fontRenderer.textRenderer.setSmoothing(true);
 		needsDataUpdate = true;
 		updateLoop.start();
@@ -105,9 +95,9 @@ public class JOGL2Renderer implements GLEventListener {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		gl.glRotatef(pitch, 1.0f, 0.0f, 0.0f);
-		gl.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
-		gl.glTranslatef(-cx / 100f, -cy / 100f, -cz / 100f);
+		gl.glRotatef(DrawUtils.lppos.getPitch(), 1.0f, 0.0f, 0.0f);
+		gl.glRotatef(DrawUtils.lppos.getYaw(), 0.0f, 1.0f, 0.0f);
+		gl.glTranslatef(-DrawUtils.lppos.getX() / 100f, -DrawUtils.lppos.getY() / 100f, -DrawUtils.lppos.getZ() / 100f);
 
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glClearColor(0f, 0f, 0f, 0f);

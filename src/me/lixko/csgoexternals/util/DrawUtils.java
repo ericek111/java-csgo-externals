@@ -21,6 +21,7 @@ public class DrawUtils {
 	public static BasicTheme theme = new BasicTheme();
 	public static FontRenderer fontRenderer = theme.fontRenderer;
 	public static TextAlign align = TextAlign.LEFT;
+	public static LocalPlayerPosition lppos = new LocalPlayerPosition();
 	
 	public static TextureRenderer mTextureRenderer;
 	private static Graphics2D tTextureGraphics2D;
@@ -261,6 +262,13 @@ public class DrawUtils {
 		}
 
 		drawRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
+	}
+	
+	public static void draw3DString(String str, float x, float y, float z, float rotation, float scale) {
+		gl.glRotatef(rotation, 0f, 1f, 0f);
+		fontRenderer.textRenderer.begin3DRendering();
+		fontRenderer.textRenderer.draw3D("Hello, world!", x, y, z, scale);
+		fontRenderer.textRenderer.end3DRendering();
 	}
 
 	public static int getScreenWidth() {
