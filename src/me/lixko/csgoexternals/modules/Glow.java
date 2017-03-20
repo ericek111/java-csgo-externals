@@ -57,7 +57,6 @@ public class Glow extends Module {
 	public void onLoop() {
 		if (!(glowEnabled || glowJustDisabled))
 			return;
-
 		Engine.clientModule().read(Offsets.m_dwGlowObject, glowman.size(), cglowobjmanbuf);
 
 		// glowman.m_GlowObjectDefinitions.offset() + cvec.x.offset(), but
@@ -109,7 +108,7 @@ public class Glow extends Module {
 				glowobj.m_flGlowBlue.set(0.0f);
 				glowobj.m_flGlowAlpha.set(0.7f);
 			}
-			if (glowJustDisabled && !glowOthers) {
+			if (glowJustDisabled || !glowEnabled) {
 				glowEnabled = false;
 				glowJustDisabled = false;
 				glowobj.m_flGlowRed.set(0f);
@@ -119,11 +118,7 @@ public class Glow extends Module {
 				glowobj.m_bRenderWhenOccluded.set(false);
 				glowobj.m_bRenderWhenUnoccluded.set(false);
 				glowobj.m_bFullBloomRender.set(false);
-				System.out.println("Disabling glow!!");
 			}
-
-			if (glowJustDisabled && glowOthers)
-				glowOthers = false;
 
 			long glowptr = Pointer.nativeValue(g_glow);
 
@@ -153,14 +148,20 @@ public class Glow extends Module {
 
 	@Override
 	public void onKeyPress(KeySym sym) {
-		if (sym.intValue() == X11.XK_Alt_L) {
-			if (!glowEnabled)
-				glowEnabled = true;
-			else
-				glowJustDisabled = true;
-		} else if (sym.intValue() == X11.XK_Control_R) {
+		if (sym.intValue() == X11.XK_Control_R) {
 			glowOthers = !glowOthers;
 		}
 	}
+	
+	@Override
+	public void onEnable() {
+		glowEnabled = true;
+	}
+	
+	@Override
+	public void onDisable() {
+		glowJustDisabled = true;
+	}
+	
 
 }

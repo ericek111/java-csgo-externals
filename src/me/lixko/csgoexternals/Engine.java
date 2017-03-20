@@ -118,8 +118,10 @@ public final class Engine {
 		System.out.println("Engine initialization complete! Starting client...");
 		Client.theClient.startClient();
 		keyLoop.start();
-
+		
+		
 		Client.theClient.commandManager.executeCommand("bind set kp_end disablepp toggle");
+		Client.theClient.commandManager.executeCommand("bind set Alt_L glow toggle");
 		Client.theClient.eventHandler.onEngineLoaded();
 
 		while (Client.theClient.isRunning) {
@@ -171,6 +173,7 @@ public final class Engine {
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.m_dwForceAttack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
 		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
+		System.out.println("m_dwClientState: " + StringFormat.hex(Offsets.m_dwClientState));
 		System.out.println();
 	}
 
