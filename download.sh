@@ -3,7 +3,7 @@ DOWNLOAD_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals
 START_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/start.sh"
 RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/releases"
 
-self_update=true
+self_update=false
 updated=false
 
 if [ "$1" == "-noup" ]; then
