@@ -1,6 +1,7 @@
 package me.lixko.csgoexternals.offsets;
 
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.util.StringFormat;
 
 public final class Offsets {
 
@@ -12,7 +13,8 @@ public final class Offsets {
 	public static String ALT1_SIGNATURE = " 44 89 e8 c1 e0 11 c1 f8 1f 83 e8 03 45 84 e4 74 00 21 d0";
 	public static String FORCEATTACK_SIGNATURE = " 44 89 e8 83 e0 01 f7 d8 83 e8 03 45 84 e4 74 00 21 d0";
 	public static String LOCALPLAYER_SIGNATURE = " 48 89 e5 74 0e 48 8d 05 00 00 00 00";
-
+	public static String CLIENTSTATE_SIGNATURE = "C7 83 00 00 00 00 FF FF FF FF 48 8B 5D 00 48 8D 3D";
+	
 	/**
 	 * Client.dll offsets
 	 */
@@ -26,6 +28,8 @@ public final class Offsets {
 	public static long m_dwEntityList;
 	public static long m_dwLocalPlayer;
 	public static long m_dwLocalPlayerPointer; // < dereference!
+	
+	public static long m_dwClientState;
 
 	public static long m_iAlt2;
 
@@ -45,11 +49,13 @@ public final class Offsets {
 	public static long m_vecBaseVelocity = 0x154;
 	public static long m_angRotation = 0x160;
 	public static long m_vecOrigin = 0x16c;
+	public static long m_nModelIndex = 0x28c;
 	public static long m_bSpotted = 0xECD;
 
 	public static long m_angEyeAngles = 0xb310;
-
 	public static long m_Local = 0x36f0;
+	
+	public static long m_dwFullUpdate = 0x1FC;
 
 	public static void load() {
 		/**
@@ -91,6 +97,12 @@ public final class Offsets {
 		long localplayerlea = PatternScanner.getAddressForPattern(Engine.clientModule(), LOCALPLAYER_SIGNATURE);
 		m_dwLocalPlayerPointer = Engine.clientModule().GetCallAddress(localplayerlea + 7);
 
+		
+		long clientstateptr = PatternScanner.getAddressForPattern(Engine.engineModule(), CLIENTSTATE_SIGNATURE);
+		System.out.println(StringFormat.hex(clientstateptr));
+		m_dwClientState = Engine.engineModule().GetAbsoluteAddress(clientstateptr, 1, 5);
+		
+		
 		m_dwLocalPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
 
 		/**
