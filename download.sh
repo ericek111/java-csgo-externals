@@ -99,6 +99,9 @@ echo ">>> Dependencies downloaded!"
 
 downloadmain
 
+mkdir -p "$ABSPATH/scripts"
+touch "$ABSPATH/scripts/autoexec.txt"
+
 downloadstart
 
 if [ "$updated" = true ] ; then
