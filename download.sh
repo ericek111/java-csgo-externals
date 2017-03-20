@@ -95,7 +95,7 @@ function downloadtextures {
 		exit 1;
 	else
 		echo "Downloaded textures.zip!"
-		unzip "$ABSPATH/textures.zip"
+		unzip -q "$ABSPATH/textures.zip"
 		rm "$ABSPATH/textures.zip"
 	fi
 }
