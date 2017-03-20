@@ -2,6 +2,7 @@
 DOWNLOAD_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh"
 START_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/start.sh"
 RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/releases"
+TEXTURES_ZIP="https://github.com/ericek111/java-csgo-externals/releases/download/1.1/textures.zip"
 
 self_update=false
 updated=false
@@ -86,6 +87,18 @@ function downloadstart {
 		chmod +x "$ABSPATH/start.sh"
 	fi
 }
+function downloadtextures {
+	wget_output=$(wget -4 -q -N -O "$ABSPATH/textures.zip" "$TEXTURES_ZIP")
+	if [ $? -ne 0 ]; then
+		echo "$wget_output"
+		echo "ERROR: Failed to download textures.zip!"
+		exit 1;
+	else
+		echo "Downloaded textures.zip!"
+		unzip "$ABSPATH/textures.zip"
+		rm "$ABSPATH/textures.zip"
+	fi
+}
 
 echo ""
 echo ">>> Downlading dependencies..."
@@ -101,13 +114,13 @@ downloaddep "$ABSPATH/lib" "https://github.com/ericek111/java-csgo-externals/rel
 downloaddep "$ABSPATH/lib" "https://github.com/ericek111/Java-Memory-Manipulation/releases/download/2.0/Java-Memory-Manipulation.jar"
 echo ">>> Dependencies downloaded!"
 
+downloadtextures
 downloadmain
+downloadstart
 
 mkdir -p "$ABSPATH/scripts"
 echo "bind set Alt_L glow toggle" >> "$ABSPATH/scripts/autoexec.txt"
 echo "bind set kp_end disablepp toggle" >> "$ABSPATH/scripts/autoexec.txt"
-
-downloadstart
 
 if [ "$updated" = true ] ; then
 	rm "$ABSPATH/download.sh" 2> /dev/null
