@@ -12,6 +12,7 @@ Start by running `sudo ./start.sh` in the install folder.
 
 ### Commands:
 You can bind commands to keys using `bind set [key] [command]`. You can get the keycode from [XKeySym.java class](src/me/lixko/csgoexternals/util/XKeySym.java).
+**Example:** `bind set Alt_L glow toggle`
 
 `bind set [key] [command]` - Bind command to key.  
 `bind del [key]` - Delete bound command.  
