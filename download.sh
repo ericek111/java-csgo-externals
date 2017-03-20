@@ -43,7 +43,7 @@ fi
 
 
 function downloaddep {
-	if [ ! -f /tmp/foo.txt ]; then
+	if [ -f "$ABSPATH/lib/$(basename "$2")" ]; then
 		echo "$(basename "$2") already exists! Skipping..."
 		return 0;
 	fi
