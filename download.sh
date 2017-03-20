@@ -43,6 +43,10 @@ fi
 
 
 function downloaddep {
+	if [ ! -f /tmp/foo.txt ]; then
+		echo "$(basename "$2") already exists! Skipping..."
+		return 0;
+	fi
 	wget_output=$(wget -4 -q -N  -O "$1/$(basename "$2")" "$2")
 	if [ $? -ne 0 ]; then
 		rm "$ABSPATH/lib/$(basename "$2")"  2> /dev/null
@@ -72,7 +76,7 @@ function downloadmain {
 	fi
 }
 function downloadstart {
-	wget_output=$(wget -4 -nc -q -O "$ABSPATH/start.sh" "$START_SCRIPT")
+	wget_output=$(wget -4 -q -N -O "$ABSPATH/start.sh" "$START_SCRIPT")
 	if [ $? -ne 0 ]; then
 		echo "$wget_output"
 		echo "ERROR: Failed to download the start script!"
