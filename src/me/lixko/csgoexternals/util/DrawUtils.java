@@ -10,7 +10,6 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.awt.TextureRenderer;
 
-import me.lixko.csgoexternals.Main;
 import me.lixko.csgoexternals.themes.BasicTheme;
 
 @SuppressWarnings("static-access")
