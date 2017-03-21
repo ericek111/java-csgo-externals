@@ -128,8 +128,11 @@ public final class Engine {
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
 
-			if (Offsets.m_dwLocalPlayer < 1)
+			if (Offsets.m_dwLocalPlayer < 1) {
+				Thread.sleep(1000);
 				continue;
+			}
+
 			try {
 				Client.theClient.eventHandler.onLoop();
 			} catch (Exception ex) {
