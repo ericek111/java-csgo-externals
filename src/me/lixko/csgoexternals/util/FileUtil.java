@@ -20,7 +20,7 @@ import com.google.gson.JsonParser;
 
 public class FileUtil {
 
-	public static String mainpath = me.lixko.csgoexternals.Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	public static String mainpath = cutDirectory(me.lixko.csgoexternals.Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
 	public static void writeConfig(HashMap<String, String> map, String path) {
 		File dir = new File(path);
@@ -108,5 +108,9 @@ public class FileUtil {
 				out.close();
 			}
 		}
+	}
+	
+	private static String cutDirectory(String path) {
+		return path.substring(0, path.lastIndexOf(File.separator));
 	}
 }

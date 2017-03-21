@@ -51,7 +51,9 @@ public final class Offsets {
 	public static long m_vecOrigin = 0x16c;
 	public static long m_nModelIndex = 0x28c;
 	public static long m_bSpotted = 0xECD;
-
+	public static long m_flFlashMaxAlpha = 0xabf4;
+	public static long m_flFlashDuration = 0xabf8;
+	
 	public static long m_angEyeAngles = 0xb310;
 	public static long m_Local = 0x36f0;
 

@@ -19,6 +19,7 @@ public class ModuleManager {
 		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());
 		registerModule(new Glow());
+		registerModule(new NoFlash());
 		registerModule(new NoHands());
 		registerModule(new RankReveal());
 		registerModule(new RecoilCross());

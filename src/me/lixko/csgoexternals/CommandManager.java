@@ -184,7 +184,7 @@ public class CommandManager {
 					if (f.exists() && !f.isDirectory()) {
 						String line = "";
 						BufferedReader reader;
-
+						System.out.println("Executing script " + args[0] + "!");
 						try {
 							reader = new BufferedReader(new FileReader(f));
 
@@ -194,9 +194,7 @@ public class CommandManager {
 								} else if (!line.startsWith("#")) {
 									this.executeCommand(line);
 								}
-							}
-
-							System.out.println("Executing script " + args[0] + "!");
+							}							
 						} catch (IOException e) {
 							StringFormat.error(ChatColor.RED + "Error in script " + ChatColor.YELLOW + ChatColor.ITALIC + args[0] + ChatColor.RESET + ChatColor.RED + ": " + e.getMessage());
 							e.printStackTrace();

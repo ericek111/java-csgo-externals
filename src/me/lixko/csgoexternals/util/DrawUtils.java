@@ -31,7 +31,8 @@ public class DrawUtils {
 	private static float[] color = new float[4];
 
 	static {
-		String texturespath = me.lixko.csgoexternals.Main.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "textures/";
+		String texturespath = FileUtil.mainpath + "/textures/";
+		System.out.println(texturespath);
 		for (File rankimg : (new File(texturespath + "ranks")).listFiles()) {
 			addTexture(rankimg.getName().substring(0, rankimg.getName().lastIndexOf(".")), rankimg);
 		}
