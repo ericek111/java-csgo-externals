@@ -88,7 +88,7 @@ public final class PatternScanner {
 	}
 
 	public static byte[] hexStringToByteArray(String str) {
-		String s = str.replaceAll("\\s+", "");
+		String s = str.replaceAll("\\s+", "").replaceAll("??", "00");
 		int len = s.length();
 		byte[] data = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
