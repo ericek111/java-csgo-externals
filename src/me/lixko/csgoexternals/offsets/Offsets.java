@@ -4,9 +4,9 @@ import me.lixko.csgoexternals.Engine;
 
 public final class Offsets {
 
-	public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "80 3D ?? ?? ?? ?? ?? 0F 85 ?? ?? ?? ?? 85 C9";
+	public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "80 3D ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 85 C9";
 	public static String ENTITYLIST_SIGNATURE = 		"48 8B 15 ?? ?? ?? ?? 0F B7 C0 48 C1 E0 04";
-	public static String GLOWOBJECT_SIGNATURE = 		"E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 ?? ?? ?? C7";
+	public static String GLOWOBJECT_SIGNATURE = 		"E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 00 00 00 C7";
 	public static String PLAYERRESOURCES_SIGNATURE = 	"48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 85 C0 74 10 48";
 	public static String FORCEJUMP_SIGNATURE = 			"44 89 e8 c1 e0 1d c1 f8 1f 83 e8 03 45 84 e4 74 08 21 d0";
 	public static String ALT1_SIGNATURE =      			"44 89 e8 c1 e0 11 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
