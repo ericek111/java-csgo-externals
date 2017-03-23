@@ -127,7 +127,7 @@ public final class Engine {
 
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
-
+			
 			if (Offsets.m_dwLocalPlayer < 1) {
 				Thread.sleep(1000);
 				continue;
@@ -167,14 +167,14 @@ public final class Engine {
 		Offsets.load();
 		System.out.println();
 		System.out.println("m_dwGlowObject: " + StringFormat.hex(Offsets.m_dwGlowObject));
-		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.m_dw_iAlt1));
-		System.out.println("m_dwForceJump: " + StringFormat.hex(Offsets.m_dwForceJump));
+		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.input.alt1));
+		System.out.println("m_iAlt2: " + StringFormat.hex(Offsets.input.alt2));
+		System.out.println("m_dwForceJump: " + StringFormat.hex(Offsets.input.jump));
 		System.out.println("m_dw_bOverridePostProcessingDisable: " + StringFormat.hex(Offsets.m_dw_bOverridePostProcessingDisable));
 		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResourcesPointer));
-		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.m_dwForceAttack));
+		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.input.attack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
 		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
-		System.out.println("m_dwClientState: " + StringFormat.hex(Offsets.m_dwClientState));
 		System.out.println();
 	}
 

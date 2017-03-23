@@ -16,10 +16,10 @@ public class Bunnyhop extends Module {
 
 					long localPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
 
-					if (Engine.clientModule().readInt(Offsets.m_dw_iAlt1) == 5) {
+					if (Engine.clientModule().readInt(Offsets.input.alt1) == 5) {
 						long m_fFlags = Engine.clientModule().readLong(localPlayer + Offsets.m_fFlags);
 						if ((m_fFlags & Flags.FL_ONGROUND) > 0)
-							Engine.clientModule().writeInt(Offsets.m_dwForceJump, 6);
+							Engine.clientModule().writeInt(Offsets.input.jump, 6);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

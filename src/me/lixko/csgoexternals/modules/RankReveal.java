@@ -12,7 +12,6 @@ import me.lixko.csgoexternals.structs.CSPlayerResource;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
-import me.lixko.csgoexternals.util.XKeySym;
 
 public class RankReveal extends Module {
 	boolean needsDataUpdate = false;
@@ -35,7 +34,7 @@ public class RankReveal extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(3);
-					shouldDraw = XKeySym.isPressed(XKeySym.XK_Tab);
+					shouldDraw = Engine.clientModule().readInt(Offsets.input.score) > 0;
 					if (!needsDataUpdate || Offsets.m_dwPlayerResourcesPointer == 0 || Offsets.m_dwPlayerResources == 0 || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
