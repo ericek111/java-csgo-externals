@@ -34,7 +34,7 @@ public class RankReveal extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(3);
-					shouldDraw = Engine.clientModule().readInt(Offsets.input.score) > 0;
+					shouldDraw = Engine.clientModule().readInt(Offsets.input.score) > 4;
 					if (!needsDataUpdate || Offsets.m_dwPlayerResourcesPointer == 0 || Offsets.m_dwPlayerResources == 0 || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
