@@ -121,7 +121,7 @@ public final class Engine {
 
 		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
 		Client.theClient.eventHandler.onEngineLoaded();
-
+		
 		while (Client.theClient.isRunning) {
 			last_tick = System.nanoTime();
 
@@ -175,6 +175,7 @@ public final class Engine {
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.input.attack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
 		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
+		System.out.println("m_dwGlobalVars: " + StringFormat.hex(Offsets.m_dwGlobalVars));
 		System.out.println();
 	}
 

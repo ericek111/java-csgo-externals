@@ -29,7 +29,7 @@ public class DrawUtils {
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
-
+	
 	static {
 		String texturespath = FileUtil.mainpath + "/textures/";
 		System.out.println(texturespath);

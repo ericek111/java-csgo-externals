@@ -5,15 +5,15 @@ import me.lixko.csgoexternals.Engine;
 public final class Offsets {
 
 	public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "80 3D ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 85 C9";
-	public static String ENTITYLIST_SIGNATURE = 		"48 8B 15 ?? ?? ?? ?? 0F B7 C0 48 C1 E0 04";
-	public static String GLOWOBJECT_SIGNATURE = 		"E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 00 00 00 C7";
-	public static String PLAYERRESOURCES_SIGNATURE = 	"48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 85 C0 74 10 48";
-	public static String FORCEJUMP_SIGNATURE = 			"44 89 e8 c1 e0 1d c1 f8 1f 83 e8 03 45 84 e4 74 08 21 d0";
-	public static String ALT1_SIGNATURE =      			"44 89 e8 c1 e0 11 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
-	public static String ALT2_SIGNATURE = 				"44 89 e8 c1 e0 10 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
-	public static String FORCEATTACK_SIGNATURE = 		"44 89 e8 83 e0 01 f7 d8 83 e8 03 45 84 e4 74 ?? 21 d0";
-	public static String LOCALPLAYER_SIGNATURE = 		"48 89 e5 74 0e 48 8d 05 ?? ?? ?? ??";
-	
+	public static String ENTITYLIST_SIGNATURE =			"48 8B 15 ?? ?? ?? ?? 0F B7 C0 48 C1 E0 04";
+	public static String GLOWOBJECT_SIGNATURE =			"E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 00 00 00 C7";
+	public static String PLAYERRESOURCES_SIGNATURE =	"48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 85 C0 74 10 48";
+	public static String FORCEJUMP_SIGNATURE =			"44 89 e8 c1 e0 1d c1 f8 1f 83 e8 03 45 84 e4 74 08 21 d0";
+	public static String ALT1_SIGNATURE =				"44 89 e8 c1 e0 11 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
+	public static String ALT2_SIGNATURE =				"44 89 e8 c1 e0 10 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
+	public static String FORCEATTACK_SIGNATURE =		"44 89 e8 83 e0 01 f7 d8 83 e8 03 45 84 e4 74 ?? 21 d0";
+	public static String LOCALPLAYER_SIGNATURE =		"48 89 e5 74 0e 48 8d 05 ?? ?? ?? ??";
+	public static String GLOBALVARS_SIGNATURE =			"4C 8B 25 ?? ?? ?? ?? F3 0F 10 86 C0 3D 00 00 49";
 	/**
 	 * Client.dll offsets
 	 */
@@ -27,7 +27,8 @@ public final class Offsets {
 	public static long m_dwEntityList;
 	public static long m_dwLocalPlayer;
 	public static long m_dwLocalPlayerPointer; // < dereference!	
-
+	public static long m_dwGlobalVars;
+	
 	/*
 	 * Static offsets
 	 */
@@ -51,8 +52,13 @@ public final class Offsets {
 	
 	public static long m_angEyeAngles = 0xb310;
 	public static long m_Local = 0x36f0;
+	public static long m_iCrosshairIndex = 0xb398;
+	public static long m_iEntityIndex = 0x94;
 
 	public static long m_dwFullUpdate = 0x1FC;
+	
+	public static long m_flC4Blow = 0x300c;
+	
 
 	public static void load() {
 		/**
@@ -95,6 +101,11 @@ public final class Offsets {
 
 		long localplayerlea = PatternScanner.getAddressForPattern(Engine.clientModule(), LOCALPLAYER_SIGNATURE);
 		m_dwLocalPlayerPointer = Engine.clientModule().GetCallAddress(localplayerlea + 7);
+		
+		long globalvarsmov = PatternScanner.getAddressForPattern(Engine.clientModule(), GLOBALVARS_SIGNATURE);
+		long globalvarsptr = Engine.clientModule().GetAbsoluteAddress(globalvarsmov, 3, 7);
+		long globalvars = Engine.clientModule().readLong(globalvarsptr);
+		m_dwGlobalVars = Engine.clientModule().readLong(globalvars);
 
 		m_dwLocalPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
 
