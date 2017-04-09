@@ -19,6 +19,8 @@ package me.lixko.csgoexternals.offsets;
 import com.github.jonatino.misc.Cacheable;
 import com.github.jonatino.process.Module;
 
+import me.lixko.csgoexternals.util.StringFormat;
+
 import java.util.Arrays;
 
 public final class PatternScanner {
@@ -44,6 +46,12 @@ public final class PatternScanner {
 	public static long getAddressForPattern(Module module, String sigstr) {
 		return getAddressForPattern(module, 0, 0, 0, hexStringToByteArray(sigstr));
 	}
+	
+	public static long getAddressForPattern(Module module, long values) {
+		byte[] barr = toByteArray(values);
+		System.out.println(StringFormat.hex(barr));
+		return getAddressForPattern(module, 0, 0, 0, barr);
+	}
 
 	public static long getAddressForPattern(Module module, int pattern_offset, int address_offset, int flags, byte... values) {
 		long off = module.size() - values.length;
@@ -59,7 +67,7 @@ public final class PatternScanner {
 				return i + address_offset;
 			}
 		}
-		throw new IllegalStateException("Can not find offset inside of " + module.name() + " with pattern " + Arrays.toString(values));
+		throw new IllegalStateException("Can not find offset inside of " + module.name() + " with pattern " + StringFormat.hex(values)); //+ Arrays.toString(values));
 	}
 
 	private static boolean checkMask(Module module, long offset, byte[] pMask) {
