@@ -1,5 +1,7 @@
 package me.lixko.csgoexternals.modules;
 
+import java.util.TreeMap;
+
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.Client;
@@ -107,6 +109,9 @@ public class Module {
 	}
 
 	public void onWorldRender() {
+	}
+	
+	public void setStatusLabel(TreeMap<Integer, String> map) {
 	}
 
 }

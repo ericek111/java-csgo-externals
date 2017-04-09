@@ -33,7 +33,6 @@ public class FOVChanger extends Module {
 		Engine.clientModule().writeInt(Offsets.m_dwLocalPlayer + 0x3998, (int)120);
 		Engine.clientModule().writeInt(Offsets.m_dwLocalPlayer + 0x399c, (int)120);
 		Engine.clientModule().writeInt(Offsets.m_dwLocalPlayer + 0x3b14, (int)120);
-		
 	}
 	
 }

@@ -1,11 +1,15 @@
 package me.lixko.csgoexternals;
 
+import java.util.Map;
+
 import javax.script.ScriptException;
 
 import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.modules.Module;
+import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.StringFormat;
+import me.lixko.csgoexternals.util.TextAlign;
 
 public class EventHandler {
 
@@ -50,8 +54,10 @@ public class EventHandler {
 	}
 
 	public void onLoop() {
+		Client.theClient.moduleManager.cachedStatusText.clear();
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			eventModule.onLoop();
+			eventModule.setStatusLabel(Client.theClient.moduleManager.cachedStatusText);
 		}
 		try {
 			if (Client.theClient.jsinitialized)
@@ -79,6 +85,15 @@ public class EventHandler {
 		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
 		}
+		String str = "";
+		for(Map.Entry<Integer, String> entry : Client.theClient.moduleManager.cachedStatusText.entrySet())
+			str += str == "" ? entry.getValue() : " + " + entry.getValue();
+		
+		DrawUtils.setTextColor(0.0f, 1.0f, 1.0f, 0.8f);
+		DrawUtils.setAlign(TextAlign.CENTER);
+		DrawUtils.enableStringBackground();
+		DrawUtils.drawString(DrawUtils.drawable.getSurfaceWidth() / 2, 15, str);
+		DrawUtils.setAlign(TextAlign.LEFT);
 	}
 
 	public void onWorldRender() {

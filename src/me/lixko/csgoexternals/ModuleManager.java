@@ -2,22 +2,26 @@ package me.lixko.csgoexternals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import me.lixko.csgoexternals.modules.*;
 
 public class ModuleManager {
 	public ArrayList<Module> activeModules = new ArrayList<Module>();
 	public HashMap<String, Boolean> toggledModules = new HashMap<String, Boolean>();
-
+	public TreeMap<Integer, String> cachedStatusText = new TreeMap<Integer, String>();
+	
 	public ModuleManager() {
 		registerModules();
 	}
 
 	public void registerModules() {
+		registerModule(new AutoDefuse());
 		registerModule(new BoxESP());
 		registerModule(new Bunnyhop());
 		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());
+		registerModule(new FOVChanger());
 		registerModule(new Glow());
 		registerModule(new NoFlash());
 		registerModule(new NoHands());
