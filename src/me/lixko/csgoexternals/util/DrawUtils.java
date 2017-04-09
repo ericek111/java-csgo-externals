@@ -124,6 +124,26 @@ public class DrawUtils {
 	public static void setColor(int ir, int ig, int ib, int ia) {
 		setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
 	}
+	
+	public static void setTextureColor(int color) {
+		setTextureColor((float) ((color >> 24) & 0xFF) / 255, (float) ((color >> 16) & 0xFF) / 255, (float) ((color >> 8) & 0xFF) / 255, (float) ((color >> 0) & 0xFF) / 255);
+	}
+
+	public static void setTextureColor(float r, float g, float b) {
+		mTextureRenderer.setColor(r,  g,  b,  1.0f);
+	}
+
+	public static void setTextureColor(float r, float g, float b, float a) {
+		mTextureRenderer.setColor(r,  g,  b,  a);
+	}
+
+	public static void setTextureColor(int ir, int ig, int ib) {
+		setTextureColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
+	}
+
+	public static void setTextureColor(int ir, int ig, int ib, int ia) {
+		setTextureColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
+	}
 
 	public static void setTextColor(int color) {
 		fontRenderer.textRenderer.setColor((color >> 24) & 0xFF / 255, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color >> 0) & 0xFF);
