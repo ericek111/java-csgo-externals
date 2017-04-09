@@ -13,11 +13,10 @@ public class Bunnyhop extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(5);
-
-					long localPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
+					if(Offsets.m_dwLocalPlayer == 0) continue;
 
 					if (Engine.clientModule().readInt(Offsets.input.alt1) == 5) {
-						long m_fFlags = Engine.clientModule().readLong(localPlayer + Offsets.m_fFlags);
+						long m_fFlags = Engine.clientModule().readLong(Offsets.m_dwLocalPlayer + Offsets.m_fFlags);
 						if ((m_fFlags & Flags.FL_ONGROUND) > 0)
 							Engine.clientModule().writeInt(Offsets.input.jump, 6);
 					}
