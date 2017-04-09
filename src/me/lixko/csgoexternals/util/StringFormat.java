@@ -262,7 +262,11 @@ public class StringFormat {
 	public static String hex(long n) {
 		return String.format("0x%8s", Long.toHexString(n)).replace(' ', '0');
 	}
-
+	
+	public static String hex(byte... n) {
+		return javax.xml.bind.DatatypeConverter.printHexBinary(n);
+	}
+	
 	public static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = supp.get();
