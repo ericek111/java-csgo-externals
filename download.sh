@@ -1,7 +1,8 @@
 #!/bin/bash
 DOWNLOAD_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/download.sh"
 START_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/start.sh"
-RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/releases"
+MAIN_RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/releases"
+JMM_RELEASES_URL="https://api.github.com/repos/ericek111/Java-Memory-Manipulation/releases"
 TEXTURES_ZIP="https://github.com/ericek111/java-csgo-externals/releases/download/1.1/textures.zip"
 
 self_update=false
@@ -59,7 +60,7 @@ function downloaddep {
 	fi
 }
 function downloadmain {
-	gitreleases=$(wget -4 -O - -o /dev/null "$RELEASES_URL")
+	gitreleases=$(wget -4 -O - -o /dev/null "$MAIN_RELEASES_URL")
 	if [ $? -ne 0 ]; then
 		echo "ERROR: Failed to fetch GitHub releases!"
 		exit 1;
@@ -73,6 +74,24 @@ function downloadmain {
 			exit 1;
 		else
 			echo "Downloaded the main JAR!"
+		fi
+	fi
+}
+function downloadjmm {
+	gitjmmreleases=$(wget -4 -O - -o /dev/null "$JMM_RELEASES_URL")
+	if [ $? -ne 0 ]; then
+		echo "ERROR: Failed to fetch GitHub releases!"
+		exit 1;
+	else
+		jmmjarurl=$(echo "$gitjmmreleases" | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+		wget_output=$(wget -4 -N -q -O "$ABSPATH/lib/Java-Memory-Manipulation.jar" "$jmmjarurl")
+		if [ $? -ne 0 ]; then
+			rm "$ABSPATH/Java-Memory-Manipulation.jar"  2> /dev/null
+			echo "$wget_output"
+			echo "ERROR: Failed to download Java-Memory-Manipulation library! $jmmjarurl"
+			exit 1;
+		else
+			echo "Downloaded Java-Memory-Manipulation library!"
 		fi
 	fi
 }
@@ -111,7 +130,7 @@ downloaddep "$ABSPATH/lib" "https://jogamp.org/deployment/jogamp-current/jar/glu
 downloaddep "$ABSPATH/lib" "https://jogamp.org/deployment/jogamp-current/jar/gluegen-rt-natives-linux-amd64.jar"
 downloaddep "$ABSPATH/lib" "https://github.com/ericek111/java-csgo-externals/releases/download/1.0/jogl-all.jar"
 downloaddep "$ABSPATH/lib" "https://github.com/ericek111/java-csgo-externals/releases/download/1.0/jogl-all-natives-linux-amd64.jar"
-downloaddep "$ABSPATH/lib" "https://github.com/ericek111/Java-Memory-Manipulation/releases/download/2.0/Java-Memory-Manipulation.jar"
+downloadjmm
 echo ">>> Dependencies downloaded!"
 
 downloadtextures
