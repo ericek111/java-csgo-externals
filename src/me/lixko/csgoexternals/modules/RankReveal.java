@@ -129,11 +129,12 @@ public class RankReveal extends Module {
 		DrawUtils.fontRenderer = DrawUtils.theme.fontRendererLarge;
 
 		if (res.m_iHealth.getInt(resid * Integer.BYTES) > 0) {
-			DrawUtils.setTextColor(0.9f, 0.42f, 0.4f, 1.0f);
+			DrawUtils.setTextColor(1.0f, 0.2f, 0.2f, 1.0f);
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 8, y, res.m_iHealth.getInt(resid * Integer.BYTES) + "");
 		}
 
 		if (res.m_iArmor.getInt(resid * Integer.BYTES) > 0) {
+			DrawUtils.fontRenderer = DrawUtils.theme.fontRenderer;
 			if (team == 2)
 				DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
 			else
@@ -141,12 +142,13 @@ public class RankReveal extends Module {
 			String str = res.m_iArmor.getInt(resid * Integer.BYTES) + "";
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 - 40, y, str);
 			if (res.m_bHasHelmet.getBoolean(resid)) {
-				DrawUtils.setLineWidth(3.0f);
+				DrawUtils.setLineWidth(2.0f);
 				DrawUtils.setColor(0.6f, 0.6f, 0.6f, 0.8f);
 				DrawUtils.drawRectangleAroundString(str, DrawUtils.getScreenWidth() / 4 - 40, y);
 			}
 		}
-
+		
+		DrawUtils.setTextureColor(1f, 1f, 1f);
 		if (res.m_iPlayerC4.getInt() == resid && lpteamnum != 2)
 			DrawUtils.drawTexture("bomb", DrawUtils.getScreenWidth() / 4 + 60, y - 8, 25, -1);
 
