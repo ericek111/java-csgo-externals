@@ -10,9 +10,9 @@ import me.lixko.csgoexternals.util.DrawUtils;
 
 public class RecoilCross extends Module {
 
-	boolean needsDataUpdate = false;
-	VectorMem punchvec = new VectorMem();
-	MemoryBuffer lpvecbuf = new MemoryBuffer(punchvec.size());
+	private boolean needsDataUpdate = false;
+	private VectorMem punchvec = new VectorMem();
+	private MemoryBuffer lpvecbuf = new MemoryBuffer(punchvec.size());
 
 	private final int fov = 90;
 	private final int sx = (int) (DrawUtils.getScreenWidth() * 0.5f);
