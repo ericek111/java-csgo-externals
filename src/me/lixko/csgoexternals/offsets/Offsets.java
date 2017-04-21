@@ -1,11 +1,12 @@
 package me.lixko.csgoexternals.offsets;
 
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.util.StringFormat;
 
 public final class Offsets {
 
 	public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "80 3D ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 85 C9";
-	public static String ENTITYLIST_SIGNATURE =			"48 8B 15 ?? ?? ?? ?? 0F B7 C0 48 C1 E0 04";
+	public static String ENTITYLIST_SIGNATURE = 		"48 8B 05 ?? ?? ?? ?? 48 8B 38 48 8B 07 89 55 B0";
 	public static String GLOWOBJECT_SIGNATURE =			"E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 00 00 00 C7";
 	public static String PLAYERRESOURCES_SIGNATURE =	"48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 85 C0 74 10 48";
 	public static String FORCEJUMP_SIGNATURE =			"44 89 e8 c1 e0 1d c1 f8 1f 83 e8 03 45 84 e4 74 08 21 d0";
@@ -14,6 +15,9 @@ public final class Offsets {
 	public static String FORCEATTACK_SIGNATURE =		"44 89 e8 83 e0 01 f7 d8 83 e8 03 45 84 e4 74 ?? 21 d0";
 	public static String LOCALPLAYER_SIGNATURE =		"48 89 e5 74 0e 48 8d 05 ?? ?? ?? ??";
 	public static String GLOBALVARS_SIGNATURE =			"4C 8B 25 ?? ?? ?? ?? F3 0F 10 86 C0 3D 00 00 49";
+	public static String GAMERULES_SIGNATURE = 			"48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
+	
+	public static String GAMEDIRECTORY_SIGNATURE = "F6 48 81 EC 28 02 00 00 48 8B 3D ?? ?? ?? ?? E8";
 	/**
 	 * Client.dll offsets
 	 */
@@ -28,6 +32,11 @@ public final class Offsets {
 	public static long m_dwLocalPlayer;
 	public static long m_dwLocalPlayerPointer; // < dereference!	
 	public static long m_dwGlobalVars;
+	public static long m_dwGlobalVarsPointer;
+	public static long m_dwGameRules;
+	
+	public static long m_dwEnginePointer;
+	public static long m_szGameDirectory;
 	
 	/*
 	 * Static offsets
@@ -50,6 +59,7 @@ public final class Offsets {
 	public static long m_flFlashMaxAlpha = 0xabf4;
 	public static long m_flFlashDuration = 0xabf8;
 	
+	public static long m_ArmorValue = 0xb30c;
 	public static long m_angEyeAngles = 0xb310;
 	public static long m_Local = 0x36f0;
 	public static long m_iCrosshairIndex = 0xb398;
@@ -59,21 +69,20 @@ public final class Offsets {
 	
 	public static long m_flC4Blow = 0x300c;
 	
-
 	public static void load() {
 		/**
 		 * Client.dll offsets
 		 */
 		long foundGlowPointerCall = PatternScanner.getAddressForPattern(Engine.clientModule(), GLOWOBJECT_SIGNATURE);
-		// System.out.println("Glow Pointer Call Reference: " + PatternScanner.hex(foundGlowPointerCall));
+		System.out.println("Glow Pointer Call Reference: " + StringFormat.hex(foundGlowPointerCall));
 		long glowFunctionCall = Engine.clientModule().GetCallAddress(foundGlowPointerCall);
-		// System.out.println("Glow function address: " + PatternScanner.hex(glowFunctionCall));
+		// System.out.println("Glow function address: " + StringFormat.hex(glowFunctionCall));
 		long addressOfGlowPointerOffset = (int) Engine.clientModule().readPointer(glowFunctionCall + 0x10);
 		if (addressOfGlowPointerOffset < 1)
 			throw new IllegalStateException("Unable to read address of glow pointer!");
-		// System.out.println("Glow Array offset: " + PatternScanner.hex(addressOfGlowPointerOffset));
+		// System.out.println("Glow Array offset: " + StringFormat.hex(addressOfGlowPointerOffset));
 		m_dwGlowObject = glowFunctionCall + 0x10 + addressOfGlowPointerOffset + 0x4;
-		// System.out.println("Glow Array pointer: " + PatternScanner.hex(m_dwGlowObject));
+		// System.out.println("Glow Array pointer: " + StringFormat.hex(m_dwGlowObject));
 		
 		long alt1mov = PatternScanner.getAddressForPattern(Engine.clientModule(), ALT1_SIGNATURE);
 		input.alt1 = Engine.clientModule().GetCallAddress(alt1mov + 20);
@@ -96,18 +105,45 @@ public final class Offsets {
 		long playerresourcemov = PatternScanner.getAddressForPattern(Engine.clientModule(), PLAYERRESOURCES_SIGNATURE);
 		m_dwPlayerResourcesPointer = Engine.clientModule().GetAbsoluteAddress(playerresourcemov, 3, 7);
 
+		System.out.println("----------------------------");
 		long entitylistmov = PatternScanner.getAddressForPattern(Engine.clientModule(), ENTITYLIST_SIGNATURE);
 		m_dwEntityList = Engine.clientModule().GetAbsoluteAddress(entitylistmov, 3, 7);
+		m_dwEntityList = Engine.clientModule().readLong(m_dwEntityList);
+		m_dwEntityList = Engine.clientModule().readLong(m_dwEntityList) + 8;
+		System.out.println("----------------------------");
 
 		long localplayerlea = PatternScanner.getAddressForPattern(Engine.clientModule(), LOCALPLAYER_SIGNATURE);
 		m_dwLocalPlayerPointer = Engine.clientModule().GetCallAddress(localplayerlea + 7);
+		m_dwLocalPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
 		
 		long globalvarsmov = PatternScanner.getAddressForPattern(Engine.clientModule(), GLOBALVARS_SIGNATURE);
 		long globalvarsptr = Engine.clientModule().GetAbsoluteAddress(globalvarsmov, 3, 7);
-		long globalvars = Engine.clientModule().readLong(globalvarsptr);
-		m_dwGlobalVars = Engine.clientModule().readLong(globalvars);
-
-		m_dwLocalPlayer = Engine.clientModule().readLong(Offsets.m_dwLocalPlayerPointer);
+		m_dwGlobalVarsPointer = Engine.clientModule().readLong(globalvarsptr);
+		m_dwGlobalVars = Engine.clientModule().readLong(m_dwGlobalVarsPointer);
+		
+		long gamerulesmov = PatternScanner.getAddressForPattern(Engine.clientModule(), GAMERULES_SIGNATURE);
+		long gamerulesptrptr = Engine.clientModule().GetAbsoluteAddress(gamerulesmov, 3, 7);
+		long gamerulesptr = Engine.clientModule().readLong(gamerulesptrptr);
+		m_dwGameRules = Engine.clientModule().readLong(gamerulesptr);
+		
+		/*long enginepointerlea = PatternScanner.getAddressForPattern(Engine.engineModule(), ENGINEPOINTER_SIGNATURE);
+		System.out.println("engineplea: " + StringFormat.hex(enginepointerlea));
+		long enginepointerptr = Engine.engineModule().GetAbsoluteAddress(enginepointerlea, 3, 7);
+		System.out.println("enginepointerptr: " + StringFormat.hex(enginepointerptr));
+		
+		m_dwEnginePointer = Engine.engineModule().readLong(enginepointerptr) + 8;
+		System.out.println("enginepointer: " + StringFormat.hex(m_dwEnginePointer));
+		
+		m_dwEnginePointer = Engine.engineModule().readLong(m_dwEnginePointer) + 8;
+		System.out.println("enginepointer deref twice: " + StringFormat.hex(m_dwEnginePointer));*/
+		
+		long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 8;
+		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
+		m_szGameDirectory = Engine.engineModule().readLong(gamedirptr);		
+		
+		long mapname = PatternScanner.getAddressForPattern(Engine.clientModule(), 0, 0, 0, "de_dust2");;
+		System.out.println("mapname: " + StringFormat.hex(mapname));
+		
 
 	}
 
