@@ -79,7 +79,7 @@ public class AutoDefuse extends Module {
 				if(bombtimer < 40 && bombtimer > 0 && !defused) {
 					if(defuser != 0xfff) {
 						if(bombtimer - countdown < 0.05f) {
-							System.out.println("NO TIME!!! " + bombtimer);
+							//System.out.println("NO TIME!!! " + bombtimer);
 							hastimetodefuse = false;
 						} else {
 							hastimetodefuse = true;
@@ -145,10 +145,9 @@ public class AutoDefuse extends Module {
 		
 		DrawUtils.fontRenderer = DrawUtils.theme.fontRenderer;
 		
-		if(bombtimer < 20f)
+		if(bombtimer < 5f || (defuser != 0xFFF && deftime > 0 && deftime < 10))
 		if(hastimetodefuse) {
-			if(lpteam == 2) DrawUtils.setTextureColor(1f, 0f, 0f);
-			else DrawUtils.setTextureColor(0f, 1f, 0f);
+			DrawUtils.setTextureColor(0f, 1f, 0f);
 			DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 2 - 50, DrawUtils.getScreenHeight() - 200, 100, -1);
 		} else {
 			if(lpteam == 2) DrawUtils.setTextureColor(0f, 1f, 0f);
