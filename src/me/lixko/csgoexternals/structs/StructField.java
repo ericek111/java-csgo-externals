@@ -66,7 +66,167 @@ public class StructField {
 	public void set(Pointer value) {
 		memstr.membuf.setPointer(memstr.OFFSET + this.offset, value);
 	}
+	
+	public void set(long offset, int value) {
+		memstr.membuf.setInt(memstr.OFFSET + this.offset + offset, value);
+	}
 
+	public void set(long offset, float value) {
+		memstr.membuf.setFloat(memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void set(long offset, double value) {
+		memstr.membuf.setDouble(memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void set(long offset, long value) {
+		memstr.membuf.setLong(memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void set(long offset, boolean value) {
+		memstr.membuf.setByte(memstr.OFFSET + this.offset + offset, value ? (byte) 1 : (byte) 0);
+	}
+
+	public void set(long offset, short value) {
+		memstr.membuf.setShort(memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void set(long offset, char value) {
+		memstr.membuf.setChar(memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void set(long offset, Pointer value) {
+		memstr.membuf.setPointer(memstr.OFFSET + this.offset + offset, value);
+	}
+	
+	public void write(int value) {
+		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(float value) {
+		memstr.membuf.lastReadSource().writeFloat(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(double value) {
+		memstr.membuf.lastReadSource().writeDouble(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(long value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(boolean value) {
+		memstr.membuf.lastReadSource().writeBoolean(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(short value) {
+		memstr.membuf.lastReadSource().writeShort(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(char value) {
+		memstr.membuf.lastReadSource().writeByte(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void write(Pointer value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, Pointer.nativeValue(value));
+	}
+	
+	public void write(long offset, int value) {
+		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, float value) {
+		memstr.membuf.lastReadSource().writeFloat(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, double value) {
+		memstr.membuf.lastReadSource().writeDouble(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, long value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, boolean value) {
+		memstr.membuf.lastReadSource().writeBoolean(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, short value) {
+		memstr.membuf.lastReadSource().writeShort(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, char value) {
+		memstr.membuf.lastReadSource().writeByte(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void write(long offset, Pointer value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, Pointer.nativeValue(value));
+	}
+	
+	public void writeInt(int value) {
+		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeFloat(float value) {
+		memstr.membuf.lastReadSource().writeFloat(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeDouble(double value) {
+		memstr.membuf.lastReadSource().writeDouble(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeLong(long value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeBoolean(boolean value) {
+		memstr.membuf.lastReadSource().writeBoolean(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeShort(short value) {
+		memstr.membuf.lastReadSource().writeShort(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeByte(char value) {
+		memstr.membuf.lastReadSource().writeByte(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
+	}
+
+	public void writeLong(Pointer value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, Pointer.nativeValue(value));
+	}
+	
+	public void writeInt(long offset, int value) {
+		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeFloat(long offset, float value) {
+		memstr.membuf.lastReadSource().writeFloat(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeDouble(long offset, double value) {
+		memstr.membuf.lastReadSource().writeDouble(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeLong(long offset, long value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeBoolean(long offset, boolean value) {
+		memstr.membuf.lastReadSource().writeBoolean(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeShort(long offset, short value) {
+		memstr.membuf.lastReadSource().writeShort(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeByte(long offset, char value) {
+		memstr.membuf.lastReadSource().writeByte(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
+	}
+
+	public void writeLong(long offset, Pointer value) {
+		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, Pointer.nativeValue(value));
+	}	
+	
 	public ByteBuffer get() {
 		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset, this.size);
 	}
