@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.awt.TextureRenderer;
 
+import me.lixko.csgoexternals.offsets.ItemDefinitionIndex;
 import me.lixko.csgoexternals.themes.BasicTheme;
 
 @SuppressWarnings("static-access")
@@ -23,22 +25,60 @@ public class DrawUtils {
 	public static TextAlign align = TextAlign.LEFT;
 	public static LocalPlayerPosition lppos = new LocalPlayerPosition();
 
-	public static TextureRenderer mTextureRenderer;
-	private static Graphics2D tTextureGraphics2D;
+	/*
+	 * public static TextureRenderer mTextureRenderer;
+	 * private static Graphics2D tTextureGraphics2D;
+	 */
 	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
-	
+	private static float[] texcolor = new float[4];
+
 	static {
 		String texturespath = FileUtil.mainpath + "/textures/";
-		System.out.println(texturespath);
-		for (File rankimg : (new File(texturespath + "ranks")).listFiles()) {
-			addTexture(rankimg.getName().substring(0, rankimg.getName().lastIndexOf(".")), rankimg);
+		for (File texfile : textureSourceFile("ranks").listFiles()) {
+			addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
 		}
-		addTexture("defuser", new File(texturespath + "defuser.png"));
-		addTexture("bomb", new File(texturespath + "bomb.png"));
+		for (File texfile : textureSourceFile("weapons").listFiles()) {
+			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			if (name.startsWith("weapon_"))
+				addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+			else
+				addTexture(name, texfile);
+		}
+		textureSourceFile("weapons_outline");
+		for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
+			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			if (name.startsWith("weapon_"))
+				addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+			else
+				addTexture("out_" + name, texfile);
+		}
+		addTexture("defuser", textureSourceFile("defuser.png"));
+		addTexture("bomb", textureSourceFile("bomb.png"));
 		loadTextures();
+	}
+
+	public static File textureSourceFile(String directory) {
+		File folder = null;
+		String path = FileUtil.mainpath + "/textures/" + directory;
+		try {
+			folder = new File(path);
+		} catch (Exception ex) {
+			System.out.println("Uknown error occured while accessing a texture file or folder: " + path);
+			ex.printStackTrace();
+			System.exit(1);
+		}
+		if (folder == null || !folder.exists()) {
+			System.out.println("ERROR! Textures folder doesn't exist! Verify its location: " + path);
+			System.exit(1);
+		}
+		if (folder.isDirectory() && folder.listFiles() == null) {
+			System.out.println("ERROR! Cannot list a texture folder! Verify its location: " + path);
+			System.exit(1);
+		}
+		return folder;
 	}
 
 	public static void addTexture(String key, File imgfile) {
@@ -50,43 +90,77 @@ public class DrawUtils {
 	}
 
 	public static void loadTextures() {
-		int totalwidth = 0;
-		int maxheight = 0;
-		for (Map.Entry<String, Texture> entry : textures.entrySet()) {
-			Texture tex = entry.getValue();
-			maxheight = Math.max(maxheight, tex.height);
-			tex.texx = totalwidth;
-			totalwidth += tex.width;
-		}
-		mTextureRenderer = new TextureRenderer(totalwidth, maxheight, true);
-		tTextureGraphics2D = mTextureRenderer.createGraphics();
-		for (Map.Entry<String, Texture> entry : textures.entrySet()) {
-			Texture tex = entry.getValue();
-			tTextureGraphics2D.drawImage(tex.img, tex.texx, 0, null);
-		}
-		tTextureGraphics2D.dispose();
-		mTextureRenderer.markDirty(0, 0, totalwidth, maxheight);
+		/*
+		 * int totalwidth = 0;
+		 * int maxheight = 0;
+		 * for (Map.Entry<String, Texture> entry : textures.entrySet()) {
+		 * Texture tex = entry.getValue();
+		 * maxheight = Math.max(maxheight, tex.height);
+		 * tex.texx = totalwidth;
+		 * totalwidth += tex.width;
+		 * }
+		 * System.out.println("Allocating texture buffer " + totalwidth + "x" + maxheight + "px.");
+		 * System.out.println("Maximum texture size: " + GL.GL_MAX_TEXTURE_SIZE);
+		 * mTextureRenderer = new TextureRenderer(totalwidth, maxheight, true);
+		 * tTextureGraphics2D = mTextureRenderer.createGraphics();
+		 * for (Map.Entry<String, Texture> entry : textures.entrySet()) {
+		 * Texture tex = entry.getValue();
+		 * tTextureGraphics2D.drawImage(tex.img, tex.texx, 0, null);
+		 * }
+		 * tTextureGraphics2D.dispose();
+		 * mTextureRenderer.markDirty(0, 0, totalwidth, maxheight);
+		 */
 	}
 
 	public static void drawTexture(String key, int x, int y) {
 		Texture tex = textures.get(key);
+		if (tex == null)
+			return;
 
-		mTextureRenderer.beginOrthoRendering(getScreenWidth() * 1, getScreenHeight() * 1);
-		mTextureRenderer.drawOrthoRect(x, y, tex.texx, mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
-		mTextureRenderer.endOrthoRendering();
+		tex.mTextureRenderer.setColor(texcolor[0], texcolor[1], texcolor[2], texcolor[3]);
+		tex.mTextureRenderer.beginOrthoRendering(getScreenWidth() * 1, getScreenHeight() * 1);
+		tex.mTextureRenderer.drawOrthoRect(x, y, tex.texx, tex.mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
+		tex.mTextureRenderer.endOrthoRendering();
 	}
 
 	public static void drawTexture(String key, int x, int y, int width, int height) {
 		Texture tex = textures.get(key);
-		float ratx = (tex.width / width);
-		float raty = 0f;
-		if (height > 0)
-			raty = (tex.height / height);
-		else
-			raty = ratx;
-		mTextureRenderer.beginOrthoRendering((int) (getScreenWidth() * ratx), (int) (getScreenHeight() * raty));
-		mTextureRenderer.drawOrthoRect((int) (x * ratx), (int) (y * raty), tex.texx, mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
-		mTextureRenderer.endOrthoRendering();
+		if (tex == null)
+			return;
+
+		float ratx = 1f;
+		float raty = 1f;
+		if (width > 0) {
+			ratx = (tex.width / width);
+			if (height > 0)
+				raty = (tex.height / height);
+			else
+				raty = ratx;
+		} else {
+			if (height > 0) {
+				raty = (tex.height / height);
+				ratx = raty;
+			} else
+				ratx = 1f;
+		}
+
+		int xoffset = 0;
+		switch (DrawUtils.align) {
+		case LEFT:
+			xoffset = 0;
+			break;
+		case CENTER:
+			xoffset = (int) ((float) tex.width / ratx / 2);
+			break;
+		case RIGHT:
+			xoffset = (int) ((float) tex.width / ratx);
+			break;
+		}
+
+		tex.mTextureRenderer.setColor(texcolor[0], texcolor[1], texcolor[2], texcolor[3]);
+		tex.mTextureRenderer.beginOrthoRendering((int) (getScreenWidth() * ratx), (int) (getScreenHeight() * raty));
+		tex.mTextureRenderer.drawOrthoRect((int) ((x - xoffset) * ratx), (int) (y * raty), tex.texx, tex.mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
+		tex.mTextureRenderer.endOrthoRendering();
 	}
 
 	public static void setAlign(TextAlign ta) {
@@ -124,17 +198,23 @@ public class DrawUtils {
 	public static void setColor(int ir, int ig, int ib, int ia) {
 		setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
 	}
-	
+
 	public static void setTextureColor(int color) {
 		setTextureColor((float) ((color >> 24) & 0xFF) / 255, (float) ((color >> 16) & 0xFF) / 255, (float) ((color >> 8) & 0xFF) / 255, (float) ((color >> 0) & 0xFF) / 255);
 	}
 
 	public static void setTextureColor(float r, float g, float b) {
-		mTextureRenderer.setColor(r,  g,  b,  1.0f);
+		texcolor[0] = r;
+		texcolor[1] = g;
+		texcolor[2] = b;
+		texcolor[3] = 1f;
 	}
 
 	public static void setTextureColor(float r, float g, float b, float a) {
-		mTextureRenderer.setColor(r,  g,  b,  a);
+		texcolor[0] = r;
+		texcolor[1] = g;
+		texcolor[2] = b;
+		texcolor[3] = a;
 	}
 
 	public static void setTextureColor(int ir, int ig, int ib) {
