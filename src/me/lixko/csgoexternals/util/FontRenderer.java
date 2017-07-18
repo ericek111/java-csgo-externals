@@ -13,6 +13,7 @@ public class FontRenderer {
 
 	public FontRenderer(TextRenderer textRenderer) {
 		this.textRenderer = textRenderer;
+		this.textRenderer.setSmoothing(true);
 	}
 
 	public float getStringWidth(String str) {

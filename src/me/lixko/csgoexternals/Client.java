@@ -24,8 +24,7 @@ public class Client {
 	public StringFormat stringFormat;
 	public CommandManager commandManager;
 	public ConfigManager configManager;
-	X11 xlib = X11.INSTANCE;
-	Display dpy = xlib.XOpenDisplay(null);
+	public KeyboardHandler keyboardHandler;
 
 	public Gson gson;
 	public Gson nicegson;
@@ -40,6 +39,7 @@ public class Client {
 		this.stringFormat = new StringFormat();
 		this.commandManager = new CommandManager();
 		this.configManager = new ConfigManager();
+		this.keyboardHandler = new KeyboardHandler();
 
 		this.nicegson = new GsonBuilder().setPrettyPrinting().create();
 		this.gson = new Gson();
@@ -59,7 +59,7 @@ public class Client {
 		this.commandManager = null;
 		this.jsengine = null;
 		this.jsinvocable = null;
-		this.dpy = xlib.XOpenDisplay(null);
+		this.keyboardHandler = null;
 		startClient();
 	}
 
@@ -92,6 +92,7 @@ public class Client {
 	}
 
 	public void shutdownClient() {
+		Client.theClient.eventHandler.onClientShutdown();
 		this.isRunning = false;
 	}
 

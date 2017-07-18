@@ -79,7 +79,6 @@ public class JOGL2Renderer implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		DrawUtils.gl = drawable.getGL().getGL2();
 		DrawUtils.drawable = drawable;
-		DrawUtils.fontRenderer.textRenderer.setSmoothing(true);
 		needsDataUpdate = true;
 		updateLoop.start();
 	}
