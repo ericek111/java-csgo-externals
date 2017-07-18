@@ -3,7 +3,7 @@ DOWNLOAD_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals
 START_SCRIPT="https://raw.githubusercontent.com/ericek111/java-csgo-externals/master/start.sh"
 MAIN_RELEASES_URL="https://api.github.com/repos/ericek111/java-csgo-externals/releases"
 JMM_RELEASES_URL="https://api.github.com/repos/ericek111/Java-Memory-Manipulation/releases"
-TEXTURES_ZIP="https://github.com/ericek111/java-csgo-externals/releases/download/1.1/textures.zip"
+TEXTURES_ZIP="https://github.com/ericek111/java-csgo-externals/releases/download/1.4/textures.zip"
 
 self_update=false
 updated=false
