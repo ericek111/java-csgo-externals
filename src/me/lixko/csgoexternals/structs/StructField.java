@@ -66,7 +66,7 @@ public class StructField {
 	public void set(Pointer value) {
 		memstr.membuf.setPointer(memstr.OFFSET + this.offset, value);
 	}
-	
+
 	public void set(long offset, int value) {
 		memstr.membuf.setInt(memstr.OFFSET + this.offset + offset, value);
 	}
@@ -98,7 +98,7 @@ public class StructField {
 	public void set(long offset, Pointer value) {
 		memstr.membuf.setPointer(memstr.OFFSET + this.offset + offset, value);
 	}
-	
+
 	public void write(int value) {
 		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
 	}
@@ -130,7 +130,7 @@ public class StructField {
 	public void write(Pointer value) {
 		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, Pointer.nativeValue(value));
 	}
-	
+
 	public void write(long offset, int value) {
 		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
 	}
@@ -162,7 +162,7 @@ public class StructField {
 	public void write(long offset, Pointer value) {
 		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, Pointer.nativeValue(value));
 	}
-	
+
 	public void writeInt(int value) {
 		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, value);
 	}
@@ -194,7 +194,7 @@ public class StructField {
 	public void writeLong(Pointer value) {
 		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset, Pointer.nativeValue(value));
 	}
-	
+
 	public void writeInt(long offset, int value) {
 		memstr.membuf.lastReadSource().writeInt(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, value);
 	}
@@ -225,8 +225,8 @@ public class StructField {
 
 	public void writeLong(long offset, Pointer value) {
 		memstr.membuf.lastReadSource().writeLong(memstr.membuf.lastReadAddress() + memstr.OFFSET + this.offset + offset, Pointer.nativeValue(value));
-	}	
-	
+	}
+
 	public ByteBuffer get() {
 		return memstr.membuf.getByteBuffer(memstr.OFFSET + this.offset, this.size);
 	}

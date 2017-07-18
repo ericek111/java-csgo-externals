@@ -7,11 +7,12 @@ public class NoFlash extends Module {
 
 	@Override
 	public void onLoop() {
-		if(!this.isToggled() || Offsets.m_dwLocalPlayer == 0) return;
-		if(Engine.clientModule().readFloat(Offsets.m_dwLocalPlayer + Offsets.m_flFlashMaxAlpha) > 70f)
+		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0)
+			return;
+		if (Engine.clientModule().readFloat(Offsets.m_dwLocalPlayer + Offsets.m_flFlashMaxAlpha) > 70f)
 			Engine.clientModule().writeFloat(Offsets.m_dwLocalPlayer + Offsets.m_flFlashMaxAlpha, 100f);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		Engine.clientModule().writeFloat(Offsets.m_dwLocalPlayer + Offsets.m_flFlashMaxAlpha, 255f);

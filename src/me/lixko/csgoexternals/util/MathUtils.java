@@ -18,7 +18,7 @@ public class MathUtils {
 	public static double normalizeAngle(double angle) {
 		return ((angle % 360) + 360) % 360;
 	}
-	
+
 	public static float GetArmourHealth(float flDamage, int ArmorValue) {
 		float flCurDamage = flDamage;
 
@@ -37,9 +37,9 @@ public class MathUtils {
 
 		return flNew;
 	}
-	
+
 	public static double exp(double val) {
-	    final long tmp = (long) (1512775 * val + (1072693248 - 60801));
-	    return Double.longBitsToDouble(tmp << 32);
+		final long tmp = (long) (1512775 * val + (1072693248 - 60801));
+		return Double.longBitsToDouble(tmp << 32);
 	}
 }

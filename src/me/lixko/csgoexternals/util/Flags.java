@@ -1,6 +1,9 @@
 package me.lixko.csgoexternals.util;
 
 public class Flags {
+
+	// https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
+
 	public static final int TEAM_SPECTATOR = 1;
 	public static final int TEAM_T = 2;
 	public static final int TEAM_CT = 3;

@@ -1,7 +1,7 @@
 package me.lixko.csgoexternals.offsets;
 
 public class InputOffsets {
-	
+
 	public long use;
 	public long jump;
 	public long duck;
@@ -19,14 +19,14 @@ public class InputOffsets {
 	public long speed;
 	public long back;
 	public long commandermousemove;
-	
+
 	public void init() {
 		use = alt1 - 0xC * 3;
 		jump = alt1 - 0xC * 2;
 		duck = alt1 - 0xC * 1;
 		alt2 = alt1 + 0xC;
 		score = duck + 0x40;
-		
+
 		attack2 = attack - 0xC;
 		moveright = attack + 0x48;
 		moveleft = attack + 0x48 + 0xC * 1;

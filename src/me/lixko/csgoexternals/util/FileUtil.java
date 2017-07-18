@@ -109,7 +109,7 @@ public class FileUtil {
 			}
 		}
 	}
-	
+
 	private static String cutDirectory(String path) {
 		return path.substring(0, path.lastIndexOf(File.separator));
 	}

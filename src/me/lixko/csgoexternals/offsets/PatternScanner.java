@@ -46,7 +46,7 @@ public final class PatternScanner {
 	public static long getAddressForPattern(Module module, String sigstr) {
 		return getAddressForPattern(module, 0, 0, 0, hexStringToByteArray(sigstr));
 	}
-	
+
 	public static long getAddressForPattern(Module module, long values) {
 		byte[] barr = toByteArray(values);
 		System.out.println(StringFormat.hex(barr));
@@ -67,7 +67,7 @@ public final class PatternScanner {
 				return i + address_offset;
 			}
 		}
-		throw new IllegalStateException("Can not find offset inside of " + module.name() + " with pattern " + StringFormat.hex(values)); //+ Arrays.toString(values));
+		throw new IllegalStateException("Can not find offset inside of " + module.name() + " with pattern " + StringFormat.hex(values)); // + Arrays.toString(values));
 	}
 
 	private static boolean checkMask(Module module, long offset, byte[] pMask) {

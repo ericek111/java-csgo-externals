@@ -17,5 +17,5 @@ public class CGlobalVars extends MemStruct {
 	public final StructField pSaveData = new StructField(this, Long.BYTES);
 	public final StructField m_bClient = new StructField(this, 1);
 	public final StructField m_bRemoteClient = new StructField(this, 1);
-	
+
 }

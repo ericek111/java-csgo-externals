@@ -11,10 +11,14 @@ import com.sun.jna.platform.unix.X11.KeySym;
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.structs.BaseAttributableItem;
+import me.lixko.csgoexternals.structs.CEntInfo;
+import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.structs.CGlowObjectManager;
 import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
 import me.lixko.csgoexternals.util.MemoryUtils;
+import me.lixko.csgoexternals.util.StringFormat;
 
 public class Glow extends Module {
 
@@ -22,6 +26,9 @@ public class Glow extends Module {
 	CGlowObjectManager glowman = new CGlowObjectManager();
 	CUtlVector cvec = new CUtlVector();
 	AutoDefuse autodefusemod;
+
+	CEntInfo centinfo = new CEntInfo();
+	MemoryBuffer centinfobuf = new MemoryBuffer(centinfo.size());
 
 	MemoryBuffer cglowobjmanbuf = new MemoryBuffer(glowman.size());
 	MemoryBuffer g_glow = new MemoryBuffer(glowobj.size() * 1024);
@@ -31,36 +38,26 @@ public class Glow extends Module {
 	long bytesToCutOffEnd = glowobj.size() - glowobj.writeEnd();
 	long bytesToCutOffBegin = glowobj.writeStart();
 	long totalWriteSize = (glowobj.size() - (bytesToCutOffBegin + bytesToCutOffEnd));
-	
-	private long lastbombglow = 0;
-	
-	
-	/*
-	 * unix.iovec g_remote[] = new unix.iovec[1024]; unix.iovec g_local[] = new
-	 * unix.iovec[1024]; Pointer p_remote[] = fill(new Pointer[1024], () -> new
-	 * Pointer(0)); Pointer p_local[] = fill(new Pointer[1024], () -> new
-	 * Pointer(0));
-	 */
 
+	private long lastbombglow = 0;
 	int objcount;
 	long data_ptr;
 
 	boolean glowEnabled = true;
 	boolean glowOthers = true;
 	boolean glowJustDisabled = false;
-	
+
+	CGlobalVars globalvars = new CGlobalVars();
+
 	public void onLoop() {
 		if (!(glowEnabled || glowJustDisabled))
 			return;
 		Engine.clientModule().read(Offsets.m_dwGlowObject, glowman.size(), cglowobjmanbuf);
 
-		// glowman.m_GlowObjectDefinitions.offset() + cvec.x.offset(), but
-		// m_GlowObjectDefinitions offset = 0
 		objcount = cglowobjmanbuf.getInt(cvec.Count.offset());
 		data_ptr = cglowobjmanbuf.getLong(cvec.DataPtr.offset());
 
 		Engine.clientModule().read(data_ptr, objcount * glowobj.size(), g_glow);
-		
 		int writeCount = 0;
 		for (int i = 0; i < objcount; i++) {
 			glowobj.setSource(g_glow, i * glowobj.size());
@@ -69,9 +66,12 @@ public class Glow extends Module {
 				continue;
 			int team = Engine.clientModule().readInt(entityaddr + Offsets.m_iTeamNum);
 			int health = Engine.clientModule().readInt(entityaddr + Offsets.m_iHealth);
-			
+
 			boolean issabomb = false;
 			String classname = MemoryUtils.getEntityClassName(entityaddr);
+			int rendercolor = Engine.clientModule().readInt(entityaddr + 0xa8);
+
+			// if(i < 5)System.out.println(i + ": " + StringFormat.hex(g_glow.lastReadAddress() + i * glowobj.size()));
 
 			// Radar
 			Engine.clientModule().writeBoolean(entityaddr + Offsets.m_bSpotted, true);
@@ -79,16 +79,17 @@ public class Glow extends Module {
 			glowobj.m_bRenderWhenOccluded.set(true);
 			glowobj.m_bRenderWhenUnoccluded.set(false);
 			glowobj.m_bFullBloomRender.set(false);
-			
-			//Engine.clientModule().writeInt(entityaddr + 0xa8 , 0xFF0000FF);
 
-			if(classname.startsWith("4C_C4") || classname.startsWith("11C_PlantedC4")) {
+			// Engine.clientModule().writeInt(entityaddr + 0xa8 , 0xFF0000FF);
+			health = Math.min(health, 100);
+
+			if (classname.startsWith("4C_C4") || classname.startsWith("11C_PlantedC4")) {
 				glowobj.m_flGlowRed.set(1.0f);
 				glowobj.m_flGlowGreen.set(0.4f);
 				glowobj.m_flGlowBlue.set(0.0f);
 				glowobj.m_flGlowAlpha.set(1.0f);
 				glowobj.m_bFullBloomRender.set(true);
-				if(classname.startsWith("11C_PlantedC4"))
+				if (classname.startsWith("11C_PlantedC4"))
 					issabomb = true;
 			} else if (team == 2) {
 				glowobj.m_flGlowRed.set(1.0f);
@@ -100,6 +101,13 @@ public class Glow extends Module {
 				glowobj.m_flGlowGreen.set(health != 0 ? 1.0f - health / 100.0f : 0.0f);
 				glowobj.m_flGlowBlue.set(1.0f);
 				glowobj.m_flGlowAlpha.set(0.55f);
+
+				if (classname.startsWith("10C_CSPlayer") && (rendercolor == 0xff00ff00 || rendercolor == 0xffff0000 || rendercolor == 0xff0000ff)) {
+					glowobj.m_flGlowRed.set((health / 100.0f) * 0.4f);
+					glowobj.m_flGlowGreen.set(health != 0 ? 1.0f - health / 100.0f : 0.0f);
+					glowobj.m_flGlowBlue.set(1.0f);
+					glowobj.m_flGlowAlpha.set(1.00f);
+				}
 			} else {
 				if (glowOthers)
 					glowobj.m_bRenderWhenOccluded.set(true);
@@ -116,7 +124,7 @@ public class Glow extends Module {
 				glowobj.m_flGlowBlue.set(0.0f);
 				glowobj.m_flGlowAlpha.set(0.7f);
 			}
-			
+
 			if (glowJustDisabled || !glowEnabled) {
 				glowEnabled = false;
 				glowJustDisabled = false;
@@ -128,41 +136,27 @@ public class Glow extends Module {
 				glowobj.m_bRenderWhenUnoccluded.set(false);
 				glowobj.m_bFullBloomRender.set(false);
 			}
-			
-			if(issabomb) {
+
+			if (issabomb) {
 				autodefusemod.bombentityaddr = entityaddr;
 				autodefusemod.autodefuset = true;
 				lastbombglow = System.currentTimeMillis();
-			} else if(System.currentTimeMillis() > lastbombglow+500) {
+			} else if (System.currentTimeMillis() > lastbombglow + 500) {
 				autodefusemod.autodefuset = false;
 			}
-			
+
+			// glowobj.m_bFullBloomRender.set(true);
+			// glowobj.m_flGlowAlpha.set(0.5f);
+			// glowobj.m_nGlowStyle.set(3);
+
 			long glowptr = Pointer.nativeValue(g_glow);
 
 			l_local[writeCount] = glowptr + bytesToCutOffBegin + glowobj.size() * i;
 			l_remote[writeCount] = data_ptr + bytesToCutOffBegin + glowobj.size() * i;
 			l_length[writeCount] = (int) totalWriteSize;
 
-			/*
-			 * Pointer bufptr = g_glow;
-			 * Pointer.nativeValue(p_remote[writeCount], l_remote[writeCount]);
-			 * Pointer.nativeValue(p_local[writeCount], l_local[writeCount]);
-			 * 
-			 * if(g_remote[writeCount] == null) { g_remote[writeCount] = new
-			 * unix.iovec(); g_local[writeCount] = new unix.iovec(); }
-			 * g_remote[writeCount].iov_base = p_remote[writeCount];
-			 * g_local[writeCount].iov_base = p_local[writeCount];
-			 * g_remote[writeCount].iov_len = g_local[writeCount].iov_len =
-			 * (int) totalWriteSize;
-			 */
-			
-			
-			//if(Engine.clientModule().readInt(entityaddr + Offsets.m_iEntityIndex) == Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iCrosshairIndex))
-			
 			writeCount++;
 		}
-		// unix.process_vm_writev(Engine.process().id(), g_local, writeCount,
-		// g_remote, writeCount, 0);
 		unixc.mem_write(Engine.process().id(), l_local, l_remote, l_length);
 	}
 
@@ -182,13 +176,7 @@ public class Glow extends Module {
 	public void onDisable() {
 		glowJustDisabled = true;
 	}
-	
-	@Override
-	public void setStatusLabel(TreeMap<Integer, String> map) {
-		if(this.isToggled())
-			map.put(100, glowOthers ? "GLOW All" : "GLOW Players");
-	}
-	
+
 	@Override
 	public void onEngineLoaded() {
 		autodefusemod = (AutoDefuse) Client.theClient.moduleManager.getModule("AutoDefuse");

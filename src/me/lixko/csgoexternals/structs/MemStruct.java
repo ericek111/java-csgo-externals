@@ -4,7 +4,7 @@ import com.github.jonatino.misc.MemoryBuffer;
 import com.github.jonatino.process.Module;
 
 public class MemStruct {
-	
+
 	public long OFFSET = 0;
 	public int SIZE = 0;
 	public MemoryBuffer membuf;
@@ -22,7 +22,7 @@ public class MemStruct {
 	public MemStruct(MemoryBuffer membuf) {
 		this.membuf = membuf;
 	}
-	
+
 	public MemStruct(long offset) {
 		this.OFFSET = offset;
 	}
@@ -51,7 +51,5 @@ public class MemStruct {
 	public int size() {
 		return SIZE;
 	}
-	
-
 
 }

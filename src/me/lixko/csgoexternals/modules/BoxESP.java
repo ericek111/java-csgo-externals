@@ -31,7 +31,7 @@ public class BoxESP extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(1);
-					if (!needsDataUpdate)
+					if (Offsets.m_dwLocalPlayer == 0 || true)
 						continue;
 
 					long data_ptr = Engine.clientModule().readLong(Offsets.m_dwGlowObject);
@@ -39,11 +39,19 @@ public class BoxESP extends Module {
 
 					posarr.clear();
 
+					// System.out.println("size: " + glowobj.size() + " red: " + glowobj.m_flGlowRed.offset() + " alpha: " + glowobj.m_flGlowAlpha.offset() + " occ: " + glowobj.m_bRenderWhenOccluded.offset() + " unocc: " + glowobj.m_bRenderWhenUnoccluded.offset());
+
 					for (int i = 0; i < 64; i++) {
 						glowobj.setSource(g_glow, i * glowobj.size());
 						long entityaddr = glowobj.m_pEntity.getLong();
-						if (entityaddr < 1)
+						if (entityaddr < 1 || entityaddr > Engine.clientModule().end())
 							continue;
+
+						Engine.clientModule().writeFloat(data_ptr + i * glowobj.size() + glowobj.m_flGlowRed.offset(), 1f);
+						Engine.clientModule().writeFloat(data_ptr + i * glowobj.size() + glowobj.m_flGlowAlpha.offset(), 1f);
+						Engine.clientModule().writeBoolean(data_ptr + i * glowobj.size() + glowobj.m_bRenderWhenUnoccluded.offset(), false);
+
+						Engine.clientModule().writeBoolean(data_ptr + i * glowobj.size() + glowobj.m_bRenderWhenOccluded.offset(), true);
 
 						int health = Engine.clientModule().readInt(entityaddr + Offsets.m_iHealth);
 						int team = Engine.clientModule().readInt(entityaddr + Offsets.m_iTeamNum);
@@ -51,10 +59,10 @@ public class BoxESP extends Module {
 						if (health < 1 || team < 1)
 							continue;
 
-						posarr.add(new Vec3f(lporigin.x.getFloat(), lporigin.y.getFloat(), lporigin.z.getFloat()));
+						// posarr.add(new Vec3f(lporigin.x.getFloat(), lporigin.y.getFloat(), lporigin.z.getFloat()));
 					}
 
-					needsDataUpdate = false;
+					// needsDataUpdate = false;
 				} catch (Exception e) {
 					e.printStackTrace();
 					try {
@@ -70,29 +78,59 @@ public class BoxESP extends Module {
 	@SuppressWarnings("static-access")
 	@Override
 	public void onUIRender() {
-		if (true || !Client.theClient.isRunning)
+		if (!Client.theClient.isRunning || true)
 			return;
 		VectorMem toread = lporigin;
 
-		DrawUtils.enableStringBackground();
-		DrawUtils.setTextColor(DrawUtils.theme.textColor);
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
-
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 1 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
-
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 2 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
-
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecVelocity, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 3 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
-
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
-
+		/*
+		 * DrawUtils.enableStringBackground();
+		 * DrawUtils.setTextColor(DrawUtils.theme.textColor);
+		 * Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvecbuf.size(), lpvecbuf);
+		 * DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+		 * 
+		 * Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, lpvecbuf.size(), lpvecbuf);
+		 * DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 1 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+		 * 
+		 * Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, lpvecbuf.size(), lpvecbuf);
+		 * DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 2 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+		 * 
+		 * Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecVelocity, lpvecbuf.size(), lpvecbuf);
+		 * DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 3 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+		 * 
+		 * Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
+		 * DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+		 */
 		//
+		int classid = 0;
+		int crossid = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iCrosshairIndex);
 
+		long data_ptr = Engine.clientModule().readLong(Offsets.m_dwGlowObject);
+		Engine.clientModule().read(data_ptr, 64 * glowobj.size(), g_glow);
+		for (int i = 0; i < 64; i++) {
+			glowobj.setSource(g_glow, i * glowobj.size());
+			long entityaddr = glowobj.m_pEntity.getLong();
+			if (entityaddr < 1)
+				continue;
+
+			int health = Engine.clientModule().readInt(entityaddr + Offsets.m_iHealth);
+			int team = Engine.clientModule().readInt(entityaddr + Offsets.m_iTeamNum);
+
+			if (health < 1 || team < 1)
+				continue;
+
+			int entitylistid = Engine.clientModule().readInt(entityaddr + Offsets.m_iEntityIndex);
+
+			long vtable = Engine.clientModule().readLong(entityaddr + 8);
+
+			long fn = Engine.clientModule().readLong(vtable + 8 * 2);
+
+			// long cls = Engine.clientModule().readLong(fn + 1);
+
+			// classid = Engine.clientModule().readInt(cls + 0x14);
+
+		}
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, "" + classid);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 3 * 18, "" + crossid);
 	}
 
 	@Override

@@ -3,7 +3,31 @@ package me.lixko.csgoexternals.util;
 import java.util.HashMap;
 
 public enum ChatColor {
-	BLACK('0', 0x000000FF), DARK_BLUE('1', 0x0000AAFF), DARK_GREEN('2', 0x00AA00FF), DARK_AQUA('3', 0x00AAAAFF), DARK_RED('4', 0xAA0000FF), DARK_PURPLE('5', 0xAA00AAFF), GOLD('6', 0xFFAA00FF), GRAY('7', 0xAAAAAAFF), DARK_GRAY('8', 0x555555FF), BLUE('9', 0x5555FFFF), GREEN('a', 0x55FF55FF), AQUA('b', 0x55FFFFFF), RED('c', 0xFF5555FF), LIGHT_PURPLE('d', 0xFF55FFFF), YELLOW('e', 0xFFFF55FF), WHITE('f', 0xFFFFFFFF), BOLD('l', -1), STRIKETHROUGH('m', -1), UNDERLINE('u', -1), PLAIN('n', -1), ITALIC('o', -1), SMALL('p', -1), MEDIUM('s', -1), LARGE('t', -1), RESET('r', -1);
+	BLACK('0', 0x000000FF),
+	DARK_BLUE('1', 0x0000AAFF),
+	DARK_GREEN('2', 0x00AA00FF),
+	DARK_AQUA('3', 0x00AAAAFF),
+	DARK_RED('4', 0xAA0000FF),
+	DARK_PURPLE('5', 0xAA00AAFF),
+	GOLD('6', 0xFFAA00FF),
+	GRAY('7', 0xAAAAAAFF),
+	DARK_GRAY('8', 0x555555FF),
+	BLUE('9', 0x5555FFFF),
+	GREEN('a', 0x55FF55FF),
+	AQUA('b', 0x55FFFFFF),
+	RED('c', 0xFF5555FF),
+	LIGHT_PURPLE('d', 0xFF55FFFF),
+	YELLOW('e', 0xFFFF55FF),
+	WHITE('f', 0xFFFFFFFF),
+	BOLD('l', -1),
+	STRIKETHROUGH('m', -1),
+	UNDERLINE('u', -1),
+	PLAIN('n', -1),
+	ITALIC('o', -1),
+	SMALL('p', -1),
+	MEDIUM('s', -1),
+	LARGE('t', -1),
+	RESET('r', -1);
 
 	public char code;
 	public int color;
