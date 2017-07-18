@@ -1,5 +1,6 @@
 package me.lixko.csgoexternals.util;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Map;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.awt.TextureRenderer;
 
 import me.lixko.csgoexternals.offsets.ItemDefinitionIndex;
@@ -21,7 +23,7 @@ public class DrawUtils {
 
 	public static GLAutoDrawable drawable;
 	public static BasicTheme theme = new BasicTheme();
-	public static FontRenderer fontRenderer = theme.fontRenderer;
+	public static FontRenderer fontRenderer;
 	public static TextAlign align = TextAlign.LEFT;
 	public static LocalPlayerPosition lppos = new LocalPlayerPosition();
 
@@ -30,10 +32,15 @@ public class DrawUtils {
 	 * private static Graphics2D tTextureGraphics2D;
 	 */
 	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
+	public static HashMap<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
 
 	private static boolean textBackground = true;
 	private static float[] color = new float[4];
 	private static float[] texcolor = new float[4];
+	private static float[] textcolor = new float[4];
+	private static int textsize = 18;
+	private static int textstyle = Font.PLAIN;
+	private static String fontname = theme.normalFontName;
 
 	static {
 		String texturespath = FileUtil.mainpath + "/textures/";
@@ -113,6 +120,8 @@ public class DrawUtils {
 	}
 
 	public static void drawTexture(String key, int x, int y) {
+		if (!textures.containsKey(key))
+			return;
 		Texture tex = textures.get(key);
 		if (tex == null)
 			return;
@@ -124,13 +133,22 @@ public class DrawUtils {
 	}
 
 	public static void drawTexture(String key, int x, int y, int width, int height) {
+		if (!textures.containsKey(key))
+			return;
 		Texture tex = textures.get(key);
 		if (tex == null)
 			return;
 
 		float ratx = 1f;
 		float raty = 1f;
-		if (width > 0) {
+		if (width < 0 && height < 0) {
+			ratx = (tex.width / width);
+			if (height > 0)
+				raty = (tex.height / height);
+			else
+				raty = ratx;
+
+		} else if (width > 0) {
 			ratx = (tex.width / width);
 			if (height > 0)
 				raty = (tex.height / height);
@@ -161,6 +179,40 @@ public class DrawUtils {
 		tex.mTextureRenderer.beginOrthoRendering((int) (getScreenWidth() * ratx), (int) (getScreenHeight() * raty));
 		tex.mTextureRenderer.drawOrthoRect((int) ((x - xoffset) * ratx), (int) (y * raty), tex.texx, tex.mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
 		tex.mTextureRenderer.endOrthoRendering();
+	}
+
+	public static FontRenderer getFont(String name, int style, int size) {
+		if (fontRenderers.containsKey(name + "/" + style + "/" + size)) {
+			return fontRenderer = fontRenderers.get(name + "/" + style + "/" + size);
+		} else {
+			FontRenderer newfr = new FontRenderer(new TextRenderer(new Font(name, style, size)));
+			fontRenderers.put(name + "/" + style + "/" + size, newfr);
+			System.out.println("Loading new Font: " + name + "/" + style + "/" + size);
+			return fontRenderer = newfr;
+		}
+	}
+
+	public static void setStyle(ChatColor... styles) {
+		for (ChatColor e : styles) {
+			if (e.color != -1)
+				DrawUtils.setTextColor(e.color);
+			else if (e == ChatColor.PLAIN)
+				textstyle = Font.PLAIN;
+			else if (e == ChatColor.BOLD)
+				textstyle |= Font.BOLD;
+			else if (e == ChatColor.ITALIC)
+				textstyle |= Font.ITALIC;
+			else if (e == ChatColor.SMALL) {
+				textsize = theme.smallFontSize;
+				fontname = theme.smallFontName;
+			} else if (e == ChatColor.MEDIUM) {
+				textsize = theme.normalFontSize;
+				fontname = theme.normalFontName;
+			} else if (e == ChatColor.LARGE) {
+				textsize = theme.largeFontSize;
+				fontname = theme.largeFontName;
+			}
+		}
 	}
 
 	public static void setAlign(TextAlign ta) {
@@ -217,32 +269,30 @@ public class DrawUtils {
 		texcolor[3] = a;
 	}
 
-	public static void setTextureColor(int ir, int ig, int ib) {
-		setTextureColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
-	}
-
-	public static void setTextureColor(int ir, int ig, int ib, int ia) {
-		setTextureColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
-	}
-
-	public static void setTextColor(int color) {
-		fontRenderer.textRenderer.setColor((color >> 24) & 0xFF / 255, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color >> 0) & 0xFF);
-	}
-
-	public static void setTextColor(float r, float g, float b) {
-		fontRenderer.textRenderer.setColor(r, g, b, 1.0f);
-	}
-
-	public static void setTextColor(float r, float g, float b, float a) {
-		fontRenderer.textRenderer.setColor(r, g, b, a);
-	}
-
 	public static void setTextColor(int ir, int ig, int ib) {
-		fontRenderer.textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, 1.0f);
+		setTextColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
 	}
 
 	public static void setTextColor(int ir, int ig, int ib, int ia) {
-		fontRenderer.textRenderer.setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
+		setTextColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f, (float) ia / 255f);
+	}
+
+	public static void setTextColor(int color) {
+		setTextColor((float) ((color >> 24) & 0xFF) / 255f, (float) ((color >> 16) & 0xFF) / 255f, (float) ((color >> 8) & 0xFF) / 255f, (float) ((color >> 0) & 0xFF) / 255f);
+	}
+
+	public static void setTextColor(float r, float g, float b) {
+		textcolor[0] = r;
+		textcolor[1] = g;
+		textcolor[2] = b;
+		textcolor[3] = 1f;
+	}
+
+	public static void setTextColor(float r, float g, float b, float a) {
+		textcolor[0] = r;
+		textcolor[1] = g;
+		textcolor[2] = b;
+		textcolor[3] = a;
 	}
 
 	public static void enableStringBackground() {
@@ -320,29 +370,84 @@ public class DrawUtils {
 	}
 
 	public static void drawString(int x, int y, String str) {
-		if (textBackground)
-			setColor(theme.stringBackgroundColor);
 		if (str.length() < 1)
 			return;
-		float txtw = fontRenderer.getStringWidth(str);
-		float txth = fontRenderer.getStringHeight(str);
+		if (fontRenderer == null)
+			fontRenderer = getFont(fontname, textstyle, textsize);
+
+		float txtw = 0, txth = 0;
+		String[] strparts = str.split(ChatColor.colorChar + "");
+		String todraw = "";
 		int xoffset = 0;
-		switch (align) {
-		case LEFT:
-			xoffset = 0;
-			break;
-		case CENTER:
-			xoffset = (int) (txtw) / 2;
-			break;
-		case RIGHT:
-			xoffset = (int) txtw;
-			break;
+
+		if (textBackground || align != TextAlign.LEFT) {
+			for (int i = 0; i < strparts.length; i++) {
+				if (strparts[i].length() == 0)
+					continue;
+				if (i == 0 && str.charAt(0) != ChatColor.colorChar) {
+					todraw = strparts[i].substring(0);
+				} else {
+					ChatColor foundenum = ChatColor.getChatColor(strparts[i].charAt(0));
+					if (foundenum == null) {
+						todraw = strparts[i];
+					} else {
+						todraw = strparts[i].substring(1);
+						setStyle(foundenum);
+					}
+				}
+
+				getFont(fontname, textstyle, textsize);
+				txtw += fontRenderer.getStringWidth(todraw);
+				txth = Math.max(fontRenderer.getStringHeight(todraw), txth);
+			}
+
+			switch (align) {
+			case LEFT:
+				xoffset = 0;
+				break;
+			case CENTER:
+				xoffset = (int) (txtw) / 2;
+				break;
+			case RIGHT:
+				xoffset = (int) txtw;
+				break;
+			}
+			todraw = "";
+
+			setColor(theme.stringBackgroundColor);
+			fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
+
 		}
 
-		fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
-		fontRenderer.textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
-		fontRenderer.textRenderer.draw(str, x - xoffset, y);
-		fontRenderer.textRenderer.endRendering();
+		for (int i = 0; i < strparts.length; i++) {
+			if (strparts[i].length() == 0)
+				continue;
+			if (i == 0 && str.charAt(0) != ChatColor.colorChar) {
+				todraw = strparts[i].substring(0);
+			} else {
+				ChatColor foundenum = ChatColor.getChatColor(strparts[i].charAt(0));
+				if (foundenum == null) {
+					todraw = strparts[i];
+				} else {
+					todraw = strparts[i].substring(1);
+					setStyle(foundenum);
+				}
+			}
+
+			getFont(fontname, textstyle, textsize);
+			fontRenderer.textRenderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+			fontRenderer.textRenderer.setColor(textcolor[0], textcolor[1], textcolor[2], textcolor[3]);
+			fontRenderer.textRenderer.draw(todraw, x - xoffset, y);
+			fontRenderer.textRenderer.endRendering();
+			x += fontRenderer.getStringWidth(todraw);
+		}
+
+		if (textsize == theme.smallFontSize)
+			setStyle(theme.smallFontStyle);
+		else if (textsize == theme.normalFontSize)
+			setStyle(theme.normalFontStyle);
+		else if (textsize == theme.largeFontSize)
+			setStyle(theme.largeFontStyle);
 	}
 
 	public static void drawRectangleAroundString(String str, int x, int y) {
@@ -404,7 +509,6 @@ public class DrawUtils {
 		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
-		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		DrawUtils.setColor(0f, 0f, 1f, 0.5f); // blue color
 		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
 		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)

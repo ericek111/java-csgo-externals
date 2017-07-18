@@ -109,19 +109,19 @@ public class StringFormat {
 	}
 
 	public static void notEnoughArguments() {
-		syntaxerror(ChatColor.RED + ChatColor.RED + "Not enough arguments!");
+		syntaxerror("" + ChatColor.RED + ChatColor.RED + "Not enough arguments!");
 	}
 
 	public static void notEnoughArguments(int provided, int required) {
-		syntaxerror(ChatColor.RED + ChatColor.RED + "Not enough arguments! " + ChatColor.GRAY + "[" + ChatColor.RED + provided + ChatColor.GRAY + " / " + ChatColor.YELLOW + required + ChatColor.GRAY + "]");
+		syntaxerror("" + ChatColor.RED + ChatColor.RED + "Not enough arguments! " + ChatColor.GRAY + "[" + ChatColor.RED + provided + ChatColor.GRAY + " / " + ChatColor.YELLOW + required + ChatColor.GRAY + "]");
 	}
 
 	public static void notEnoughArguments(String format) {
-		syntaxerror(ChatColor.RED + ChatColor.RED + "Not enough arguments! Hint:" + ChatColor.GRAY + format);
+		syntaxerror("" + ChatColor.RED + ChatColor.RED + "Not enough arguments! Hint:" + ChatColor.GRAY + format);
 	}
 
 	public static void notEnoughArguments(String cmd, String format) {
-		syntaxerror(ChatColor.RED + ChatColor.RED + "Not enough arguments: " + ChatColor.GRAY + ChatColor.ITALIC + cmd + ChatColor.RED + " " + ChatColor.GOLD + format);
+		syntaxerror("" + ChatColor.RED + ChatColor.RED + "Not enough arguments: " + ChatColor.GRAY + ChatColor.ITALIC + cmd + ChatColor.RED + " " + ChatColor.GOLD + format);
 	}
 
 	public static void readconf(String what, String value) {
@@ -174,7 +174,7 @@ public class StringFormat {
 			if (brackets)
 				msg(ChatColor.GRAY + "[" + modulename + "]" + ChatColor.RESET + " " + msg);
 			else
-				msg(ChatColor.YELLOW + ChatColor.ITALIC + modulename + ChatColor.RESET + " " + msg);
+				msg("" + ChatColor.YELLOW + ChatColor.ITALIC + modulename + ChatColor.RESET + " " + msg);
 	}
 
 	public static void modconfchange(String modulename, String what, String from, String to) {
@@ -226,7 +226,7 @@ public class StringFormat {
 	}
 
 	public static boolean containsColor(String s) {
-		return (s.contains(ChatColor.AQUA) || s.contains(ChatColor.AQUA));
+		return (s.contains("" + ChatColor.AQUA) || s.contains("" + ChatColor.AQUA));
 	}
 
 	// convert from UTF-8 -> internal Java String format
@@ -262,11 +262,11 @@ public class StringFormat {
 	public static String hex(long n) {
 		return String.format("0x%8s", Long.toHexString(n)).replace(' ', '0');
 	}
-	
+
 	public static String hex(byte... n) {
 		return javax.xml.bind.DatatypeConverter.printHexBinary(n);
 	}
-	
+
 	public static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = supp.get();

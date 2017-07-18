@@ -1,10 +1,6 @@
 package me.lixko.csgoexternals.themes;
 
-import java.awt.Font;
-
-import com.jogamp.opengl.util.awt.TextRenderer;
-
-import me.lixko.csgoexternals.util.FontRenderer;
+import me.lixko.csgoexternals.util.ChatColor;
 
 public class BasicTheme {
 	// ==================== COLORS ==================== //
@@ -14,14 +10,16 @@ public class BasicTheme {
 	// ================== DIMENSIONS ================== //
 	public static final int[] stringBackgroundPadding = new int[] { 2 };
 
-	public final FontRenderer fontRenderer = new FontRenderer(new TextRenderer(new Font("Verdana", Font.BOLD, 13)));
-	public final FontRenderer fontRendererLarge = new FontRenderer(new TextRenderer(new Font("Verdana", Font.BOLD, 18)));
+	public static final String smallFontName = "Verdana";
+	public static final int smallFontSize = 10;
+	public static final ChatColor smallFontStyle = ChatColor.BOLD;
 
-	/*
-	 * static {
-	 * fontRenderer.textRenderer.setSmoothing(true);
-	 * fontRenderer.textRenderer.setSmoothing(true);
-	 * }
-	 */
+	public static final String normalFontName = "Verdana";
+	public static final int normalFontSize = 13;
+	public static final ChatColor normalFontStyle = ChatColor.BOLD;
+
+	public static final String largeFontName = "Verdana";
+	public static final int largeFontSize = 18;
+	public static final ChatColor largeFontStyle = ChatColor.BOLD;
 
 }
