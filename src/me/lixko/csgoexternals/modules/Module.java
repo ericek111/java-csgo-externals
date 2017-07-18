@@ -110,8 +110,14 @@ public class Module {
 
 	public void onWorldRender() {
 	}
-	
+
 	public void setStatusLabel(TreeMap<Integer, String> map) {
+	}
+
+	public void onClientShutdown() {
+	}
+
+	public void onKeyRelease(KeySym key) {
 	}
 
 }

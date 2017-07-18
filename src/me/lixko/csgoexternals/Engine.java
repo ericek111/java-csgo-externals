@@ -1,16 +1,34 @@
 package me.lixko.csgoexternals;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
+import com.github.jonatino.misc.MemoryBuffer;
+import com.github.jonatino.natives.unix.dlfcn;
+import com.github.jonatino.natives.unix.ptrace;
+import com.github.jonatino.natives.unix.unix;
+import com.github.jonatino.natives.unix.unixc;
 import com.github.jonatino.process.Module;
 import com.github.jonatino.process.Process;
 import com.github.jonatino.process.Processes;
-
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.unix.X11;
+import com.sun.jna.platform.unix.X11.XTest;
+import com.sun.jna.platform.unix.X11.Xext;
 import com.sun.jna.platform.unix.X11.Display;
 import com.sun.jna.platform.unix.X11.KeySym;
+import com.sun.jna.platform.unix.X11.Pixmap;
+import com.sun.jna.platform.unix.X11.Window;
+import com.sun.jna.ptr.IntByReference;
 
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.offsets.PatternScanner;
+import me.lixko.csgoexternals.structs.QAngle;
+import me.lixko.csgoexternals.structs.user_regs_struct;
+import me.lixko.csgoexternals.util.MemoryUtils;
+import me.lixko.csgoexternals.util.ProfilerUtil;
 import me.lixko.csgoexternals.util.StringFormat;
 
 import com.jogamp.newt.event.WindowAdapter;
@@ -22,17 +40,21 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 public final class Engine {
 
-	private static Process process;
+	private static Process process, localprocess = Processes.byId(MemoryUtils.getPID());
 	private static Module clientModule, engineModule;
 
 	private static final int TARGET_TPS = 200;
 	private long tps_sleep = (long) ((1f / TARGET_TPS) * 1000);
 	private long last_tick = 0;
 
-	public static X11 lib = X11.INSTANCE;
-	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial(() -> lib.XOpenDisplay(null));
+	public static X11 x11 = X11.INSTANCE;
+	public static XTest xtest = XTest.INSTANCE;
+	public static Xext xext = Xext.INSTANCE;
+
+	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial(() -> x11.XOpenDisplay(null));
 
 	public void init() throws InterruptedException, IOException {
+
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		caps.setBackgroundOpaque(false);
@@ -64,44 +86,14 @@ public final class Engine {
 		// window.setAlwaysOnTop(true);
 		animator.start();
 
-		Thread keyLoop = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				byte[] keys = new byte[32];
-				byte[] lastkeys = new byte[32];
-
-				while (Client.theClient.isRunning) {
-					try {
-						Thread.sleep(5);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					if (dpy == null)
-						throw new Error("Can't open X Display");
-
-					lib.XQueryKeymap(dpy.get(), keys);
-
-					for (int i = 0; i < keys.length; ++i) {
-						if (keys[i] != lastkeys[i]) {
-							for (int j = 0, test = 1; j < 8; ++j, test *= 2) {
-								if (((keys[i] & test) > 0) && ((keys[i] & test) != (lastkeys[i] & test))) {
-									int code = i * 8 + j;
-									KeySym sym = lib.XKeycodeToKeysym(dpy.get(), (byte) code, 0);
-									// System.out.println("Key: " +
-									// lib.XKeysymToString(sym) + " / " +
-									// PatternScanner.hex(lib.XKeysymToKeycode(dpy,
-									// sym)) + " / " + sym.intValue());
-									Client.theClient.eventHandler.onKeyPress(sym);
-								}
-							}
-						}
-						lastkeys[i] = keys[i];
-					}
-				}
-				lib.XCloseDisplay(dpy.get());
-			}
-		});
+		// void XShapeCombineMask(Display display, Window window, int dest_kind, int x_off, int y_off, Pixmap src, int op);
+		/*
+		 * Window xwin = new Window(window.getWindowHandle());
+		 * Pixmap pmap = lib.XCreatePixmap(dpy.get(), xwin, 150, 150, 1);
+		 * xext.XShapeCombineMask(dpy.get(), xwin, xext.ShapeInput, 100, 100, pmap, xext.ShapeSet);
+		 * // XAllowEvents(g_display, AsyncBoth, CurrentTime);
+		 * lib.XSelectInput(dpy.get(), xwin, new NativeLong(lib.PointerMotionMask | lib.ButtonPressMask | lib.ButtonReleaseMask));
+		 */
 
 		String processName = "csgo_linux64";
 		String clientName = "client_client.so";
@@ -111,23 +103,46 @@ public final class Engine {
 		waitUntilFound("client module", () -> (clientModule = process.findModule(clientName)) != null);
 		waitUntilFound("engine module", () -> (engineModule = process.findModule(engineName)) != null);
 		System.out.println("process: " + processName);
-		System.out.println("client: " + StringFormat.hex(clientModule.start()));
-		System.out.println("engine: " + StringFormat.hex(engineModule.start()));
+		System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+		System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+
 		loadOffsets();
+
+		/*
+		 * long engine_self = dlfcn.dlopen(engineModule.name(), dlfcn.RTLD_LAZY);
+		 * long createinterface_engine = dlfcn.dlsym(engine_self, "CreateInterface");
+		 */
 
 		System.out.println("Engine initialization complete! Starting client...");
 		Client.theClient.startClient();
-		keyLoop.start();
 
 		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
 		Client.theClient.eventHandler.onEngineLoaded();
-		
+		Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
+		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
+		// Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
+
+		QAngle viewangles = new QAngle();
+		MemoryBuffer viewanglesbuf = new MemoryBuffer(viewangles.size());
+		viewangles.setSource(viewanglesbuf);
+
 		while (Client.theClient.isRunning) {
 			last_tick = System.nanoTime();
 
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
-			
+
+			// Engine.engineModule().read(Offsets.m_dwEnginePointer + 0x8E18, viewanglesbuf);
+			// System.out.println("x: " + viewangles.x.getFloat() + " / y: " + viewangles.y.getFloat());
+
+			/*
+			 * int connectstate = Engine.engineModule().readInt(Offsets.m_dwEnginePointer + 0x198);
+			 * System.out.println("connectstate: " + connectstate);
+			 * 
+			 * int maxclients = Engine.engineModule().readInt(Offsets.m_dwEnginePointer + 0x3A0);
+			 * System.out.println("maxclients: " + maxclients);
+			 */
+
 			if (Offsets.m_dwLocalPlayer < 1) {
 				Thread.sleep(1000);
 				continue;
@@ -156,7 +171,7 @@ public final class Engine {
 
 		}
 
-		keyLoop.join();
+		Client.theClient.shutdownClient();
 	}
 
 	public static void initAll() {
@@ -174,7 +189,7 @@ public final class Engine {
 		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResourcesPointer));
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.input.attack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
-		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer));
+		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer) + " / " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer - clientModule().start()));
 		System.out.println("m_dwGlobalVars: " + StringFormat.hex(Offsets.m_dwGlobalVars));
 		System.out.println();
 	}

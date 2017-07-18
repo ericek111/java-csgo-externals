@@ -54,15 +54,41 @@ public class CommandManager {
 	}
 
 	public void processCommand(String command) {
-		boolean executed = executeCommand(command);
-
-		if (executed) {
+		if (executeCommand(command))
 			System.out.println("[LixkoPack] Executed command: " + command);
-			// Minecraft.getMinecraft().thePlayer.addChatMessage(new
-			// ChatComponentText(Client.theClient.stringFormat.stringprefix +
-			// ChatColor.GREEN + "Egzekjutit!"));
-		} else {
+		else
 			StringFormat.unknownCommand(command, "");
+	}
+
+	public void processPlusCommand(String command) {
+		if (executePlusCommand(command))
+			System.out.println("[LixkoPack] Executed command: " + command);
+		else
+			StringFormat.unknownCommand(command, "");
+	}
+
+	public boolean executePlusCommand(String command) {
+		if (command.length() < 1) {
+			return false;
+		}
+
+		String argstring = "";
+		String[] args = {};
+
+		if (command.contains(" ")) {
+			String[] commandarr = command.split("\\s+");
+			args = parseArgs(commandarr);
+			argstring = command.replace(commandarr[0] + " ", "");
+			command = commandarr[0];
+			// System.out.println("comm: " + command + ", argstring: " +
+			// argstring);
+		}
+
+		if (command.equalsIgnoreCase("ping")) {
+			StringFormat.sendmsg("Pong!");
+			return true;
+		} else {
+			return Client.theClient.eventHandler.onCommand(command, args, argstring);
 		}
 	}
 
@@ -194,7 +220,7 @@ public class CommandManager {
 								} else if (!line.startsWith("#")) {
 									this.executeCommand(line);
 								}
-							}							
+							}
 						} catch (IOException e) {
 							StringFormat.error(ChatColor.RED + "Error in script " + ChatColor.YELLOW + ChatColor.ITALIC + args[0] + ChatColor.RESET + ChatColor.RED + ": " + e.getMessage());
 							e.printStackTrace();
@@ -210,71 +236,89 @@ public class CommandManager {
 
 			return true;
 		} else if (command.equalsIgnoreCase("bind")) {
-			/*
-			 * Command: bind Args: action, key, command Example: bind add K
-			 * sprint toggle
-			 */
-			if (args.length > 2) {
-				String boundcommand = argstring.replace(args[0] + " " + args[1] + " ", "");
-				System.out.println(args[1]);
-				int bindkey = 0;
-				try {
-					// bindkey =
-					// X11.INSTANCE.XStringToKeysym(args[1]).intValue();
-					bindkey = XKeySym.find(args[1]);
-				} catch (NullPointerException ex) {
-
-				}
-
-				if (args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("delete")) {
-					if (bindkey < 1) {
-						StringFormat.error(ChatColor.RED + "Invalid key " + ChatColor.GRAY + ChatColor.ITALIC + args[1] + ChatColor.RED + "!");
-					} else {
-						Client.theClient.configManager.unregisterKeybind(bindkey);
-						StringFormat.confchange("Bound command on key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + " was removed!");
-					}
-				} else if (args[0].equalsIgnoreCase("set")) {
-					if (bindkey < 1) {
-						StringFormat.error(ChatColor.RED + "Invalid key " + ChatColor.GRAY + ChatColor.ITALIC + args[1] + ChatColor.RED + "!");
-					} else {
-						Client.theClient.configManager.registerKeybind(bindkey, boundcommand);
-						StringFormat.confchange("Command (" + ChatColor.YELLOW + ChatColor.ITALIC + boundcommand + ChatColor.RESET + ChatColor.GREEN + ") was " + ChatColor.GREEN + "bound to key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + "!");
-					}
-				} else {
-					StringFormat.notEnoughArguments(command, "(del|delete|set) (key) [command]");
-				}
-			} else if (args.length > 1) {
-				if (args[0].equalsIgnoreCase("set")) {
-					StringFormat.notEnoughArguments(command, "(set) (key) [command]");
-				} else {
-					StringFormat.notEnoughArguments(command, "(del|delete|set) (key) [command]");
-				}
-			} else if (args.length > 0) {
-				if (args[0].equalsIgnoreCase("set")) {
-					StringFormat.notEnoughArguments(command, "set (key) (command)");
-				} else if (args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("delete")) {
-					StringFormat.notEnoughArguments(command, "del|delete (key)");
-				} else if (args[0].equalsIgnoreCase("list")) {
-					StringFormat.msg(ChatColor.YELLOW + "Binds:");
-					for (Map.Entry<String, String> entry : Client.theClient.configManager.config.entrySet()) {
-						String key = entry.getKey();
-						String value = entry.getValue();
-						if (key.startsWith("keybinds.key.")) {
-							String bkey = key.substring("keybinds.key.".length());
-							if (StringFormat.isInteger(bkey)) {
-								StringFormat.dirmsg(ChatColor.GOLD + Client.theClient.xlib.XKeycodeToKeysym(Client.theClient.dpy, (byte) (Integer.parseInt(bkey)), 0) + ": " + ChatColor.GRAY + value);
-							} else {
-								StringFormat.warn(ChatColor.GOLD + "Possible config corruption! Key: " + key);
-							}
-						}
-					}
-				} else {
-					StringFormat.notEnoughArguments(command, "(del|delete|set) (key) [command]");
-				}
-			} else {
-				StringFormat.notEnoughArguments(command, "(del|delete|set|list) (key) [command]");
+			int bindkey = 0;
+			try {
+				// bindkey = X11.INSTANCE.XStringToKeysym(args[1]).intValue();
+				bindkey = XKeySym.find(args[0]);
+			} catch (NullPointerException ex) {
 			}
 
+			if (bindkey < 1) {
+				StringFormat.error(ChatColor.RED + "Invalid key " + ChatColor.GRAY + ChatColor.ITALIC + args[0] + ChatColor.RED + "!");
+				return true;
+			}
+
+			if (args.length == 1) {
+				String boundCommand = Client.theClient.configManager.getBoundCommand(bindkey);
+				if (boundCommand == "")
+					StringFormat.confnochange("No command bound on key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + ".");
+				else
+					StringFormat.confnochange("Command bound on key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + ": " + ChatColor.GRAY + ChatColor.ITALIC + boundCommand);
+				return true;
+			}
+
+			if (args.length == 2 && (args[1] == "-" || args[1] == "''" || args[1] == "\"\"" || args[1] == "del")) {
+				Client.theClient.configManager.unregisterKeybind(bindkey);
+				StringFormat.confchange("Bound command on key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + " was removed!");
+				return true;
+			}
+
+			if (args.length > 1) {
+				String boundCommand = argstring.replace(args[0] + " ", "");
+				Client.theClient.configManager.registerKeybind(bindkey, boundCommand);
+				StringFormat.confchange("Command (" + ChatColor.YELLOW + ChatColor.ITALIC + boundCommand + ChatColor.RESET + ChatColor.GREEN + ") was " + ChatColor.GREEN + "bound to key " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + "!");
+				return true;
+			}
+			return true;
+		} else if (command.equalsIgnoreCase("binds")) {
+			StringFormat.msg(ChatColor.YELLOW + "Binds:");
+			for (Map.Entry<String, String> entry : Client.theClient.configManager.config.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue();
+				if (key.startsWith("keybinds.key.")) {
+					String bkey = key.substring("keybinds.key.".length());
+					if (StringFormat.isInteger(bkey)) {
+						StringFormat.dirmsg("" + ChatColor.GOLD + Engine.x11.XKeycodeToKeysym(Engine.dpy.get(), (byte) (Integer.parseInt(bkey)), 0) + ": " + ChatColor.GRAY + value);
+					} else {
+						StringFormat.warn(ChatColor.GOLD + "Possible config corruption! Key: " + key + " value: " + value);
+					}
+				}
+			}
+			return true;
+		} else if (command.equalsIgnoreCase("alias")) {
+			if (args.length == 1) {
+				String boundCommand = Client.theClient.configManager.getAliasCommand(args[0].toLowerCase());
+				if (boundCommand == "")
+					StringFormat.confnochange("No command bound on alias " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + ".");
+				else
+					StringFormat.confnochange("Alias " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + " = " + ChatColor.GRAY + ChatColor.ITALIC + boundCommand);
+				return true;
+			}
+
+			if (args.length == 2 && (args[1] == "-" || args[1] == "''" || args[1] == "\"\"" || args[1] == "del")) {
+				Client.theClient.configManager.unregisterAlias(args[0].toLowerCase());
+				StringFormat.confchange("Alias " + ChatColor.YELLOW + ChatColor.ITALIC + args[1] + ChatColor.RESET + ChatColor.GREEN + " was removed!");
+				return true;
+			}
+
+			if (args.length > 1) {
+				String boundCommand = argstring.replace(args[0] + " ", "");
+				Client.theClient.configManager.registerAlias(args[0].toLowerCase(), boundCommand);
+				StringFormat.confchange("Alias " + ChatColor.YELLOW + ChatColor.ITALIC + args[0].toLowerCase() + ChatColor.RESET + ChatColor.GREEN + " was set to: " + ChatColor.GRAY + ChatColor.ITALIC + boundCommand);
+				return true;
+			}
+			return true;
+		} else if (command.equalsIgnoreCase("aliases")) {
+			StringFormat.msg(ChatColor.YELLOW + "Aliases:");
+			for (Map.Entry<String, String> entry : Client.theClient.configManager.config.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue();
+				if (key.startsWith("aliases.")) {
+					String alias = key.substring("aliases.".length());
+					StringFormat.dirmsg(ChatColor.GOLD + alias + " = " + ChatColor.GRAY + value);
+				}
+
+			}
 			return true;
 		} else if (command.equalsIgnoreCase("help")) {
 			StringFormat.msg(ChatColor.YELLOW + "Available commands: ");

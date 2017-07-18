@@ -86,9 +86,9 @@ public class EventHandler {
 			e.printStackTrace();
 		}
 		String str = "";
-		for(Map.Entry<Integer, String> entry : Client.theClient.moduleManager.cachedStatusText.entrySet())
+		for (Map.Entry<Integer, String> entry : Client.theClient.moduleManager.cachedStatusText.entrySet())
 			str += str == "" ? entry.getValue() : " + " + entry.getValue();
-		
+
 		DrawUtils.setTextColor(0.0f, 1.0f, 1.0f, 0.8f);
 		DrawUtils.setAlign(TextAlign.CENTER);
 		DrawUtils.enableStringBackground();
@@ -129,6 +129,19 @@ public class EventHandler {
 		}
 	}
 
+	public void onKeyRelease(KeySym key) {
+		Client.theClient.configManager.executeCommandOnKeyRelease(key.intValue());
+		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
+			eventModule.onKeyRelease(key);
+		}
+		try {
+			if (Client.theClient.jsinitialized)
+				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onKeyRelease", key);
+		} catch (NoSuchMethodException | ScriptException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void onEngineLoaded() {
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			eventModule.onEngineLoaded();
@@ -139,6 +152,19 @@ public class EventHandler {
 		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void onClientShutdown() {
+		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
+			eventModule.onClientShutdown();
+		}
+		try {
+			if (Client.theClient.jsinitialized)
+				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onClientShutdown");
+		} catch (NoSuchMethodException | ScriptException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

@@ -84,6 +84,14 @@ public class ConfigManager extends FileUtil {
 		delValue("keybinds.key." + key);
 	}
 
+	public void registerAlias(String key, String cmd) {
+		setValue("aliases." + key, cmd);
+	}
+
+	public void unregisterAlias(String key) {
+		delValue("aliases." + key);
+	}
+
 	public String getBoundCommand(int key) {
 		if (pathExists("keybinds.key." + key)) {
 			return getValue("keybinds.key." + key);
@@ -92,11 +100,32 @@ public class ConfigManager extends FileUtil {
 		}
 	}
 
+	public String getAliasCommand(String key) {
+		if (pathExists("aliases." + key)) {
+			return getValue("aliases." + key);
+		} else {
+			return "";
+		}
+	}
+
 	public void executeCommandOnKey(int key) {
 		String s = getBoundCommand(key);
 
-		if (s != "") {
+		if (s == "")
+			return;
+		if (s.startsWith("+")) {
+			Client.theClient.commandManager.processPlusCommand(s);
+		} else {
 			Client.theClient.commandManager.processCommand(s);
+		}
+	}
+
+	public void executeCommandOnKeyRelease(int key) {
+		String s = getBoundCommand(key);
+		if (s == "")
+			return;
+		if (s.startsWith("+")) {
+			Client.theClient.commandManager.processPlusCommand("-" + s.substring(1));
 		}
 	}
 
@@ -117,7 +146,8 @@ public class ConfigManager extends FileUtil {
 	}
 
 	public boolean pathExists(String key) {
-		updateConfig();
+		if (config == null)
+			updateConfig();
 		return config.containsKey(key);
 	}
 
