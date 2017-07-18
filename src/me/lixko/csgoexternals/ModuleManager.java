@@ -10,13 +10,15 @@ public class ModuleManager {
 	public ArrayList<Module> activeModules = new ArrayList<Module>();
 	public HashMap<String, Boolean> toggledModules = new HashMap<String, Boolean>();
 	public TreeMap<Integer, String> cachedStatusText = new TreeMap<Integer, String>();
-	
+
 	public ModuleManager() {
 		registerModules();
 	}
 
 	public void registerModules() {
 		registerModule(new AutoDefuse());
+		registerModule(new AutoJoinCT());
+		// registerModule(new AutoPlant());
 		registerModule(new BoxESP());
 		registerModule(new Bunnyhop());
 		registerModule(new CrosshairDot());
@@ -27,6 +29,7 @@ public class ModuleManager {
 		registerModule(new NoHands());
 		registerModule(new RankReveal());
 		registerModule(new RecoilCross());
+		registerModule(new SkinChanger());
 	}
 
 	public void reloadManager() {
