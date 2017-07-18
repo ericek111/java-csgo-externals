@@ -13,12 +13,20 @@ public class Bunnyhop extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(5);
-					if(Offsets.m_dwLocalPlayer == 0) continue;
+					if (Offsets.m_dwLocalPlayer == 0)
+						continue;
 
 					if (Engine.clientModule().readInt(Offsets.input.alt1) == 5) {
 						long m_fFlags = Engine.clientModule().readLong(Offsets.m_dwLocalPlayer + Offsets.m_fFlags);
-						if ((m_fFlags & Flags.FL_ONGROUND) > 0)
+						// TODO: Add randomization settings.
+						if (false && (m_fFlags & Flags.FL_ONGROUND) > 0)
 							Engine.clientModule().writeInt(Offsets.input.jump, 6);
+						else if ((m_fFlags & Flags.FL_ONGROUND) > 0) {
+							Thread.sleep(5 + (int) (Math.random() * 25));
+							Engine.clientModule().writeInt(Offsets.input.jump, 5);
+							Thread.sleep(15 + (int) (Math.random() * 150));
+							Engine.clientModule().writeInt(Offsets.input.jump, 4);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
