@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import me.lixko.csgoexternals.modules.*;
 
 public class ModuleManager {
+
 	public ArrayList<Module> activeModules = new ArrayList<Module>();
 	public HashMap<String, Boolean> toggledModules = new HashMap<String, Boolean>();
 	public TreeMap<Integer, String> cachedStatusText = new TreeMap<Integer, String>();
@@ -16,6 +17,7 @@ public class ModuleManager {
 	}
 
 	public void registerModules() {
+		registerModule(new AimBot());
 		registerModule(new AutoDefuse());
 		registerModule(new AutoJoinCT());
 		// registerModule(new AutoPlant());
@@ -25,11 +27,13 @@ public class ModuleManager {
 		registerModule(new DisablePP());
 		registerModule(new FOVChanger());
 		registerModule(new Glow());
+		registerModule(new NameHUD());
 		registerModule(new NoFlash());
 		registerModule(new NoHands());
 		registerModule(new RankReveal());
 		registerModule(new RecoilCross());
 		registerModule(new SkinChanger());
+		registerModule(new Spectators());
 	}
 
 	public void reloadManager() {

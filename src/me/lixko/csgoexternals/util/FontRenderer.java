@@ -21,8 +21,15 @@ public class FontRenderer {
 		float strw = 0;
 		for (int i = 0; i < str.length(); i++) {
 			chari = str.charAt(i);
+			if (chari < 32)
+				continue;
 			if (charWidth[chari] == 0) {
-				charWidth[chari] = textRenderer.getCharWidth(chari);
+				try {
+					charWidth[chari] = textRenderer.getCharWidth(chari);
+				} catch (Throwable e) {
+					System.out.println("Can't find width of " + chari);
+				}
+
 				if (charWidth[chari] == 0)
 					charWidth[chari] = -1;
 			}

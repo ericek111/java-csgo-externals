@@ -12,6 +12,7 @@ import me.lixko.csgoexternals.util.TextAlign;
 import me.lixko.csgoexternals.util.XKeySym;
 
 public class AutoJoinCT extends Module {
+
 	RankReveal rankreveal;
 	Module thismod = this;
 	int loopc = 0;
@@ -47,6 +48,8 @@ public class AutoJoinCT extends Module {
 
 	@Override
 	public void onUIRender() {
+		if (!this.isToggled())
+			return;
 		loopc++;
 		if (loopc == 90) {
 			loopc = 0;

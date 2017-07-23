@@ -118,6 +118,8 @@ public final class Engine {
 
 		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
 		Client.theClient.eventHandler.onEngineLoaded();
+		// Client.theClient.commandManager.executeCommand("namehud toggle");
+		// Client.theClient.commandManager.executeCommand("spectators toggle");
 		Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
 		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
 		// Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");

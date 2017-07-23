@@ -1,6 +1,7 @@
 package me.lixko.csgoexternals.structs;
 
 public class CSPlayerResource extends MemStruct {
+	public final StructField m_szName = new StructField(this, Long.BYTES * 64, 0xF78);
 	public final StructField m_iPing = new StructField(this, 64 * Integer.BYTES, 0x1180);
 	public final StructField m_iKills = new StructField(this, 64 * Integer.BYTES, 0x1284);
 	public final StructField m_iAssists = new StructField(this, 64 * Integer.BYTES, 0x1388);

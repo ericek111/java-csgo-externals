@@ -2,15 +2,14 @@ package me.lixko.csgoexternals;
 
 import com.sun.jna.platform.unix.X11.KeySym;
 
-import me.lixko.csgoexternals.util.StringFormat;
-
 public class KeyboardHandler {
+
+	byte[] keys = new byte[32];
+	byte[] lastkeys = new byte[32];
 
 	Thread keyLoop = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			byte[] keys = new byte[32];
-			byte[] lastkeys = new byte[32];
 
 			while (!Client.theClient.isInitialized) {
 				try {
@@ -37,7 +36,7 @@ public class KeyboardHandler {
 							if (((keys[i] & test) != (lastkeys[i] & test))) { // (keys[i] & test) > 0)
 								int code = i * 8 + j;
 								KeySym sym = Engine.x11.XKeycodeToKeysym(Engine.dpy.get(), (byte) code, 0);
-								// System.out.println((keys[i] & test) + " Key: " + Engine.x11.XKeysymToString(sym) + " / " + StringFormat.hex(Engine.x11.XKeysymToKeycode(Engine.dpy.get(), sym)) + " / " + sym.intValue());
+								// System.out.println((keys[i] & test) + " Key: " + Engine.x11.XKeysymToString(sym) + " / " + StringFormat.hex(code) + " = " + code + " / " + sym.intValue() + ", i: " + i + " j: " + j);
 								if ((keys[i] & test) > 0)
 									Client.theClient.eventHandler.onKeyPress(sym);
 								else
@@ -55,6 +54,11 @@ public class KeyboardHandler {
 
 	public KeyboardHandler() {
 		keyLoop.start();
+	}
+
+	public boolean isPressed(int code) {
+		int c = Engine.x11.XKeysymToKeycode(Engine.dpy.get(), new KeySym(code));
+		return (keys[(c & 0xFF) / 8] & (1 << (c % 8))) > 0;
 	}
 
 }

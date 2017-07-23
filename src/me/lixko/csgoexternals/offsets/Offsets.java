@@ -46,6 +46,7 @@ public final class Offsets {
 	 */
 
 	public static long m_dwEntityLoopDistance = 0x20;
+	public static long m_dwBoneDistance = 0x30;
 
 	public static long m_viewPunchAngle = 0x68;
 	public static long m_aimPunchAngle = 0x74;
@@ -61,11 +62,15 @@ public final class Offsets {
 	public static long m_bSpotted = 0xECD;
 	public static long m_flFlashMaxAlpha = 0xabf4;
 	public static long m_flFlashDuration = 0xabf8;
+	public static long m_dwBoneMatrix = 0x2C70; // CBaseAnimating->m_nForceBone + 0x2C
+
+	public static long m_hObserverTarget = 0x3b74;
+	public static long m_iObserverMode = 0x3b60;
 
 	public static long m_ArmorValue = 0xb30c;
 	public static long m_angEyeAngles = 0xb310;
 	public static long m_Local = 0x36f0;
-	public static long m_iCrosshairIndex = 0xb398;
+	public static long m_iCrosshairIndex = 0xBBD8;
 	public static long m_iEntityIndex = 0x94;
 
 	public static long m_nDeltaTick = 0x174;

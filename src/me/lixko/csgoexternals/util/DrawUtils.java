@@ -35,6 +35,7 @@ public class DrawUtils {
 	public static HashMap<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
 
 	private static boolean textBackground = true;
+	private static boolean textBackgroundDefaultColor = true;
 	private static float[] color = new float[4];
 	private static float[] texcolor = new float[4];
 	private static float[] textcolor = new float[4];
@@ -194,7 +195,7 @@ public class DrawUtils {
 
 	public static void setStyle(ChatColor... styles) {
 		for (ChatColor e : styles) {
-			if (e.color != -1)
+			if (e.color[0] != -1)
 				DrawUtils.setTextColor(e.color);
 			else if (e == ChatColor.PLAIN)
 				textstyle = Font.PLAIN;
@@ -243,6 +244,11 @@ public class DrawUtils {
 		color[3] = a;
 	}
 
+	public static void setColorAlpha(float a) {
+		gl.glColor4f(color[0], color[1], color[2], a);
+		color[3] = a;
+	}
+
 	public static void setColor(int ir, int ig, int ib) {
 		setColor((float) ir / 255f, (float) ig / 255f, (float) ib / 255f);
 	}
@@ -266,6 +272,10 @@ public class DrawUtils {
 		texcolor[0] = r;
 		texcolor[1] = g;
 		texcolor[2] = b;
+		texcolor[3] = a;
+	}
+
+	public static void setTextureAlpha(float a) {
 		texcolor[3] = a;
 	}
 
@@ -295,6 +305,23 @@ public class DrawUtils {
 		textcolor[3] = a;
 	}
 
+	public static void setTextColor(float[] color) {
+		textcolor = color;
+	}
+
+	public static void setTextAlpha(float a) {
+		textcolor[3] = a;
+	}
+
+	public static float getDefaultTextBGAlpha() {
+		return (float) ((theme.stringBackgroundColor >> 0) & 0xFF) / 255;
+	}
+
+	// TODO: Rework
+	public static void setTextBGColorToDefault(float a) {
+		setColor((float) ((theme.stringBackgroundColor >> 24) & 0xFF) / 255, (float) ((theme.stringBackgroundColor >> 16) & 0xFF) / 255, (float) ((theme.stringBackgroundColor >> 8) & 0xFF) / 255, a);
+	}
+
 	public static void enableStringBackground() {
 		textBackground = true;
 		setColor(theme.stringBackgroundColor);
@@ -303,6 +330,14 @@ public class DrawUtils {
 	public static void disableStringBackground() {
 		textBackground = false;
 		setColor(0);
+	}
+
+	public static void enableTextBackgroundColor() {
+		textBackgroundDefaultColor = true;
+	}
+
+	public static void disableTextBackgroundColor() {
+		textBackgroundDefaultColor = false;
 	}
 
 	public static boolean isNoColor() {
@@ -414,7 +449,8 @@ public class DrawUtils {
 			}
 			todraw = "";
 
-			setColor(theme.stringBackgroundColor);
+			if (textBackgroundDefaultColor)
+				setColor(theme.stringBackgroundColor);
 			fillRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
 
 		}
