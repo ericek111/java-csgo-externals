@@ -45,10 +45,10 @@ public class Spectators extends Module {
 			if (entptr == 0 || entptr == Offsets.m_dwLocalPlayer)
 				continue;
 			int obs = Engine.clientModule().readInt(entptr + Offsets.m_hObserverTarget) & 0xFFF - 1;
-			if (obs == 0xFFF)
+			if (obs == 0xFFE)
 				continue;
 			long targetptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * obs);
-			if (lpobstarget == 0xFFF && targetptr != Offsets.m_dwLocalPlayer)
+			if (lpobstarget == 0xFFE && targetptr != Offsets.m_dwLocalPlayer)
 				continue;
 			else if (lpobstarget != obs)
 				continue;
