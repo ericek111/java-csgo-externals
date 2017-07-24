@@ -22,9 +22,9 @@ public class Bunnyhop extends Module {
 						if (false && (m_fFlags & Flags.FL_ONGROUND) > 0)
 							Engine.clientModule().writeInt(Offsets.input.jump, 6);
 						else if ((m_fFlags & Flags.FL_ONGROUND) > 0) {
-							Thread.sleep(5 + (int) (Math.random() * 25));
+							Thread.sleep(5 + (int) (Math.random() * 15));
 							Engine.clientModule().writeInt(Offsets.input.jump, 5);
-							Thread.sleep(15 + (int) (Math.random() * 150));
+							Thread.sleep(15 + (int) (Math.random() * 100));
 							Engine.clientModule().writeInt(Offsets.input.jump, 4);
 						}
 					}
