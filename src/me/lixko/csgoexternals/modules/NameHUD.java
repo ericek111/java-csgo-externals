@@ -24,6 +24,8 @@ public class NameHUD extends Module {
 			return;
 		if (lastspottedtime + 1500 < System.currentTimeMillis())
 			return;
+		if (lastspottedent == 0)
+			return;
 		DrawUtils.setAlign(TextAlign.CENTER);
 		if (lastspottedteam == 2)
 			DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
@@ -48,12 +50,12 @@ public class NameHUD extends Module {
 	public void onLoop() {
 		if (!this.isToggled())
 			return;
-
 		int inCross = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iCrosshairIndex);
 		if (inCross == lastspottedent) {
 			lastspottedtime = System.currentTimeMillis();
 			return;
 		}
+
 		if (inCross > 0) {
 			long cEnt = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * inCross);
 			if (cEnt > 0) {

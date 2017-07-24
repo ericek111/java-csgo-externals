@@ -21,7 +21,7 @@ public class ModuleManager {
 		registerModule(new AutoDefuse());
 		registerModule(new AutoJoinCT());
 		// registerModule(new AutoPlant());
-		registerModule(new BoxESP());
+		//registerModule(new BoxESP());
 		registerModule(new Bunnyhop());
 		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());
