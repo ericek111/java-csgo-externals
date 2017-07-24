@@ -34,6 +34,7 @@ public class RankReveal extends Module {
 	public int CTcount = 0;
 	public int Tcount = 0;
 	public boolean canJoinCT = false;
+	public int CTmoney = 0, Tmoney = 0;
 	private int loopc = 0;
 
 	private final int SCOREBOARD_PLAYER_HEIGHT = 29;
@@ -158,7 +159,7 @@ public class RankReveal extends Module {
 			drawEntity(entry.getKey(), DrawUtils.getScreenHeight() - ctyoffset - iter * SCOREBOARD_PLAYER_HEIGHT, 3);
 			iter++;
 		}
-		drawSum(DrawUtils.getScreenHeight() - ctyoffset - iter * SCOREBOARD_PLAYER_HEIGHT, 3);
+		drawSum(DrawUtils.getScreenHeight() - ctyoffset - (CTcount <= 5 && Tcount <= 5 ? 5 : iter) * SCOREBOARD_PLAYER_HEIGHT, 3);
 		iter = 0;
 
 		drawHeader(DrawUtils.getScreenHeight() - tyoffset + SCOREBOARD_PLAYER_HEIGHT);
@@ -167,8 +168,10 @@ public class RankReveal extends Module {
 			drawEntity(entry.getKey(), ypos, 2);
 			iter++;
 		}
-		drawSum(DrawUtils.getScreenHeight() - tyoffset - iter * SCOREBOARD_PLAYER_HEIGHT, 2);
+		drawSum(DrawUtils.getScreenHeight() - tyoffset - Math.max(5, iter) * SCOREBOARD_PLAYER_HEIGHT, 2);
 
+		CTmoney = 0;
+		Tmoney = 0;
 		ressumbuf.clear(ressumbuf.size());
 
 		DrawUtils.setStyle(ChatColor.MEDIUM);
@@ -197,7 +200,6 @@ public class RankReveal extends Module {
 		if (enthealth > 0) {
 			DrawUtils.setTextColor(1.0f, 0.2f, 0.2f, 1.0f);
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 8, y, enthealth + "");
-
 		}
 
 		DrawUtils.setStyle(ChatColor.MEDIUM);
@@ -214,6 +216,22 @@ public class RankReveal extends Module {
 				DrawUtils.setColor(0.6f, 0.6f, 0.6f, 0.8f);
 				DrawUtils.drawRectangleAroundString(str, DrawUtils.getScreenWidth() / 4 - 40, y);
 			}
+		}
+
+		int money = Engine.clientModule().readInt(entityptr + Offsets.m_iAccount);
+		if (team == 2)
+			Tmoney += money;
+		else
+			CTmoney += money;
+		if (lpteamnum != team) {
+			if (team == 2)
+				DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
+			else
+				DrawUtils.setTextColor(0.54f, 0.72f, 1.0f);
+			DrawUtils.disableStringBackground();
+			DrawUtils.setAlign(TextAlign.RIGHT);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 195, y + 2, ChatColor.MEDIUM + "$" + money);
+			DrawUtils.enableStringBackground();
 		}
 
 		if (autodefusemod.defuser == resid) {
@@ -235,6 +253,8 @@ public class RankReveal extends Module {
 		int com_t = res.m_nPersonaDataPublicCommendsTeacher.getInt(resid * Integer.BYTES);
 		int com_l = res.m_nPersonaDataPublicCommendsLeader.getInt(resid * Integer.BYTES);
 		int com_f = res.m_nPersonaDataPublicCommendsFriendly.getInt(resid * Integer.BYTES);
+		int com_mvp = res.m_iMVPs.getInt(resid * Integer.BYTES);
+		ressum.m_iMVPs.set(team * Integer.BYTES, ressum.m_iMVPs.getInt(team * Integer.BYTES) + com_mvp);
 		ressum.m_nPersonaDataPublicCommendsTeacher.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsTeacher.getInt(team * Integer.BYTES) + com_t);
 		ressum.m_nPersonaDataPublicCommendsLeader.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsLeader.getInt(team * Integer.BYTES) + com_l);
 		ressum.m_nPersonaDataPublicCommendsFriendly.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsFriendly.getInt(team * Integer.BYTES) + com_f);
@@ -261,7 +281,7 @@ public class RankReveal extends Module {
 		DrawUtils.setAlign(TextAlign.LEFT);
 
 		// TODO: Fix weapon display
-		if (enthealth > 0 && false) {
+		if (enthealth > 0) {
 			String entweapons = "";
 			int c = 0;
 			long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
@@ -465,17 +485,20 @@ public class RankReveal extends Module {
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 - 40, y, str);
 		}
 
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 - 70, y, ressum.m_iKills.getInt(team * Integer.BYTES) + "");
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 - 22, y, ressum.m_iAssists.getInt(team * Integer.BYTES) + "");
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 + 26, y, ressum.m_iDeaths.getInt(team * Integer.BYTES) + "");
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 + 138, y, ressum.m_iScore.getInt(team * Integer.BYTES) + "");
-		if (ressum.m_iPing.getInt(team * Integer.BYTES) > 0)
-			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 56, y, ressum.m_iPing.getInt(team * Integer.BYTES) + "");
-		DrawUtils.setAlign(TextAlign.LEFT);
-
 		int com_t = ressum.m_nPersonaDataPublicCommendsTeacher.getInt(team * Integer.BYTES);
 		int com_l = ressum.m_nPersonaDataPublicCommendsLeader.getInt(team * Integer.BYTES);
 		int com_f = ressum.m_nPersonaDataPublicCommendsFriendly.getInt(team * Integer.BYTES);
+
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 - 70, y, ressum.m_iKills.getInt(team * Integer.BYTES) + "");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 - 22, y, ressum.m_iAssists.getInt(team * Integer.BYTES) + "");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 + 26, y, ressum.m_iDeaths.getInt(team * Integer.BYTES) + "");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 + 75, y, ressum.m_iMVPs.getInt(team * Integer.BYTES) + "");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 6 * 4 + 138, y, ressum.m_iScore.getInt(team * Integer.BYTES) + "");
+		if (ressum.m_iPing.getInt(team * Integer.BYTES) > 0)
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 56, y, ressum.m_iPing.getInt(team * Integer.BYTES) + "");
+
+		DrawUtils.setAlign(TextAlign.RIGHT);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 195, y + 2, ChatColor.MEDIUM + "$" + (team == 2 ? Tmoney : CTmoney));
 
 		if (isCompetitive) {
 			int rank = ressum.m_iCompetitiveRanking.getInt(team * Integer.BYTES);
@@ -486,6 +509,7 @@ public class RankReveal extends Module {
 				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
 		}
 
+		DrawUtils.setAlign(TextAlign.LEFT);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y, (com_t > 0 ? com_t + "" : ""));
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 30, y, (com_l > 0 ? com_l + "" : ""));
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 60, y, (com_f > 0 ? com_f + "" : ""));

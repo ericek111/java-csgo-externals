@@ -18,7 +18,8 @@ public final class Offsets {
 	public static String GAMERULES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
 
 	public static String GAMEDIRECTORY_SIGNATURE = "F6 48 81 EC 28 02 00 00 48 8B 3D ?? ?? ?? ?? E8";
-	public static String ENGINEPOINTER_SIGNATURE = "48 8D 3D ?? ?? ?? ?? 31 F6 48 89 E5 5D E9 8D FF"; // g_SplitScreenMgr
+	public static String ENGINEPOINTER1_SIGNATURE = "48 8D 3D ?? ?? ?? ?? 31 F6 48 89 E5 5D E9 8D FF"; // g_SplitScreenMgr
+	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 38 48 8B 07 48 8B";
 	public static String ISTAKINGSCREENSHOT_SIGNATURE = "55 48 85 FF 48 89 E5 C6 05 ?? ?? ?? ?? 01 C6";
 
 	/**
@@ -72,6 +73,7 @@ public final class Offsets {
 	public static long m_Local = 0x36f0;
 	public static long m_iCrosshairIndex = 0xBBD8;
 	public static long m_iEntityIndex = 0x94;
+	public static long m_iAccount = 0xBB40;
 
 	public static long m_nDeltaTick = 0x174;
 
@@ -140,10 +142,6 @@ public final class Offsets {
 		long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 8;
 		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
 		m_szGameDirectory = Engine.engineModule().readLong(gamedirptr);
-
-		long mapname = PatternScanner.getAddressForPattern(Engine.clientModule(), 0, 0, 0, "de_dust2");
-		;
-		System.out.println("mapname: " + StringFormat.hex(mapname));
 
 	}
 
