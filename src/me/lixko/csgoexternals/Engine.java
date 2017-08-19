@@ -39,8 +39,10 @@ public final class Engine {
 
 	public void init() throws InterruptedException, IOException {
 
-		if (DrawUtils.enableOverlay)
+		if (DrawUtils.enableOverlay) {
+			DrawUtils.initializeTextures();
 			setupWindow();
+		}
 
 		String processName = "csgo_linux64";
 		String clientName = "client_client.so";
@@ -66,7 +68,7 @@ public final class Engine {
 		// Client.theClient.commandManager.executeCommand("spectators toggle");
 		// Client.theClient.commandManager.executeCommand("boneesp toggle");
 		// Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
-		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
+		// Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
 		// Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
 
 		while (Client.theClient.isRunning) {

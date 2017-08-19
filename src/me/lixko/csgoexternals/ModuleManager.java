@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import me.lixko.csgoexternals.modules.*;
+import me.lixko.csgoexternals.util.DrawUtils;
 
 public class ModuleManager {
 
@@ -19,21 +20,25 @@ public class ModuleManager {
 	public void registerModules() {
 		registerModule(new AimBot());
 		registerModule(new AutoDefuse());
-		registerModule(new AutoJoinCT());
 		// registerModule(new AutoPlant());
-		registerModule(new BoneESP());
 		registerModule(new Bunnyhop());
-		registerModule(new CrosshairDot());
 		registerModule(new DisablePP());
 		registerModule(new FOVChanger());
 		registerModule(new Glow());
-		registerModule(new NameHUD());
 		registerModule(new NoFlash());
 		registerModule(new NoHands());
-		registerModule(new RankReveal());
-		registerModule(new RecoilCross());
 		registerModule(new SkinChanger());
-		registerModule(new Spectators());
+
+		// TODO: Fix dependencies and NullPtrEx with DrawUtils.getScreenWidth()
+		if (DrawUtils.enableOverlay) {
+			registerModule(new AutoJoinCT());
+			registerModule(new BoneESP());
+			registerModule(new CrosshairDot());
+			registerModule(new NameHUD());
+			registerModule(new RankReveal());
+			registerModule(new RecoilCross());
+			registerModule(new Spectators());
+		}
 	}
 
 	public void reloadManager() {

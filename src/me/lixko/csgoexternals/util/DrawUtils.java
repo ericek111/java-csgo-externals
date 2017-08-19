@@ -36,29 +36,27 @@ public class DrawUtils {
 	private static int textstyle = Font.PLAIN;
 	private static String fontname = theme.normalFontName;
 
-	static {
-		if (enableOverlay) {
-			for (File texfile : textureSourceFile("ranks").listFiles()) {
-				addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
-			}
-			for (File texfile : textureSourceFile("weapons").listFiles()) {
-				String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
-				if (name.startsWith("weapon_"))
-					addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
-				else
-					addTexture(name, texfile);
-			}
-			textureSourceFile("weapons_outline");
-			for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
-				String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
-				if (name.startsWith("weapon_"))
-					addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
-				else
-					addTexture("out_" + name, texfile);
-			}
-			addTexture("defuser", textureSourceFile("defuser.png"));
-			addTexture("bomb", textureSourceFile("bomb.png"));
+	public static void initializeTextures() {
+		for (File texfile : textureSourceFile("ranks").listFiles()) {
+			addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
 		}
+		for (File texfile : textureSourceFile("weapons").listFiles()) {
+			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			if (name.startsWith("weapon_"))
+				addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+			else
+				addTexture(name, texfile);
+		}
+		textureSourceFile("weapons_outline");
+		for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
+			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			if (name.startsWith("weapon_"))
+				addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+			else
+				addTexture("out_" + name, texfile);
+		}
+		addTexture("defuser", textureSourceFile("defuser.png"));
+		addTexture("bomb", textureSourceFile("bomb.png"));
 	}
 
 	public static File textureSourceFile(String directory) {

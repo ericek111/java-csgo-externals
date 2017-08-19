@@ -15,6 +15,8 @@ public final class Main {
 				if (arg.equalsIgnoreCase("-nooverlay") || arg.equalsIgnoreCase("-disableoverlay"))
 					DrawUtils.enableOverlay = false;
 			}
+			if (!DrawUtils.enableOverlay)
+				System.out.println("Disabling overlay!");
 			Engine engine = new Engine();
 			engine.init();
 		} catch (InterruptedException | IOException e) {

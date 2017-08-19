@@ -138,8 +138,8 @@ downloadmain
 downloadstart
 
 mkdir -p "$ABSPATH/scripts"
-echo "bind set Alt_L glow toggle" >> "$ABSPATH/scripts/autoexec.txt"
-echo "bind set kp_end disablepp toggle" >> "$ABSPATH/scripts/autoexec.txt"
+echo "bind Alt_L glow toggle" >> "$ABSPATH/scripts/autoexec.txt"
+echo "bind kp_end disablepp toggle" >> "$ABSPATH/scripts/autoexec.txt"
 
 if [ "$updated" = true ] ; then
 	rm "$ABSPATH/download.sh" 2> /dev/null
