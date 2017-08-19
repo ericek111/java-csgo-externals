@@ -4,6 +4,21 @@ public class MathUtils {
 
 	public static double M_RADPI = 180 / Math.PI;
 
+	public static float[] calculateAngle(float[] a, float[] b) {
+		if (a.length > 2 && b.length > 2) {
+
+		} else if (a.length > 1 && b.length > 1) {
+			float angle = (float) Math.toDegrees(Math.atan2(a[0] - b[0], a[1] - b[1]));
+
+			if (angle < 0) {
+				angle += 360;
+			}
+
+			return new float[] { angle };
+		}
+		return new float[] {};
+	}
+
 	public static double calculateDistance(double x1, double y1, double x2, double y2) {
 		// return Math.hypot(x2 - x1, y2 - y1); | What's faster?
 		return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
@@ -82,6 +97,34 @@ public class MathUtils {
 		return x;
 	}
 
+	public static float[] csubtract(float[] a, float[] b) {
+		float[] x = a.clone();
+		for (int i = 0; i < x.length; i++)
+			x[i] -= b[i];
+		return x;
+	}
+
+	public static float[] cadd(float[] a, float[] b) {
+		float[] x = a.clone();
+		for (int i = 0; i < x.length; i++)
+			x[i] += b[i];
+		return x;
+	}
+
+	public static float[] cmultiply(float[] a, float[] b) {
+		float[] x = a.clone();
+		for (int i = 0; i < x.length; i++)
+			x[i] *= b[i];
+		return x;
+	}
+
+	public static float[] cabs(float[] a) {
+		float[] x = a.clone();
+		for (int i = 0; i < x.length; i++)
+			x[i] = Math.abs(a[i]);
+		return x;
+	}
+
 	public static float[] VectorAngles(float[] dir) {
 		float[] angles = new float[2];
 		double hyp = Math.sqrt((dir[0] * dir[0]) + (dir[1] * dir[1]));
@@ -94,13 +137,12 @@ public class MathUtils {
 
 	public static float[] CalcAngle(float[] playerpos, float[] enemypos) {
 		float[] aim = new float[2];
-		float[] delta = subtract(playerpos, enemypos);
+		float[] delta = csubtract(playerpos, enemypos);
 		double hyp = Math.sqrt((delta[0] * delta[0]) + (delta[1] * delta[1]));
 		aim[0] = (float) (Math.atan(delta[2] / hyp) * M_RADPI);
 		aim[1] = (float) (Math.atan(delta[1] / delta[0]) * M_RADPI);
 		if (delta[0] >= 0.0)
 			aim[1] += 180.0f;
-
 		return aim;
 	}
 
@@ -133,5 +175,11 @@ public class MathUtils {
 	public static double exp(double val) {
 		final long tmp = (long) (1512775 * val + (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
+	}
+
+	public static float[] worldVecToOpenGL(float[] v) {
+		if (v.length < 3)
+			return new float[] { -1, -1, -1 };
+		return new float[] { v[0], v[2], v[1] };
 	}
 }
