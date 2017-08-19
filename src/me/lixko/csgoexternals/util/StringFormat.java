@@ -275,6 +275,14 @@ public class StringFormat {
 		return str;
 	}
 
+	public static String dump(int[] arr) {
+		String str = "";
+		for (int i = 0; i < arr.length; i++) {
+			str += "[" + i + "] " + arr[i] + ", ";
+		}
+		return str;
+	}
+
 	public static <E> E[] fill(E[] arr, Supplier<? extends E> supp) {
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = supp.get();
