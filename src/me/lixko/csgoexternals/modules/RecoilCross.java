@@ -28,12 +28,12 @@ public class RecoilCross extends Module {
 		public void run() {
 			while (Client.theClient.isRunning) {
 				try {
-					Thread.sleep(1);
+					Thread.sleep(2);
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
 					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
-					float pvecy = punchvec.z.getFloat();
+					float pvecy = punchvec.y.getFloat();
 					float pvecx = punchvec.x.getFloat();
 					crosshairX = (int) (sx - (dx * pvecy));
 					crosshairY = (int) (sy - (dy * pvecx));
@@ -53,7 +53,7 @@ public class RecoilCross extends Module {
 
 	@Override
 	public void onUIRender() {
-		if (!Client.theClient.isRunning || this.needsDataUpdate)
+		if (!Client.theClient.isRunning || this.needsDataUpdate || !this.isToggled())
 			return;
 		this.needsDataUpdate = true;
 

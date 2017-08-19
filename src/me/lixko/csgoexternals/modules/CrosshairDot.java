@@ -10,7 +10,7 @@ public class CrosshairDot extends Module {
 
 	@Override
 	public void onUIRender() {
-		if (Offsets.m_dwLocalPlayer < 1)
+		if (Offsets.m_dwLocalPlayer == 0 || !this.isToggled())
 			return;
 		DrawUtils.setColor(0, 0, 0, 150);
 		DrawUtils.fillRectanglew(sx - 2, sy - 2, 4, 4);
