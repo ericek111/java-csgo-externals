@@ -6,6 +6,7 @@ import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.ChatColor;
+import me.lixko.csgoexternals.util.Const;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.TextAlign;
 
@@ -17,7 +18,7 @@ public class Spectators extends Module {
 
 	@Override
 	public void onUIRender() {
-		if (!this.isToggled())
+		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0)
 			return;
 		int i = 0;
 		DrawUtils.setTextColor(0xBBBBBBFF);
@@ -30,22 +31,22 @@ public class Spectators extends Module {
 
 	@Override
 	public void onLoop() {
-		if (!this.isToggled())
+		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0)
 			return;
 		loopc++;
 		if (loopc < 90)
 			return;
 		loopc = 0;
 		spectators.clear();
-		int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_hObserverTarget) & 0xFFF - 1;
+		int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
 		for (int i = 1; i < 64; i++) {
 			long entptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * i);
 			if (rankreveal.res.m_bAlive.getBoolean(i))
 				continue;
 			if (entptr == 0 || entptr == Offsets.m_dwLocalPlayer)
 				continue;
-			int obs = Engine.clientModule().readInt(entptr + Offsets.m_hObserverTarget) & 0xFFF - 1;
-			if (obs == 0xFFE)
+			int obs = Engine.clientModule().readInt(entptr + Offsets.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
+			if (obs == Const.ENT_ENTRY_MASK)
 				continue;
 			long targetptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * obs);
 			if (lpobstarget == 0xFFE && targetptr != Offsets.m_dwLocalPlayer)
