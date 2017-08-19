@@ -11,8 +11,8 @@ chmod +x download.sh
 Start by running `sudo ./start.sh` in the install folder.
 
 ### Commands:
-You can bind commands to keys using `bind set [key] [command]`. You can get the keycode from [XKeySym.java class](src/me/lixko/csgoexternals/util/XKeySym.java).
-**Example:** `bind set Alt_L glow toggle`
+You can bind commands to keys using `bind [key] [command]`. You can get the keycode from [XKeySym.java class](src/me/lixko/csgoexternals/util/XKeySym.java).
+**Example:** `bind Alt_L glow toggle`
 
 `bind [key] [command]` - Bind command to key.  
 `bind [key] -` - Delete bound command.  
@@ -20,9 +20,13 @@ You can bind commands to keys using `bind set [key] [command]`. You can get the 
 `[module] toggle` - Toggles module (case-insensitive name).  
 `exec [filename]` - Executes macro file in `[installdir]/scripts` folder. One command per line.  
 `restart` - Restart the whole cheatpack without leaving game.  
-`restartjs` - Restart JavaScript engine (after changing JS modules).  
+`restartjs` - Restart JavaScript engine (after changing JS modules). (JS engine WIP)  
 
 Check out [me.lixko.csgoexternals.CommandManager](src/minecraft/me/lixko/csgoexternals/CommandManager.java) for the rest of commands.
+
+### Troubleshooting
+If the cheat (or its features) doesn't work for you, please, [open a new issue](https://github.com/ericek111/java-csgo-externals/issues/new) and let me know!  
+Some compositors have problems with my [click-through transparent overlay](https://github.com/ericek111/java-csgo-externals/blob/master/native/jogl_patch.txt). You can use `-nooverlay` command line argument to disable it. This way you only get BunnyHop and Glow tho.  
 
 ### Dependencies
 - [**Java Memory Manipulation**](https://github.com/ericek111/Java-Memory-Manipulation) - Memory library for reading, parsing and writing to the process memory. [Download JAR and dependencies.](https://github.com/ericek111/Java-Memory-Manipulation/releases/tag/2.1)
