@@ -9,7 +9,6 @@ import com.jogamp.opengl.glu.GLU;
 
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.MathUtils;
 
 public class JOGL2Renderer implements GLEventListener {
 
@@ -78,6 +77,7 @@ public class JOGL2Renderer implements GLEventListener {
 	private void init3D(GLAutoDrawable drawable, GL2 gl) {
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
+		// TODO: Better FOV calculations - viewmatrix?
 		int fov = DrawUtils.lppos.getFOV();
 		glu.gluPerspective(fov == 0 ? 74f : (fov * (0.74 + fov / 1125f)), (float) drawable.getSurfaceWidth() / (float) drawable.getSurfaceHeight(), 0.2, 8000.0);
 

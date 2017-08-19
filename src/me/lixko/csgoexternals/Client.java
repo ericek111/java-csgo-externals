@@ -10,8 +10,6 @@ import javax.script.ScriptEngineManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import com.sun.jna.platform.unix.X11;
-import com.sun.jna.platform.unix.X11.Display;
 
 import me.lixko.csgoexternals.util.StringFormat;
 

@@ -11,7 +11,6 @@ import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MathUtils;
-import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
 public class AutoDefuse extends Module {

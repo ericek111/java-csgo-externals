@@ -1,17 +1,13 @@
 package me.lixko.csgoexternals.util;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.awt.TextRenderer;
-import com.jogamp.opengl.util.awt.TextureRenderer;
 
 import me.lixko.csgoexternals.offsets.ItemDefinitionIndex;
 import me.lixko.csgoexternals.themes.BasicTheme;
@@ -26,11 +22,8 @@ public class DrawUtils {
 	public static FontRenderer fontRenderer;
 	public static TextAlign align = TextAlign.LEFT;
 	public static LocalPlayerPosition lppos = new LocalPlayerPosition();
+	public static boolean enableOverlay = true;
 
-	/*
-	 * public static TextureRenderer mTextureRenderer;
-	 * private static Graphics2D tTextureGraphics2D;
-	 */
 	private static HashMap<String, Texture> textures = new HashMap<String, Texture>();
 	public static HashMap<String, FontRenderer> fontRenderers = new HashMap<String, FontRenderer>();
 
@@ -44,26 +37,28 @@ public class DrawUtils {
 	private static String fontname = theme.normalFontName;
 
 	static {
-		for (File texfile : textureSourceFile("ranks").listFiles()) {
-			addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
+		if (enableOverlay) {
+			for (File texfile : textureSourceFile("ranks").listFiles()) {
+				addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
+			}
+			for (File texfile : textureSourceFile("weapons").listFiles()) {
+				String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+				if (name.startsWith("weapon_"))
+					addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+				else
+					addTexture(name, texfile);
+			}
+			textureSourceFile("weapons_outline");
+			for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
+				String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+				if (name.startsWith("weapon_"))
+					addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
+				else
+					addTexture("out_" + name, texfile);
+			}
+			addTexture("defuser", textureSourceFile("defuser.png"));
+			addTexture("bomb", textureSourceFile("bomb.png"));
 		}
-		for (File texfile : textureSourceFile("weapons").listFiles()) {
-			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
-			if (name.startsWith("weapon_"))
-				addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
-			else
-				addTexture(name, texfile);
-		}
-		textureSourceFile("weapons_outline");
-		for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
-			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
-			if (name.startsWith("weapon_"))
-				addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
-			else
-				addTexture("out_" + name, texfile);
-		}
-		addTexture("defuser", textureSourceFile("defuser.png"));
-		addTexture("bomb", textureSourceFile("bomb.png"));
 	}
 
 	public static File textureSourceFile(String directory) {

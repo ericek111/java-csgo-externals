@@ -1,7 +1,5 @@
 package me.lixko.csgoexternals.modules;
 
-import java.util.TreeMap;
-
 import com.github.jonatino.misc.MemoryBuffer;
 import com.github.jonatino.natives.unix.unixc;
 import com.sun.jna.Pointer;
@@ -11,14 +9,12 @@ import com.sun.jna.platform.unix.X11.KeySym;
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.structs.BaseAttributableItem;
 import me.lixko.csgoexternals.structs.CEntInfo;
 import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.structs.CGlowObjectManager;
 import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
 import me.lixko.csgoexternals.util.MemoryUtils;
-import me.lixko.csgoexternals.util.StringFormat;
 
 public class Glow extends Module {
 

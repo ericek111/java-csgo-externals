@@ -1,7 +1,5 @@
 package me.lixko.csgoexternals.modules;
 
-import java.util.Arrays;
-
 import com.github.jonatino.misc.MemoryBuffer;
 
 import me.lixko.csgoexternals.Client;
@@ -9,7 +7,6 @@ import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.Mstudiobone_t;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.Studio;
 
 public class BoneESP extends Module {
