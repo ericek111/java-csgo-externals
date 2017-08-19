@@ -102,7 +102,7 @@ public class Glow extends Module {
 				glowobj.m_flGlowBlue.set(1.0f);
 				glowobj.m_flGlowAlpha.set(0.55f);
 
-				if (classname.startsWith("10C_CSPlayer") && (rendercolor == 0xff00ff00 || rendercolor == 0xffff0000 || rendercolor == 0xff0000ff)) {
+				if (rendercolor == 0xff00ff00 || rendercolor == 0xffff0000 || rendercolor == 0xff0000ff) {
 					glowobj.m_flGlowRed.set((health / 100.0f) * 0.4f);
 					glowobj.m_flGlowGreen.set(health != 0 ? 1.0f - health / 100.0f : 0.0f);
 					glowobj.m_flGlowBlue.set(1.0f);
