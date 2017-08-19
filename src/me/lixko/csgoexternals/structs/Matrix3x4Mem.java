@@ -16,6 +16,14 @@ public class Matrix3x4Mem extends MemStruct {
 	public final StructField f22 = new StructField(this, Float.BYTES);
 	public final StructField f23 = new StructField(this, Float.BYTES);
 
+	public Matrix3x4Mem(MemStruct parent) {
+		super(parent);
+	}
+
+	public Matrix3x4Mem() {
+		super();
+	}
+
 	public float[][] getMatrix() {
 		float[][] matrix = new float[3][4];
 		matrix[0][0] = f00.getFloat();

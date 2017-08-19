@@ -8,6 +8,7 @@ public class MemStruct {
 	public long OFFSET = 0;
 	public int SIZE = 0;
 	public MemoryBuffer membuf;
+	MemStruct parent;
 
 	public MemStruct(MemoryBuffer membuf, long offset) {
 		this.membuf = membuf;
@@ -21,6 +22,11 @@ public class MemStruct {
 
 	public MemStruct(MemoryBuffer membuf) {
 		this.membuf = membuf;
+	}
+
+	public MemStruct(MemStruct parent) {
+		this.parent = parent;
+		this.OFFSET = parent.OFFSET + parent.SIZE;
 	}
 
 	public MemStruct(long offset) {
@@ -50,6 +56,12 @@ public class MemStruct {
 
 	public int size() {
 		return SIZE;
+	}
+
+	public void enlarge(int size) {
+		this.SIZE += size;
+		if (parent != null)
+			parent.enlarge(size);
 	}
 
 }
