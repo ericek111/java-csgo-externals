@@ -1,5 +1,6 @@
 package me.lixko.csgoexternals.modules;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,8 @@ public class RankReveal extends Module {
 	private Map<Integer, Integer> tbs_scoreboardPlayersCT = new HashMap<Integer, Integer>(); // to
 	public Map<Integer, Integer> scoreboardPlayersT = new HashMap<Integer, Integer>();
 	public Map<Integer, Integer> scoreboardPlayersCT = new HashMap<Integer, Integer>();
+	public String[] names = new String[64];
+	public String[] clans = new String[64];
 	public int lpteamnum;
 	boolean shouldDraw = false;
 	public boolean isCompetitive = false;
@@ -36,6 +39,7 @@ public class RankReveal extends Module {
 	public boolean canJoinCT = false;
 	public int CTmoney = 0, Tmoney = 0;
 	private int loopc = 0;
+	private int tyoffset = 0, ctyoffset = 0;
 
 	private final int SCOREBOARD_PLAYER_HEIGHT = 29;
 	public static final String[] csgoranks = new String[] { "unranked", "silver-1", "silver-2", "silver-3", "silver-4", "silver-5", "sem", "gold-1", "gold-2", "gold-3", "gold-master", "master-guardian-1", "master-guardian-2", "mge", "dmg", "legendary-eagle", "lem", "smfc", "global" };
@@ -64,7 +68,7 @@ public class RankReveal extends Module {
 					tbs_scoreboardPlayersT.clear();
 					tbs_scoreboardPlayersCT.clear();
 					isCompetitive = false;
-					for (int i = 0; i < 63; i++) {
+					for (int i = 0; i < 64; i++) {
 						if (m_bConnected[i] == 0)
 							continue;
 						if (m_iTeam[i] == 2)
@@ -73,6 +77,12 @@ public class RankReveal extends Module {
 							tbs_scoreboardPlayersCT.put(i, m_iScore[i]);
 						if (m_iCompetitiveRanking[i] > 0)
 							isCompetitive = true;
+						long nameptr = resbuf.getLong(0xF78 + i * 8);
+						if (nameptr == 0)
+							continue;
+						names[i] = Engine.clientModule().readString(nameptr, 64);
+						// clans[i] = resbuf.getString(ressum.m_szClan.offset() + i * 16);
+						clans[i] = Engine.clientModule().readString(Offsets.m_dwPlayerResources + ressum.m_szClan.offset() + i * 16, 16);
 					}
 
 					scoreboardPlayersT = StringFormat.sortByValueReverse(tbs_scoreboardPlayersT, true);
@@ -113,7 +123,7 @@ public class RankReveal extends Module {
 		 * DrawUtils.fillRectangle(100, 100, 250, 250);
 		 * DrawUtils.fillRectangle(100, DrawUtils.getScreenHeight()-100, 250, DrawUtils.getScreenHeight()-250);
 		 */
-		if (!Client.theClient.isRunning)
+		if (!Client.theClient.isRunning || Offsets.m_dwLocalPlayer == 0)
 			return;
 
 		int CTcount = scoreboardPlayersCT.size();
@@ -143,8 +153,8 @@ public class RankReveal extends Module {
 		DrawUtils.setTextColor(0x00FFFFFF);
 		DrawUtils.setAlign(TextAlign.LEFT);
 
-		int ctyoffset = 145;
-		int tyoffset = 603;
+		ctyoffset = 145;
+		tyoffset = 603;
 		if (Math.max(CTcount, Tcount) < 6) {
 			ctyoffset = 377;
 			tyoffset = 633;
@@ -154,18 +164,23 @@ public class RankReveal extends Module {
 		}
 
 		int iter = 0;
+		DrawUtils.setColor(0f, 0f, 0f, 0.87f);
+		// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 + 53, DrawUtils.getScreenWidth() / 4 * 3 - 14, DrawUtils.getScreenHeight() - 125);
+
 		drawHeader(DrawUtils.getScreenHeight() - ctyoffset + SCOREBOARD_PLAYER_HEIGHT);
 		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersCT.entrySet()) {
-			drawEntity(entry.getKey(), DrawUtils.getScreenHeight() - ctyoffset - iter * SCOREBOARD_PLAYER_HEIGHT, 3);
+			drawEntity(entry.getKey(), iter, 3);
 			iter++;
 		}
 		drawSum(DrawUtils.getScreenHeight() - ctyoffset - (CTcount <= 5 && Tcount <= 5 ? 5 : iter) * SCOREBOARD_PLAYER_HEIGHT, 3);
-		iter = 0;
 
+		DrawUtils.setColor(0f, 0f, 0f, 0.87f);
+		// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 - 55, DrawUtils.getScreenWidth() / 4 * 3 - 14, 0);
+
+		iter = 0;
 		drawHeader(DrawUtils.getScreenHeight() - tyoffset + SCOREBOARD_PLAYER_HEIGHT);
 		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersT.entrySet()) {
-			int ypos = DrawUtils.getScreenHeight() - tyoffset - iter * SCOREBOARD_PLAYER_HEIGHT;
-			drawEntity(entry.getKey(), ypos, 2);
+			drawEntity(entry.getKey(), iter, 2);
 			iter++;
 		}
 		drawSum(DrawUtils.getScreenHeight() - tyoffset - Math.max(5, iter) * SCOREBOARD_PLAYER_HEIGHT, 2);
@@ -187,13 +202,35 @@ public class RankReveal extends Module {
 		autodefusemod = (AutoDefuse) Client.theClient.moduleManager.getModule("AutoDefuse");
 	}
 
-	private void drawEntity(int resid, int y, int team) {
-		DrawUtils.setAlign(TextAlign.RIGHT);
-		DrawUtils.setStyle(ChatColor.LARGE);
-
+	private void drawEntity(int resid, int yi, int team) {
 		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + resid * Offsets.m_dwEntityLoopDistance);
 		int enthealth = res.m_iHealth.getInt(resid * Integer.BYTES);
 		int entarmor = res.m_iArmor.getInt(resid * Integer.BYTES);
+		int money = Engine.clientModule().readInt(entityptr + Offsets.m_iAccount);
+		int mvps = res.m_iMVPs.getInt(resid * Integer.BYTES);
+		int y = 0;
+		if (team == 3)
+			y = DrawUtils.getScreenHeight() - ctyoffset - yi * SCOREBOARD_PLAYER_HEIGHT;
+		else
+			y = DrawUtils.getScreenHeight() - tyoffset - yi * SCOREBOARD_PLAYER_HEIGHT;
+
+		if (yi == 13 && team == 2) {
+			DrawUtils.setColor(0f, 0f, 0f, 0.85f);
+			DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, 112, DrawUtils.getScreenWidth() / 4 * 3 - 14, 0);
+		}
+
+		if (team == 2)
+			DrawUtils.setColor(0.878f, 0.686f, 0.337f, 0.15f);
+		else
+			DrawUtils.setColor(0.54f, 0.72f, 1.0f, 0.15f);
+
+		if (enthealth < 1)
+			DrawUtils.setColorAlpha(0.06f);
+
+		// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 15, y - 7, DrawUtils.getScreenWidth() / 4 * 3 - 18, y + SCOREBOARD_PLAYER_HEIGHT - 9);
+		DrawUtils.setAlign(TextAlign.RIGHT);
+		DrawUtils.setStyle(ChatColor.LARGE);
+
 		ressum.m_iHealth.set(team * Integer.BYTES, ressum.m_iHealth.getInt(team * Integer.BYTES) + enthealth);
 		ressum.m_iArmor.set(team * Integer.BYTES, ressum.m_iArmor.getInt(team * Integer.BYTES) + entarmor);
 
@@ -218,20 +255,42 @@ public class RankReveal extends Module {
 			}
 		}
 
-		int money = Engine.clientModule().readInt(entityptr + Offsets.m_iAccount);
 		if (team == 2)
 			Tmoney += money;
 		else
 			CTmoney += money;
-		if (lpteamnum != team) {
-			if (team == 2)
-				DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
-			else
-				DrawUtils.setTextColor(0.54f, 0.72f, 1.0f);
+
+		if (team == 2)
+			DrawUtils.setTextColor(0.878f, 0.686f, 0.337f);
+		else
+			DrawUtils.setTextColor(0.54f, 0.72f, 1.0f);
+
+		if (lpteamnum != team || yi > 11) {
 			DrawUtils.disableStringBackground();
 			DrawUtils.setAlign(TextAlign.RIGHT);
-			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 195, y + 2, ChatColor.MEDIUM + "$" + money);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 200, y + 2, ChatColor.MEDIUM + "$" + money);
 			DrawUtils.enableStringBackground();
+		}
+
+		if (yi > 11) {
+			DrawUtils.disableStringBackground();
+			DrawUtils.setAlign(TextAlign.RIGHT);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 248, y + 2, ChatColor.MEDIUM + "" + res.m_iKills.getInt(resid * Integer.BYTES));
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 296, y + 2, ChatColor.MEDIUM + "" + res.m_iAssists.getInt(resid * Integer.BYTES));
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 344, y + 2, ChatColor.MEDIUM + "" + res.m_iDeaths.getInt(resid * Integer.BYTES));
+
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 54, y + 2, ChatColor.MEDIUM + "" + res.m_iPing.getInt(resid * Integer.BYTES));
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 25, y + 2, ChatColor.MEDIUM + "" + res.m_iScore.getInt(resid * Integer.BYTES));
+			DrawUtils.setAlign(TextAlign.LEFT);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 120, y + 2, "" + ChatColor.MEDIUM + ChatColor.WHITE + clans[resid] + " " + (team == 2 ? ChatColor.TCHAT : ChatColor.CTCHAT) + names[resid]);
+			DrawUtils.enableStringBackground();
+			if (mvps > 0) {
+				DrawUtils.setAlign(TextAlign.RIGHT);
+				DrawUtils.setTextColor(0xF4E179FF);
+				DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 380, y + 2, ChatColor.MEDIUM + "" + mvps);
+			}
+
+			// DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 400 , y + 2, ChatColor.MEDIUM + "" + resid);
 		}
 
 		if (autodefusemod.defuser == resid) {
@@ -253,8 +312,7 @@ public class RankReveal extends Module {
 		int com_t = res.m_nPersonaDataPublicCommendsTeacher.getInt(resid * Integer.BYTES);
 		int com_l = res.m_nPersonaDataPublicCommendsLeader.getInt(resid * Integer.BYTES);
 		int com_f = res.m_nPersonaDataPublicCommendsFriendly.getInt(resid * Integer.BYTES);
-		int com_mvp = res.m_iMVPs.getInt(resid * Integer.BYTES);
-		ressum.m_iMVPs.set(team * Integer.BYTES, ressum.m_iMVPs.getInt(team * Integer.BYTES) + com_mvp);
+		ressum.m_iMVPs.set(team * Integer.BYTES, ressum.m_iMVPs.getInt(team * Integer.BYTES) + mvps);
 		ressum.m_nPersonaDataPublicCommendsTeacher.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsTeacher.getInt(team * Integer.BYTES) + com_t);
 		ressum.m_nPersonaDataPublicCommendsLeader.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsLeader.getInt(team * Integer.BYTES) + com_l);
 		ressum.m_nPersonaDataPublicCommendsFriendly.set(team * Integer.BYTES, ressum.m_nPersonaDataPublicCommendsFriendly.getInt(team * Integer.BYTES) + com_f);
@@ -462,7 +520,7 @@ public class RankReveal extends Module {
 	private void drawSum(int y, int team) {
 		DrawUtils.setAlign(TextAlign.RIGHT);
 		DrawUtils.setStyle(ChatColor.MEDIUM);
-		DrawUtils.setColor(0.1f, 0.1f, 0.1f, 0.92f);
+		// DrawUtils.setColor(0.1f, 0.1f, 0.1f, 0.92f);
 		if (team == 2)
 			DrawUtils.setColor(0.878f, 0.686f, 0.337f, 0.7f);
 		else
@@ -500,16 +558,17 @@ public class RankReveal extends Module {
 		DrawUtils.setAlign(TextAlign.RIGHT);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 195, y + 2, ChatColor.MEDIUM + "$" + (team == 2 ? Tmoney : CTmoney));
 
+		DrawUtils.setAlign(TextAlign.LEFT);
 		if (isCompetitive) {
+
 			int rank = ressum.m_iCompetitiveRanking.getInt(team * Integer.BYTES);
 			int wins = ressum.m_iCompetitiveWins.getInt(team * Integer.BYTES);
 			if (rank > 0)
-				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 10, y + 2, rank + "");
+				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 10, y, rank + "");
 			if (wins > 1)
-				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y + 2, wins + "");
+				DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + 43, y, wins + "");
 		}
 
-		DrawUtils.setAlign(TextAlign.LEFT);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y, (com_t > 0 ? com_t + "" : ""));
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 30, y, (com_l > 0 ? com_l + "" : ""));
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 60, y, (com_f > 0 ? com_f + "" : ""));
