@@ -5,7 +5,6 @@ import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
 public class NameHUD extends Module {
@@ -70,6 +69,7 @@ public class NameHUD extends Module {
 						lastspottedteam = Engine.clientModule().readInt(cEnt + Offsets.m_iTeamNum);
 						lastspottedhealth = Engine.clientModule().readInt(cEnt + Offsets.m_iHealth);
 					}
+
 				}
 
 			}

@@ -73,7 +73,10 @@ public class ConfigManager extends FileUtil {
 		// gson.fromJson(JSONFeatureSet, new TypeToken<Map<String, String>>()
 		// {}.getType());
 		HashMap<String, String> map = gson.fromJson(configjson, stringStringMap);
-		config = map;
+		if (map == null)
+			config = new HashMap<String, String>();
+		else
+			config = map;
 	}
 
 	public void registerKeybind(int key, String action) {

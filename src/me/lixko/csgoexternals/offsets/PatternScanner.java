@@ -21,8 +21,6 @@ import com.github.jonatino.process.Module;
 
 import me.lixko.csgoexternals.util.StringFormat;
 
-import java.util.Arrays;
-
 public final class PatternScanner {
 
 	public static final int READ = 1, SUBTRACT = 2;

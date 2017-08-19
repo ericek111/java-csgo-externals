@@ -1,34 +1,18 @@
 package me.lixko.csgoexternals;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
-import com.github.jonatino.misc.MemoryBuffer;
-import com.github.jonatino.natives.unix.dlfcn;
-import com.github.jonatino.natives.unix.ptrace;
-import com.github.jonatino.natives.unix.unix;
-import com.github.jonatino.natives.unix.unixc;
 import com.github.jonatino.process.Module;
 import com.github.jonatino.process.Process;
 import com.github.jonatino.process.Processes;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
 import com.sun.jna.platform.unix.X11;
 import com.sun.jna.platform.unix.X11.XTest;
 import com.sun.jna.platform.unix.X11.Xext;
 import com.sun.jna.platform.unix.X11.Display;
-import com.sun.jna.platform.unix.X11.KeySym;
-import com.sun.jna.platform.unix.X11.Pixmap;
-import com.sun.jna.platform.unix.X11.Window;
-import com.sun.jna.ptr.IntByReference;
 
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.offsets.PatternScanner;
-import me.lixko.csgoexternals.structs.QAngle;
-import me.lixko.csgoexternals.structs.user_regs_struct;
+import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
-import me.lixko.csgoexternals.util.ProfilerUtil;
 import me.lixko.csgoexternals.util.StringFormat;
 
 import com.jogamp.newt.event.WindowAdapter;
@@ -55,6 +39,77 @@ public final class Engine {
 
 	public void init() throws InterruptedException, IOException {
 
+		if (DrawUtils.enableOverlay)
+			setupWindow();
+
+		String processName = "csgo_linux64";
+		String clientName = "client_client.so";
+		String engineName = "engine_client.so";
+
+		waitUntilFound("process", () -> (process = Processes.byName(processName)) != null);
+		waitUntilFound("client module", () -> (clientModule = process.findModule(clientName)) != null);
+		waitUntilFound("engine module", () -> (engineModule = process.findModule(engineName)) != null);
+		System.out.println("process: " + processName);
+		System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+		System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+
+		loadOffsets();
+
+		System.out.println("Engine initialization complete! Starting client...");
+		Client.theClient.startClient();
+
+		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
+		Client.theClient.eventHandler.onEngineLoaded();
+		Client.theClient.commandManager.executeCommand("recoilcross toggle");
+		Client.theClient.commandManager.executeCommand("crosshairdot toggle");
+		// Client.theClient.commandManager.executeCommand("namehud toggle");
+		// Client.theClient.commandManager.executeCommand("spectators toggle");
+		// Client.theClient.commandManager.executeCommand("boneesp toggle");
+		// Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
+		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
+		// Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
+
+		while (Client.theClient.isRunning) {
+			last_tick = System.nanoTime();
+
+			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
+			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
+
+			if (Offsets.m_dwLocalPlayer < 1) {
+				Thread.sleep(1000);
+				continue;
+			}
+
+			try {
+				Client.theClient.eventHandler.onLoop();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				Thread.sleep(100);
+			}
+			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3998);
+			if (DrawUtils.lppos.fov == 0)
+				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3AF4);
+
+			if (tps_sleep > 0)
+				Thread.sleep(tps_sleep);
+
+			double adjust = ((1f / TARGET_TPS) * 1e9) / (System.nanoTime() - last_tick);
+			tps_sleep *= adjust;
+			if (tps_sleep > ((1f / TARGET_TPS) * 1000))
+				tps_sleep = (long) ((1f / TARGET_TPS) * 1000l);
+			if (tps_sleep < 1)
+				tps_sleep = 1;
+
+			// System.out.println("Looping! " + Math.floor(adjust*1e5)/1e5 + " /
+			// " + tps_sleep + " - " + (System.nanoTime() - last_tick) + " > " +
+			// ((System.nanoTime() - last_tick) / 1e9));
+
+		}
+
+		Client.theClient.shutdownClient();
+	}
+
+	private void setupWindow() {
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		caps.setBackgroundOpaque(false);
@@ -94,89 +149,6 @@ public final class Engine {
 		 * // XAllowEvents(g_display, AsyncBoth, CurrentTime);
 		 * lib.XSelectInput(dpy.get(), xwin, new NativeLong(lib.PointerMotionMask | lib.ButtonPressMask | lib.ButtonReleaseMask));
 		 */
-
-		String processName = "csgo_linux64";
-		String clientName = "client_client.so";
-		String engineName = "engine_client.so";
-
-		waitUntilFound("process", () -> (process = Processes.byName(processName)) != null);
-		waitUntilFound("client module", () -> (clientModule = process.findModule(clientName)) != null);
-		waitUntilFound("engine module", () -> (engineModule = process.findModule(engineName)) != null);
-		System.out.println("process: " + processName);
-		System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
-		System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
-
-		loadOffsets();
-
-		/*
-		 * long engine_self = dlfcn.dlopen(engineModule.name(), dlfcn.RTLD_LAZY);
-		 * long createinterface_engine = dlfcn.dlsym(engine_self, "CreateInterface");
-		 */
-
-		System.out.println("Engine initialization complete! Starting client...");
-		Client.theClient.startClient();
-
-		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
-		Client.theClient.eventHandler.onEngineLoaded();
-		// Client.theClient.commandManager.executeCommand("namehud toggle");
-		// Client.theClient.commandManager.executeCommand("spectators toggle");
-		Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
-		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
-		// Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
-
-		QAngle viewangles = new QAngle();
-		MemoryBuffer viewanglesbuf = new MemoryBuffer(viewangles.size());
-		viewangles.setSource(viewanglesbuf);
-
-		while (Client.theClient.isRunning) {
-			last_tick = System.nanoTime();
-
-			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
-			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
-
-			// Engine.engineModule().read(Offsets.m_dwEnginePointer + 0x8E18, viewanglesbuf);
-			// System.out.println("x: " + viewangles.x.getFloat() + " / y: " + viewangles.y.getFloat());
-
-			/*
-			 * int connectstate = Engine.engineModule().readInt(Offsets.m_dwEnginePointer + 0x198);
-			 * System.out.println("connectstate: " + connectstate);
-			 * 
-			 * int maxclients = Engine.engineModule().readInt(Offsets.m_dwEnginePointer + 0x3A0);
-			 * System.out.println("maxclients: " + maxclients);
-			 */
-
-			if (Offsets.m_dwLocalPlayer < 1) {
-				Thread.sleep(1000);
-				continue;
-			}
-
-			try {
-				Client.theClient.eventHandler.onLoop();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				Thread.sleep(100);
-			}
-			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3998);
-			if (DrawUtils.lppos.fov == 0)
-				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3AF4);
-
-			if (tps_sleep > 0)
-				Thread.sleep(tps_sleep);
-
-			double adjust = ((1f / TARGET_TPS) * 1e9) / (System.nanoTime() - last_tick);
-			tps_sleep *= adjust;
-			if (tps_sleep > ((1f / TARGET_TPS) * 1000))
-				tps_sleep = (long) ((1f / TARGET_TPS) * 1000l);
-			if (tps_sleep < 1)
-				tps_sleep = 1;
-
-			// System.out.println("Looping! " + Math.floor(adjust*1e5)/1e5 + " /
-			// " + tps_sleep + " - " + (System.nanoTime() - last_tick) + " > " +
-			// ((System.nanoTime() - last_tick) / 1e9));
-
-		}
-
-		Client.theClient.shutdownClient();
 	}
 
 	public static void initAll() {

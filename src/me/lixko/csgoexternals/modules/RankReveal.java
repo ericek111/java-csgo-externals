@@ -1,6 +1,5 @@
 package me.lixko.csgoexternals.modules;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -340,7 +339,7 @@ public class RankReveal extends Module {
 
 		// TODO: Fix weapon display
 		if (enthealth > 0) {
-			String entweapons = "";
+			// String entweapons = "";
 			int c = 0;
 			long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
 			// ArrayList<Integer> equipment = new ArrayList<Integer>();

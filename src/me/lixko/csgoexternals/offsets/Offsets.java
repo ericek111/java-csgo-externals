@@ -151,22 +151,6 @@ public final class Offsets {
 		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
 		m_szGameDirectory = Engine.engineModule().readLong(gamedirptr);
 
-		long mdlcachemov = PatternScanner.getAddressForPattern(Engine.engineModule(), MDLCACHE_SIGNATURE);
-		long mdlcache = Engine.engineModule().GetAbsoluteAddress(mdlcachemov, 3, 7);
-		m_dwModelCache = Engine.engineModule().readLong(mdlcache);
-		System.out.println("1 > " + StringFormat.hex(m_dwModelCache));
-		/*
-		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache);
-		 * System.out.println("2 > " + StringFormat.hex(m_dwModelCache));
-		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache);
-		 * System.out.println("3 > " + StringFormat.hex(m_dwModelCache));
-		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache + 0x70);
-		 * System.out.println("4 > " + StringFormat.hex(m_dwModelCache));
-		 * System.exit(0);
-		 */
-
-		// long engptrfunc = PatternScanner.getAddressForPattern(Engine.engineModule(), );
-
 	}
 
 }

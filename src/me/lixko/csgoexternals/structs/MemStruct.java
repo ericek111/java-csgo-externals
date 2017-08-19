@@ -1,7 +1,6 @@
 package me.lixko.csgoexternals.structs;
 
 import com.github.jonatino.misc.MemoryBuffer;
-import com.github.jonatino.process.Module;
 
 public class MemStruct {
 
