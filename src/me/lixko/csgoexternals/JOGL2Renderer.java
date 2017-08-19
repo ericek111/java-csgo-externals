@@ -1,20 +1,17 @@
 package me.lixko.csgoexternals;
 
 import java.awt.DisplayMode;
-import java.awt.Font;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.util.awt.TextRenderer;
 
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MathUtils;
 
 public class JOGL2Renderer implements GLEventListener {
-
-	TextRenderer textRenderer = new TextRenderer(new Font("Verdana", Font.BOLD, 12));;
 
 	public static DisplayMode dm, dm_old;
 	private GLU glu = new GLU();
@@ -54,20 +51,15 @@ public class JOGL2Renderer implements GLEventListener {
 			return;
 		final GL2 gl = drawable.getGL().getGL2();
 
-		// init3D(drawable, gl);
-		// Client.theClient.eventHandler.onWorldRender();
-
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
-		// gl.glFlush();
+		gl.glFlush();
 
-		needsDataUpdate = true;
-		try {
-			Thread.sleep(2);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		init3D(drawable, gl);
+		Client.theClient.eventHandler.onWorldRender();
+		gl.glFlush();
 
+		this.needsDataUpdate = true;
 	}
 
 	@Override
@@ -79,23 +71,20 @@ public class JOGL2Renderer implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		DrawUtils.gl = drawable.getGL().getGL2();
 		DrawUtils.drawable = drawable;
-		needsDataUpdate = true;
+		this.needsDataUpdate = true;
 		updateLoop.start();
 	}
 
 	private void init3D(GLAutoDrawable drawable, GL2 gl) {
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		glu.gluPerspective(73.0f, (float) drawable.getSurfaceWidth() / (float) drawable.getSurfaceHeight(), 1.0, 8000.0);
+		int fov = DrawUtils.lppos.getFOV();
+		glu.gluPerspective(fov == 0 ? 74f : (fov * (0.74 + fov / 1125f)), (float) drawable.getSurfaceWidth() / (float) drawable.getSurfaceHeight(), 0.2, 8000.0);
 
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-
 		gl.glRotatef(DrawUtils.lppos.getPitch(), 1.0f, 0.0f, 0.0f);
 		gl.glRotatef(DrawUtils.lppos.getYaw(), 0.0f, 1.0f, 0.0f);
-		gl.glTranslatef(-DrawUtils.lppos.getX() / 100f, -DrawUtils.lppos.getY() / 100f, -DrawUtils.lppos.getZ() / 100f);
+		gl.glTranslatef(-DrawUtils.lppos.getViewOrigin()[0], -DrawUtils.lppos.getViewOrigin()[2], DrawUtils.lppos.getViewOrigin()[1]);
 
 		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glClearColor(0f, 0f, 0f, 0f);
@@ -103,7 +92,6 @@ public class JOGL2Renderer implements GLEventListener {
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		// gl.glDepthFunc(GL2.GL_LEQUAL);
 		// gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-
 		gl.glEnable(GL2.GL_BLEND);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 

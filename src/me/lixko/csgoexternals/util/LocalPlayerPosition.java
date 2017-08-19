@@ -9,9 +9,9 @@ import me.lixko.csgoexternals.structs.VectorMem;
 public class LocalPlayerPosition {
 	private VectorMem lpvec = new VectorMem();
 	private MemoryBuffer lpvecbuf = new MemoryBuffer(lpvec.size());
-	private float cx = 0f, cy = 0f, cz = 0f, pitch = 0f, yaw = 0f;
-	private float originangle = 0f;
-	private float origindistance = 0f;
+	private float pos[] = new float[3], viewoffset[] = new float[3], vieworigin[] = new float[3];
+	private float pitch, yaw;
+	public int fov, defaultfov;
 
 	public LocalPlayerPosition() {
 		lpvec.setSource(lpvecbuf);
@@ -19,32 +19,44 @@ public class LocalPlayerPosition {
 
 	public void updateData() {
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, lpvec.size(), lpvecbuf);
-		cx = lpvec.x.getFloat();
-		cy = lpvec.y.getFloat();
-		cz = -lpvec.z.getFloat();
-
-		float x1 = 0f, y1 = 0f, x2 = 999999f, y2 = 0f, x3 = 0f, y3 = 0f, x4 = cx, y4 = cz;
-
-		originangle = (float) MathUtils.calculateAngleDeg(x1, y1, x2, y2, x3, y3, x4, y4);
-		originangle += 90f;
-		originangle = (float) MathUtils.normalizeAngle(originangle);
-		origindistance = (float) MathUtils.calculateDistance(0, 0, cx, cz);
+		pos = lpvec.getVector();
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, lpvec.size(), lpvecbuf);
+		viewoffset = lpvec.getVector();
+		vieworigin = MathUtils.cadd(pos, viewoffset);
 
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, lpvecbuf.size(), lpvecbuf);
-		yaw = 90 - lpvec.z.getFloat();
+		yaw = 90 - lpvec.y.getFloat();
 		pitch = lpvec.x.getFloat();
 	}
 
 	public float getX() {
-		return this.cx;
+		return this.pos[0];
 	}
 
 	public float getY() {
-		return this.cy;
+		return this.pos[1];
 	}
 
 	public float getZ() {
-		return this.cz;
+		return this.pos[2];
+	}
+
+	public int getFOV() {
+		if (fov == 0)
+			return defaultfov;
+		return fov;
+	}
+
+	public float[] getViewOrigin() {
+		return this.vieworigin;
+	}
+
+	public float[] getViewOffset() {
+		return this.viewoffset;
+	}
+
+	public float[] getOrigin() {
+		return this.pos;
 	}
 
 	public float getPitch() {
@@ -55,11 +67,4 @@ public class LocalPlayerPosition {
 		return this.yaw;
 	}
 
-	public float getOriginAngle() {
-		return this.originangle;
-	}
-
-	public float getOriginDistance() {
-		return this.origindistance;
-	}
 }

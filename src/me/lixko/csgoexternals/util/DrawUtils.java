@@ -44,7 +44,6 @@ public class DrawUtils {
 	private static String fontname = theme.normalFontName;
 
 	static {
-		String texturespath = FileUtil.mainpath + "/textures/";
 		for (File texfile : textureSourceFile("ranks").listFiles()) {
 			addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
 		}
@@ -65,7 +64,6 @@ public class DrawUtils {
 		}
 		addTexture("defuser", textureSourceFile("defuser.png"));
 		addTexture("bomb", textureSourceFile("bomb.png"));
-		loadTextures();
 	}
 
 	public static File textureSourceFile(String directory) {
@@ -95,29 +93,6 @@ public class DrawUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void loadTextures() {
-		/*
-		 * int totalwidth = 0;
-		 * int maxheight = 0;
-		 * for (Map.Entry<String, Texture> entry : textures.entrySet()) {
-		 * Texture tex = entry.getValue();
-		 * maxheight = Math.max(maxheight, tex.height);
-		 * tex.texx = totalwidth;
-		 * totalwidth += tex.width;
-		 * }
-		 * System.out.println("Allocating texture buffer " + totalwidth + "x" + maxheight + "px.");
-		 * System.out.println("Maximum texture size: " + GL.GL_MAX_TEXTURE_SIZE);
-		 * mTextureRenderer = new TextureRenderer(totalwidth, maxheight, true);
-		 * tTextureGraphics2D = mTextureRenderer.createGraphics();
-		 * for (Map.Entry<String, Texture> entry : textures.entrySet()) {
-		 * Texture tex = entry.getValue();
-		 * tTextureGraphics2D.drawImage(tex.img, tex.texx, 0, null);
-		 * }
-		 * tTextureGraphics2D.dispose();
-		 * mTextureRenderer.markDirty(0, 0, totalwidth, maxheight);
-		 */
 	}
 
 	public static void drawTexture(String key, int x, int y) {
@@ -229,19 +204,28 @@ public class DrawUtils {
 	}
 
 	public static void setColor(float r, float g, float b) {
-		gl.glColor3f(r, g, b);
-		color[0] = r;
-		color[1] = g;
-		color[2] = b;
-		color[3] = 1f;
+		setColor(r, g, b, 1f);
 	}
 
 	public static void setColor(float r, float g, float b, float a) {
-		gl.glColor4f(r, g, b, a);
-		color[0] = r;
-		color[1] = g;
-		color[2] = b;
-		color[3] = a;
+		if (r >= 0)
+			color[0] = r;
+		if (g >= 0)
+			color[1] = g;
+		if (b >= 0)
+			color[2] = b;
+		if (a >= 0)
+			color[3] = a;
+		gl.glColor4f(color[0], color[1], color[2], color[3]);
+	}
+
+	public static void setColor(float[] c) {
+		if (c.length < 3)
+			return;
+		if (c.length == 3)
+			setColor(c[0], c[1], c[2]);
+		else
+			setColor(c[0], c[1], c[2], c[3]);
 	}
 
 	public static void setColorAlpha(float a) {
@@ -262,21 +246,32 @@ public class DrawUtils {
 	}
 
 	public static void setTextureColor(float r, float g, float b) {
-		texcolor[0] = r;
-		texcolor[1] = g;
-		texcolor[2] = b;
-		texcolor[3] = 1f;
+		setTextureColor(r, g, b, 1f);
 	}
 
 	public static void setTextureColor(float r, float g, float b, float a) {
-		texcolor[0] = r;
-		texcolor[1] = g;
-		texcolor[2] = b;
-		texcolor[3] = a;
+		if (r >= 0)
+			texcolor[0] = r;
+		if (g >= 0)
+			texcolor[1] = g;
+		if (b >= 0)
+			texcolor[2] = b;
+		if (a >= 0)
+			texcolor[3] = a;
+	}
+
+	public static void setTextureColor(float[] c) {
+		if (c.length < 3)
+			return;
+		if (c.length == 3)
+			setTextureColor(c[0], c[1], c[2]);
+		else
+			setTextureColor(c[0], c[1], c[2], c[3]);
 	}
 
 	public static void setTextureAlpha(float a) {
-		texcolor[3] = a;
+		if (a >= 0)
+			texcolor[3] = a;
 	}
 
 	public static void setTextColor(int ir, int ig, int ib) {
@@ -292,25 +287,32 @@ public class DrawUtils {
 	}
 
 	public static void setTextColor(float r, float g, float b) {
-		textcolor[0] = r;
-		textcolor[1] = g;
-		textcolor[2] = b;
-		textcolor[3] = 1f;
+		setTextColor(r, g, b, 1f);
 	}
 
 	public static void setTextColor(float r, float g, float b, float a) {
-		textcolor[0] = r;
-		textcolor[1] = g;
-		textcolor[2] = b;
-		textcolor[3] = a;
+		if (r >= 0)
+			textcolor[0] = r;
+		if (g >= 0)
+			textcolor[1] = g;
+		if (b >= 0)
+			textcolor[2] = b;
+		if (a >= 0)
+			textcolor[3] = a;
 	}
 
-	public static void setTextColor(float[] color) {
-		textcolor = color;
+	public static void setTextColor(float[] c) {
+		if (c.length < 3)
+			return;
+		if (c.length == 3)
+			setTextColor(c[0], c[1], c[2]);
+		else
+			setTextColor(c[0], c[1], c[2], c[3]);
 	}
 
 	public static void setTextAlpha(float a) {
-		textcolor[3] = a;
+		if (a >= 0)
+			textcolor[3] = a;
 	}
 
 	public static float getDefaultTextBGAlpha() {
@@ -506,12 +508,18 @@ public class DrawUtils {
 		drawRectangle(x - xoffset - theme.stringBackgroundPadding[3 % theme.stringBackgroundPadding.length], y - theme.stringBackgroundPadding[0 % theme.stringBackgroundPadding.length] - fontRenderer.getStringMinDescend(str), txtw + x - xoffset + theme.stringBackgroundPadding[1 % theme.stringBackgroundPadding.length], y + txth - theme.stringBackgroundPadding[2 % theme.stringBackgroundPadding.length]);
 	}
 
-	public static void draw3DString(String str, float x, float y, float z, float rotation, float scale) {
-		fontRenderer.textRenderer.begin3DRendering();
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
+	public static void draw3DString(String str, float x, float y, float z, float pitch, float roll, float scale) {
+
 		gl.glPushMatrix();
-		gl.glRotatef(rotation, 0f, 1f, 0f);
-		fontRenderer.textRenderer.draw3D("Hello, world!", x, y, z, scale);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glTranslatef(x, y, z);
+		fontRenderer.textRenderer.setSmoothing(true);
+		fontRenderer.textRenderer.begin3DRendering();
+		// fontRenderer.textRenderer.setColor(textcolor[0], textcolor[1], textcolor[2], textcolor[3]);
+		gl.glRotatef(-pitch, 0, 1, 0);
+		gl.glRotatef(-roll, 1, 0, 0);
+		DrawUtils.setColor(textcolor);
+		fontRenderer.textRenderer.draw3D(str, 0, 0, 0, scale);
 		fontRenderer.textRenderer.end3DRendering();
 		gl.glPopMatrix();
 	}
@@ -524,49 +532,64 @@ public class DrawUtils {
 		return drawable.getSurfaceHeight();
 	}
 
-	/*
-	 * 6----7 /| /| 3----2 | | 5--|-4 |/ |/ 0----1
-	 */
-	// float x1[], float x2[], float[] x3, float[] x4, float[] x5, float[] x6,
-	// float x7, float[] x8
-
 	public static void drawCube() {
 		gl.glPushMatrix();
-		gl.glTranslatef(10f, 0f, 0f);
+		gl.glTranslatef(0f, 0f, 0f);
 		gl.glScalef(1f, 2f, 1f);
-		// gl.glRotatef(rquad, 1.0f, 1.0f, 1.0f); // Rotate The Cube On X, Y & Z
+
+		// giving different colors to different sides
 		gl.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
-		DrawUtils.setColor(1f, 0f, 0f, 0.5f); // red color
+		DrawUtils.setColor(1f, 0f, 0f); // red color
 		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
 		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
 		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
 		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
-		DrawUtils.setColor(0f, 1f, 0f, 0.5f); // green color
+
+		DrawUtils.setColor(0f, 1f, 0f); // green color
 		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
-		DrawUtils.setColor(0f, 0f, 1f, 0.5f); // blue color
+		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+
+		DrawUtils.setColor(0f, 0f, 1f); // blue color
 		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
 		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
 		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
 		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
-		DrawUtils.setColor(1f, 1f, 0f, 0.5f); // yellow color
+
+		DrawUtils.setColor(1f, 1f, 0f); // yellow (red + green)
 		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
 		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Back)
-		gl.glColor3f(1f, 0f, 1f); // purple (red + green)
-		DrawUtils.setColor(1f, 0f, 1f, 0.5f); // purple color
+
+		DrawUtils.setColor(1f, 0f, 1f); // purple (red + green)
 		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
 		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
 		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
-		DrawUtils.setColor(0f, 1f, 1f, 0.5f); // cyan color
+
+		DrawUtils.setColor(0f, 1f, 1f); // sky blue (blue +green)
 		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
 		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
 		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
 		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		gl.glEnd(); // Done Drawing The Quad
+		gl.glPopMatrix();
+		gl.glFlush();
+	}
+
+	public static void drawLine(float[] a, float[] b) {
+		if (a.length < 3 || b.length < 3)
+			return;
+		gl.glPushMatrix();
+		gl.glTranslatef(0f, 0f, 0f);
+
+		gl.glBegin(GL2.GL_LINES);
+		gl.glVertex3f(a[0], a[2], -a[1]);
+		gl.glVertex3f(b[0], b[2], -b[1]);
+		gl.glEnd();
+
 		gl.glPopMatrix();
 	}
 
