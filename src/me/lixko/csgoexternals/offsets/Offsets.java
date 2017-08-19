@@ -14,12 +14,14 @@ public final class Offsets {
 	public static String ALT2_SIGNATURE = "44 89 e8 c1 e0 10 c1 f8 1f 83 e8 03 45 84 e4 74 ?? 21 d0";
 	public static String FORCEATTACK_SIGNATURE = "44 89 e8 83 e0 01 f7 d8 83 e8 03 45 84 e4 74 ?? 21 d0";
 	public static String LOCALPLAYER_SIGNATURE = "48 89 e5 74 0e 48 8d 05 ?? ?? ?? ??";
-	public static String GLOBALVARS_SIGNATURE = "4C 8B 25 ?? ?? ?? ?? F3 0F 10 86 C0 3D 00 00 49";
+	// public static String GLOBALVARS_SIGNATURE = "4C 8B 25 ?? ?? ?? ?? F3 0F 10 86 C0 3D 00 00 49";
+	public static String GLOBALVARS_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 00 F3 0F 10 40 10";
 	public static String GAMERULES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
 
 	public static String GAMEDIRECTORY_SIGNATURE = "F6 48 81 EC 28 02 00 00 48 8B 3D ?? ?? ?? ?? E8";
 	public static String ENGINEPOINTER1_SIGNATURE = "48 8D 3D ?? ?? ?? ?? 31 F6 48 89 E5 5D E9 8D FF"; // g_SplitScreenMgr
 	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 38 48 8B 07 48 8B";
+	public static String MDLCACHE_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 41 89 F1 44 8B 97 90 01 00 00 31"; // _g_pMDLCache
 	public static String ISTAKINGSCREENSHOT_SIGNATURE = "55 48 85 FF 48 89 E5 C6 05 ?? ?? ?? ?? 01 C6";
 
 	/**
@@ -40,6 +42,7 @@ public final class Offsets {
 	public static long m_dwGameRules;
 
 	public static long m_dwEnginePointer;
+	public static long m_dwModelCache;
 	public static long m_szGameDirectory;
 
 	/*
@@ -51,6 +54,7 @@ public final class Offsets {
 
 	public static long m_viewPunchAngle = 0x68;
 	public static long m_aimPunchAngle = 0x74;
+	public static long m_bDormant = 0x121;
 	public static long m_iTeamNum = 0x128;
 	public static long m_iHealth = 0x134;
 	public static long m_fFlags = 0x138;
@@ -63,7 +67,10 @@ public final class Offsets {
 	public static long m_bSpotted = 0xECD;
 	public static long m_flFlashMaxAlpha = 0xabf4;
 	public static long m_flFlashDuration = 0xabf8;
-	public static long m_dwBoneMatrix = 0x2C70; // CBaseAnimating->m_nForceBone + 0x2C
+	public static long m_dwBoneMatrix = 0x2C70; // CBaseAnimating->m_pStudioBones 0x2C44 + 2C
+
+	public static long m_hViewModel = 0x3AD4;
+	public static long m_ModelName = 0x370;
 
 	public static long m_hObserverTarget = 0x3b74;
 	public static long m_iObserverMode = 0x3b60;
@@ -71,7 +78,8 @@ public final class Offsets {
 	public static long m_ArmorValue = 0xb30c;
 	public static long m_angEyeAngles = 0xb310;
 	public static long m_Local = 0x36f0;
-	public static long m_iCrosshairIndex = 0xBBD8;
+	public static long m_iLastCrosshairIndex = 0xBBD4;
+	public static long m_iCrosshairIndex = 0xBBB8;
 	public static long m_iEntityIndex = 0x94;
 	public static long m_iAccount = 0xBB40;
 
@@ -142,6 +150,22 @@ public final class Offsets {
 		long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 8;
 		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
 		m_szGameDirectory = Engine.engineModule().readLong(gamedirptr);
+
+		long mdlcachemov = PatternScanner.getAddressForPattern(Engine.engineModule(), MDLCACHE_SIGNATURE);
+		long mdlcache = Engine.engineModule().GetAbsoluteAddress(mdlcachemov, 3, 7);
+		m_dwModelCache = Engine.engineModule().readLong(mdlcache);
+		System.out.println("1 > " + StringFormat.hex(m_dwModelCache));
+		/*
+		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache);
+		 * System.out.println("2 > " + StringFormat.hex(m_dwModelCache));
+		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache);
+		 * System.out.println("3 > " + StringFormat.hex(m_dwModelCache));
+		 * m_dwModelCache = Engine.engineModule().readLong(m_dwModelCache + 0x70);
+		 * System.out.println("4 > " + StringFormat.hex(m_dwModelCache));
+		 * System.exit(0);
+		 */
+
+		// long engptrfunc = PatternScanner.getAddressForPattern(Engine.engineModule(), );
 
 	}
 
