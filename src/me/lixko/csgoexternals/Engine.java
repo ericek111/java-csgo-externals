@@ -39,10 +39,8 @@ public final class Engine {
 
 	public void init() throws InterruptedException, IOException {
 
-		if (DrawUtils.enableOverlay) {
-			DrawUtils.initializeTextures();
+		if (DrawUtils.enableOverlay)
 			setupWindow();
-		}
 
 		String processName = "csgo_linux64";
 		String clientName = "client_client.so";

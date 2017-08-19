@@ -70,6 +70,7 @@ public class JOGL2Renderer implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		DrawUtils.gl = drawable.getGL().getGL2();
 		DrawUtils.drawable = drawable;
+		DrawUtils.initializeTextures();
 		this.needsDataUpdate = true;
 		updateLoop.start();
 	}
