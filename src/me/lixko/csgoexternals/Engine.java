@@ -156,6 +156,9 @@ public final class Engine {
 				ex.printStackTrace();
 				Thread.sleep(100);
 			}
+			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3998);
+			if (DrawUtils.lppos.fov == 0)
+				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3AF4);
 
 			if (tps_sleep > 0)
 				Thread.sleep(tps_sleep);
