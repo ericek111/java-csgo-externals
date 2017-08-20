@@ -6,6 +6,8 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.Const;
 
 public class Bunnyhop extends Module {
+	
+	Module thismodule = this;
 
 	Thread bhopLoop = new Thread(new Runnable() {
 		@Override
@@ -13,7 +15,7 @@ public class Bunnyhop extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(5);
-					if (Offsets.m_dwLocalPlayer == 0)
+					if (Offsets.m_dwLocalPlayer == 0 || !thismodule.isToggled())
 						continue;
 
 					if (Engine.clientModule().readInt(Offsets.input.alt1) == 5) {
