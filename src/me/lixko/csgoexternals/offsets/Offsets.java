@@ -81,7 +81,7 @@ public final class Offsets {
 	public static long m_iLastCrosshairIndex = 0xBBD4;
 	public static long m_iCrosshairIndex = 0xBBB8;
 	public static long m_iEntityIndex = 0x94;
-	public static long m_iAccount = 0xBB40;
+	public static long m_iAccount = 0xBB20;
 
 	public static long m_nDeltaTick = 0x174;
 
