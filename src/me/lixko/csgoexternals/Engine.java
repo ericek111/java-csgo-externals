@@ -62,6 +62,7 @@ public final class Engine {
 		Client.theClient.eventHandler.onEngineLoaded();
 		Client.theClient.commandManager.executeCommand("recoilcross toggle");
 		Client.theClient.commandManager.executeCommand("crosshairdot toggle");
+		Client.theClient.commandManager.executeCommand("bunnyhop toggle");
 		// Client.theClient.commandManager.executeCommand("namehud toggle");
 		// Client.theClient.commandManager.executeCommand("spectators toggle");
 		// Client.theClient.commandManager.executeCommand("boneesp toggle");
