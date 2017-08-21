@@ -1,4 +1,4 @@
-package me.lixko.csgoexternals.util;
+package me.lixko.csgoexternals.sdk;
 
 public enum ObsMode {
 	OBS_MODE_NONE, // not in spectator mode

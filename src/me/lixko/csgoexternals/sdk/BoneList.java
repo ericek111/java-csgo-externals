@@ -1,4 +1,4 @@
-package me.lixko.csgoexternals.util;
+package me.lixko.csgoexternals.sdk;
 
 public enum BoneList {
 	BONE_PELVIS(2),

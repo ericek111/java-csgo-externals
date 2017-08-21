@@ -3,10 +3,10 @@ package me.lixko.csgoexternals.modules;
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.util.Const;
+import me.lixko.csgoexternals.sdk.Const;
 
 public class Bunnyhop extends Module {
-	
+
 	Module thismodule = this;
 
 	Thread bhopLoop = new Thread(new Runnable() {

@@ -1,4 +1,4 @@
-package me.lixko.csgoexternals.util;
+package me.lixko.csgoexternals.sdk;
 
 public class Studio {
 

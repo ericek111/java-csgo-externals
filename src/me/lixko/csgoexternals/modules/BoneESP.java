@@ -5,9 +5,9 @@ import com.github.jonatino.misc.MemoryBuffer;
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.sdk.Studio;
 import me.lixko.csgoexternals.structs.Mstudiobone_t;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.Studio;
 
 public class BoneESP extends Module {
 

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.util.ChatColor;
-import me.lixko.csgoexternals.util.Const;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.TextAlign;
 
