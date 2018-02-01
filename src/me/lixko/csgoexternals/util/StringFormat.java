@@ -403,7 +403,9 @@ public class StringFormat {
 	}
 
 	public static String dumpObj(Object obj) {
-		return dumpObj(obj, true);
+		StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+		String callerstr = " @ " + caller.getClassName() + "." + caller.getMethodName() + "(" + caller.getFileName() + ":" + caller.getLineNumber() + ")";
+		return dumpObj(obj, callerstr, 1, null, true);
 	}
 
 	public static String dumpObj(Object obj, boolean numindices) {

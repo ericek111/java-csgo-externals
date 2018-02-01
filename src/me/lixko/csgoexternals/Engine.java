@@ -86,9 +86,9 @@ public final class Engine {
 			Thread.sleep(500);
 		}*/
 		
-		//Injector inj = new Injector();
-		//inj.doStuff();
-		//System.exit(0);
+		Injector inj = new Injector();
+		inj.doStuff();
+		System.exit(0);
 		
 		boolean injector = false;
 		for (String arg : args) {
@@ -109,7 +109,7 @@ public final class Engine {
 			int pid = exampleproc.id();
 			Module examplemod = exampleproc.findModule("example");
 
-			File shellcodebin = new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/docs/linux_thread_injection/thread_shellcode.bin");
+			File shellcodebin = new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux_thread_injection/thread_shellcode.bin");
 			int shellcode_size = (int) shellcodebin.length();
 
 			// Make it aligned on 8 bytes boundary

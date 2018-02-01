@@ -19,9 +19,9 @@ import me.lixko.csgoexternals.structs.user_regs_struct;
 public class Injector {
 
 	String processname = "dummy";
-	String mmapPayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/docs/linux-injector/mmap64.bin";
-	String clonePayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/docs/linux-injector/clone64.bin";
-	String injectedPayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/docs/linux-injector/mine4.bin";
+	String mmapPayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux-injector/mmap64.bin";
+	String clonePayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux-injector/clone64.bin";
+	String injectedPayload = "/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux-injector/mine4.bin";
 	int archWidth = 64;
 	int MMAP_PROTS = UnixDefs.mmap.PROT_READ | UnixDefs.mmap.PROT_WRITE | UnixDefs.mmap.PROT_EXEC;
 	int MMAP_FLAGS = UnixDefs.mmap.MAP_PRIVATE | UnixDefs.mmap.MAP_ANONYMOUS;
@@ -30,7 +30,7 @@ public class Injector {
 	
 	user_regs_struct regsobj = new user_regs_struct();
 	
-	public void doStuff() throws IOException {
+	public boolean doStuff() throws IOException {
 
 		ProfilerUtil.start();
 		user_regs_struct cregs = new user_regs_struct();
@@ -43,11 +43,13 @@ public class Injector {
 
 		IntByReference status = new IntByReference();
 		Process exampleproc = Processes.byName(processname);
+		if(exampleproc == null)
+			return false;
 		int pid = exampleproc.id();
 		Module examplemod = exampleproc.findModule(processname);
 
 		// load our shellcode
-		File shellcodebin = new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/docs/linux-injector/print64.bin");
+		File shellcodebin = new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux-injector/print64.bin");
 		int shellcode_size = (int) shellcodebin.length();
 
 		// Make it aligned on 8 bytes boundary
@@ -65,7 +67,7 @@ public class Injector {
 		// wait for the process to stop, otherwise we may kill the process
 		if (wait_stopped(pid) == 0) {
 			ProfilerUtil.measure("Failed to wait until target process stopped!");
-			return;
+			return false;
 		}
 		ProfilerUtil.measure("Process stopped is in stopped state!");
 
@@ -88,25 +90,36 @@ public class Injector {
 		//System.exit(0);
 		ptrace.write(pid, payload_addr, shellcodebuf);
 
-		System.out.println("Allocating new stack...");
+		// System.out.println("Allocating new stack...");
 		// allocate new stack
 		long stack = mmap(pid, STACK_SIZE, 0, 0, 0);
 		stack += STACK_SIZE; // stack grows downwards, use the top address
-
+		System.out.println("Allocated new stack @ " + StringFormat.hex(stack));
+		
 		// allocate space for code cave
 		long code_cave = mmap(pid, 128, 0, 0, 0);
+		
+		System.out.println("Allocated 128 B for the code cave @ " + StringFormat.hex(code_cave));
 
 		// launch the payload
 		launch(pid, code_cave, 128, stack, payload_addr, shellcode_size, 0, 0);
-
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		// restores process state
 		ptrace.setregs(pid, Pointer.nativeValue(bakregsbuf));
 		ptrace.write(pid, payload_addr, backupbuf);
 		ptrace.cont(pid);
+		
+		return true;
 	}
 
 	public long mmap(int pid, int len, long base_address, int protections, int flags) throws IOException {
-		ProfilerUtil.measure("mmap: ");
+		//ProfilerUtil.measure("mmap: ");
 
 		IntByReference status = new IntByReference();
 
@@ -121,15 +134,16 @@ public class Injector {
 		ptrace.getregs(pid, Pointer.nativeValue(origregsbuf));
 		cregsbuf.setBytes(origregsbuf);
 		
-		System.out.println(StringFormat.dumpObj(cregs));
+		// System.out.println(StringFormat.dumpObj(cregs));
 		
 		// put arguments in the proper registers
+		// TODO: 32-bit support
 		if (archWidth == 32) {
 		} else {
-			cregs.rdi.set(base_address);
-			cregs.rsi.set(len);
-			cregs.rdx.set(protections > 0 ? protections : MMAP_PROTS);
-			cregs.r10.set(flags > 0 ? flags : MMAP_FLAGS);
+			cregs.rdi.set((long) base_address);
+			cregs.rsi.set((long) len);
+			cregs.rdx.set((long) (protections > 0 ? protections : MMAP_PROTS));
+			cregs.r10.set((long) (flags > 0 ? flags : MMAP_FLAGS));
 		}
 
 		File mmapbin = new File(mmapPayload);
@@ -145,9 +159,14 @@ public class Injector {
 		}
 
 		mmapbuf.setBytes(Files.readAllBytes(mmapbin.toPath()));
-		System.out.println("Loaded shellcode (" + mmapbuf.size() + " B) @ " + StringFormat.hex(cregs.rip.getLong()));
-		System.out.println(StringFormat.hex(Files.readAllBytes(mmapbin.toPath())));
-		System.out.println(StringFormat.hex(mmapbuf.array()));
+		// System.out.println("Loaded shellcode (" + mmapbuf.size() + " B) @ " + StringFormat.hex(cregs.rip.getLong()));
+		// System.out.println(StringFormat.hex(Files.readAllBytes(mmapbin.toPath())));
+		// System.out.println(StringFormat.hex(mmapbuf.array()));
+		
+		// System.out.println("New registers:");
+		// System.out.println(StringFormat.dumpObj(cregs));
+		// System.out.println("rdx: " + cregs.rdx.getLong());
+
 		
 		// write mmap code to target process instruction pointer
 		ptrace.setregs(pid, Pointer.nativeValue(cregsbuf));
@@ -165,9 +184,9 @@ public class Injector {
 			System.err.println("Failed to mmap()!");
 			return 0;
 		}
-		System.out.println("mmap() returned " + out);
+		System.out.println("> mmap() returned " + out + " / " + StringFormat.hex(out));
 		
-		System.out.println(StringFormat.dumpObj(cregs));
+		// System.out.println(StringFormat.dumpObj(cregs));
 
 		// restore registers
 		ptrace.setregs(pid, Pointer.nativeValue(origregsbuf));
@@ -176,7 +195,7 @@ public class Injector {
 	}
 
 	public void launch(int pid, long code_cave, int code_cave_size, long stack_address, long payload_address, int payload_length, long payload_param, int flags) throws IOException {
-		ProfilerUtil.measure("mmap: ");
+		ProfilerUtil.measure("launching payload: ");
 
 		IntByReference status = new IntByReference();
 		user_regs_struct cregs = new user_regs_struct();
@@ -192,14 +211,14 @@ public class Injector {
 		// put arguments in the proper registers
 		if (archWidth == 32) {
 		} else {
-			cregs.rax.set(code_cave_size);
-			cregs.rdi.set(flags > 0 ? flags : CLONE_FLAGS);
-			cregs.rsi.set(stack_address);
-			cregs.rdx.set(STACK_SIZE);
-			cregs.rcx.set(payload_address);
-			cregs.r8.set(payload_length);
-			cregs.r9.set(payload_param);
-			cregs.rip.set(code_cave);
+			cregs.rax.set((long) code_cave_size);
+			cregs.rdi.set((long) (flags > 0 ? flags : CLONE_FLAGS));
+			cregs.rsi.set((long) stack_address);
+			cregs.rdx.set((long) STACK_SIZE);
+			cregs.rcx.set((long) payload_address);
+			cregs.r8.set((long) payload_length);
+			cregs.r9.set((long) payload_param);
+			cregs.rip.set((long) code_cave);
 		}
 
 		File clonebin = new File(clonePayload);
@@ -232,7 +251,7 @@ public class Injector {
 			System.err.println("Failed to clone()!");
 			return;
 		}
-		System.out.println("mmap() returned " + out);
+		System.out.println("clone() returned " + out);
 
 		// restore registers
 		ptrace.setregs(pid, Pointer.nativeValue(origregsbuf));
@@ -257,7 +276,7 @@ public class Injector {
 			}
 			int status = statusref.getValue();
 
-			pstateinfo(status);
+			//pstateinfo(status);
 
 			// SIGTRAP = 5 - Trace/breakpoint trap
 			if (unix.WIFSTOPPED(status) && unix.WSTOPSIG(status) == 5)
@@ -282,17 +301,17 @@ public class Injector {
 
 	public void pstateinfo(int status) {
 		if (unix.WIFSTOPPED(status))
-			ProfilerUtil.measure("Process stopped with signal " + unix.WSTOPSIG(status));
+			ProfilerUtil.measure("    Process stopped with signal " + unix.WSTOPSIG(status));
 		if (unix.WIFEXITED(status))
-			ProfilerUtil.measure("Process exited with signal " + unix.WEXITSTATUS(status));
+			ProfilerUtil.measure("    Process exited with signal " + unix.WEXITSTATUS(status));
 		if (unix.WIFSIGNALED(status)) {
-			ProfilerUtil.measure("Process terminated with signal " + unix.WTERMSIG(status));
+			ProfilerUtil.measure("    Process terminated with signal " + unix.WTERMSIG(status));
 			if (unix.WCOREDUMP(status))
-				ProfilerUtil.measure("Process core dumped!");
+				ProfilerUtil.measure("    Process core dumped!");
 		}
 		if (unix.WIFCONTINUED(status))
-			ProfilerUtil.measure("Process was resumed by delivery of SIGCONT");
+			ProfilerUtil.measure("    Process was resumed by delivery of SIGCONT");
 		if (unix.WIFEXITED(status))
-			ProfilerUtil.measure("Target process has exited!");
+			ProfilerUtil.measure("    Target process has exited!");
 	}
 }
