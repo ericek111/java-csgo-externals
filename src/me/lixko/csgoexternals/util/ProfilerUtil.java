@@ -3,12 +3,14 @@ package me.lixko.csgoexternals.util;
 public class ProfilerUtil {
 	private static final ThreadLocal<Long> firstnanos = ThreadLocal.withInitial(() -> new Long(0));
 	private static final ThreadLocal<Long> lastnanos = ThreadLocal.withInitial(() -> new Long(0));
-
+	
 	public static void start() {
 		firstnanos.set(System.nanoTime());
 	}
 
 	public static void measure(String text) {
+		System.out.println(text);
+		if(true) return;
 		if (firstnanos.get() == 0) {
 			firstnanos.set(System.nanoTime());
 			lastnanos.set(System.nanoTime());

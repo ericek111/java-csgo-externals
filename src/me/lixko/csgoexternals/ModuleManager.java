@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import me.lixko.csgoexternals.modules.*;
+import me.lixko.csgoexternals.modules.Module;
 import me.lixko.csgoexternals.util.DrawUtils;
 
 public class ModuleManager {
@@ -28,12 +29,15 @@ public class ModuleManager {
 		registerModule(new NoFlash());
 		registerModule(new NoHands());
 		registerModule(new SkinChanger());
+		registerModule(new TestModule());
 
 		// TODO: Fix dependencies and NullPtrEx with DrawUtils.getScreenWidth()
 		if (DrawUtils.enableOverlay) {
-			registerModule(new AutoJoinCT());
+			registerModule(new VisibleTest());
+			//registerModule(new AutoJoinCT());
 			registerModule(new BoneESP());
 			registerModule(new CrosshairDot());
+			//registerModule(new MapRender());
 			registerModule(new NameHUD());
 			registerModule(new RankReveal());
 			registerModule(new RecoilCross());

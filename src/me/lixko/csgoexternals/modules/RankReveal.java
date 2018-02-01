@@ -3,13 +3,16 @@ package me.lixko.csgoexternals.modules;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.jonatino.misc.Cacheable;
 import com.github.jonatino.misc.MemoryBuffer;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.AttributableItemType;
 import me.lixko.csgoexternals.offsets.ItemDefinitionIndex;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.structs.CSPlayerResource;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
@@ -86,8 +89,8 @@ public class RankReveal extends Module {
 
 					scoreboardPlayersT = StringFormat.sortByValueReverse(tbs_scoreboardPlayersT, true);
 					scoreboardPlayersCT = StringFormat.sortByValueReverse(tbs_scoreboardPlayersCT, true);
-
-					lpteamnum = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iTeamNum);
+					
+					lpteamnum = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_iTeamNum);
 					CTcount = scoreboardPlayersCT.size();
 					Tcount = scoreboardPlayersT.size();
 
@@ -163,26 +166,29 @@ public class RankReveal extends Module {
 		}
 
 		int iter = 0;
-		DrawUtils.setColor(0f, 0f, 0f, 0.87f);
-		// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 + 53, DrawUtils.getScreenWidth() / 4 * 3 - 14, DrawUtils.getScreenHeight() - 125);
-
-		drawHeader(DrawUtils.getScreenHeight() - ctyoffset + SCOREBOARD_PLAYER_HEIGHT);
-		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersCT.entrySet()) {
-			drawEntity(entry.getKey(), iter, 3);
-			iter++;
+		if(CTcount > 0) {
+			DrawUtils.setColor(0f, 0f, 0f, 0.87f);
+			// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 + 53, DrawUtils.getScreenWidth() / 4 * 3 - 14, DrawUtils.getScreenHeight() - 125);
+			drawHeader(DrawUtils.getScreenHeight() - ctyoffset + SCOREBOARD_PLAYER_HEIGHT);
+			for (Map.Entry<Integer, Integer> entry : scoreboardPlayersCT.entrySet()) {
+				drawEntity(entry.getKey(), iter, 3);
+				iter++;
+			}
+			drawSum(DrawUtils.getScreenHeight() - ctyoffset - (CTcount <= 5 && Tcount <= 5 ? 5 : iter) * SCOREBOARD_PLAYER_HEIGHT, 3);
 		}
-		drawSum(DrawUtils.getScreenHeight() - ctyoffset - (CTcount <= 5 && Tcount <= 5 ? 5 : iter) * SCOREBOARD_PLAYER_HEIGHT, 3);
-
-		DrawUtils.setColor(0f, 0f, 0f, 0.87f);
-		// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 - 55, DrawUtils.getScreenWidth() / 4 * 3 - 14, 0);
-
-		iter = 0;
-		drawHeader(DrawUtils.getScreenHeight() - tyoffset + SCOREBOARD_PLAYER_HEIGHT);
-		for (Map.Entry<Integer, Integer> entry : scoreboardPlayersT.entrySet()) {
-			drawEntity(entry.getKey(), iter, 2);
-			iter++;
+		
+		if(Tcount > 0) {
+			DrawUtils.setColor(0f, 0f, 0f, 0.87f);
+			// DrawUtils.fillRectangle(DrawUtils.getScreenWidth() / 4 + 11, DrawUtils.getScreenHeight() / 2 + 15 - 55, DrawUtils.getScreenWidth() / 4 * 3 - 14, 0);
+			
+			iter = 0;
+			drawHeader(DrawUtils.getScreenHeight() - tyoffset + SCOREBOARD_PLAYER_HEIGHT);
+			for (Map.Entry<Integer, Integer> entry : scoreboardPlayersT.entrySet()) {
+				drawEntity(entry.getKey(), iter, 2);
+				iter++;
+			}
+			drawSum(DrawUtils.getScreenHeight() - tyoffset - Math.max(5, iter) * SCOREBOARD_PLAYER_HEIGHT, 2);
 		}
-		drawSum(DrawUtils.getScreenHeight() - tyoffset - Math.max(5, iter) * SCOREBOARD_PLAYER_HEIGHT, 2);
 
 		CTmoney = 0;
 		Tmoney = 0;
@@ -199,13 +205,14 @@ public class RankReveal extends Module {
 		ressum.setSource(ressumbuf);
 		updateLoop.start();
 		autodefusemod = (AutoDefuse) Client.theClient.moduleManager.getModule("AutoDefuse");
+		//m_hObserverTarget = Offsets.netvars.get("CBasePlayer", "m_hObserverTarget");
 	}
 
 	private void drawEntity(int resid, int yi, int team) {
 		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + resid * Offsets.m_dwEntityLoopDistance);
 		int enthealth = res.m_iHealth.getInt(resid * Integer.BYTES);
 		int entarmor = res.m_iArmor.getInt(resid * Integer.BYTES);
-		int money = Engine.clientModule().readInt(entityptr + Offsets.m_iAccount);
+		int money = Engine.clientModule().readInt(entityptr + Netvars.CCSPlayer.m_iAccount);
 		int mvps = res.m_iMVPs.getInt(resid * Integer.BYTES);
 		int y = 0;
 		if (team == 3)
@@ -281,7 +288,7 @@ public class RankReveal extends Module {
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 54, y + 2, ChatColor.MEDIUM + "" + res.m_iPing.getInt(resid * Integer.BYTES));
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 25, y + 2, ChatColor.MEDIUM + "" + res.m_iScore.getInt(resid * Integer.BYTES));
 			DrawUtils.setAlign(TextAlign.LEFT);
-			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 120, y + 2, "" + ChatColor.MEDIUM + ChatColor.WHITE + clans[resid] + " " + (team == 2 ? ChatColor.TCHAT : ChatColor.CTCHAT) + names[resid]);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 120 + 200, y + 2, "" + ChatColor.MEDIUM + ChatColor.WHITE + clans[resid] + " " + (team == 2 ? ChatColor.TCHAT : ChatColor.CTCHAT) + names[resid]);
 			DrawUtils.enableStringBackground();
 			if (mvps > 0) {
 				DrawUtils.setAlign(TextAlign.RIGHT);
@@ -331,6 +338,9 @@ public class RankReveal extends Module {
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 30, y + 2, (com_l > 0 ? com_l + "" : ""));
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 60, y + 2, (com_f > 0 ? com_f + "" : ""));
 
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8) + 90, y + 2, resid + "");
+
+		
 		int cashspent = res.m_iCashSpentThisRound.getInt(resid * Integer.BYTES);
 		ressum.m_iCashSpentThisRound.set(team * Integer.BYTES, ressum.m_iCashSpentThisRound.getInt(team * Integer.BYTES) + cashspent);
 		DrawUtils.setAlign(TextAlign.RIGHT);
@@ -339,156 +349,7 @@ public class RankReveal extends Module {
 
 		// TODO: Fix weapon display
 		if (enthealth > 0) {
-			// String entweapons = "";
-			int c = 0;
-			long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
-			// ArrayList<Integer> equipment = new ArrayList<Integer>();
-
-			int activeitem = 0;
-			int lastx = 180;
-			int grenades = 0;
-			for (int w = 0; w < 64; w++) {
-				int weaponentindex = Engine.clientModule().readInt(entityptr + 0x3528 + 4 * (w - 1)) & 0xFFF;
-				if (weaponentindex == 0)
-					continue;
-				long weaponptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + weaponentindex * Offsets.m_dwEntityLoopDistance);
-				if (weaponptr == 0)
-					continue;
-
-				int m_iItemDefinitionIndex = Engine.clientModule().readInt(weaponptr + 0x34c0 + 0x60 + 0x268);
-				// String name = ItemDefinitionIndex.byValue(m_iItemDefinitionIndex).name().replace("WEAPON_", "");
-				// entweapons += name + ", ";
-				if (weaponhandle == weaponentindex)
-					activeitem = m_iItemDefinitionIndex;
-				int size = 25;
-				int xoff = 0;
-				int xspacing = 50;
-				AttributableItemType itemtype = ItemDefinitionIndex.byID(m_iItemDefinitionIndex).type();
-				if (ItemDefinitionIndex.WEAPON_C4.id() == m_iItemDefinitionIndex)
-					continue;
-				if (ItemDefinitionIndex.WEAPON_HEGRENADE.id() == m_iItemDefinitionIndex) {
-					grenades |= (1 << 0);
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 0);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_FLASHBANG.id() == m_iItemDefinitionIndex) {
-					grenades |= (1 << 1);
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 1);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_SMOKEGRENADE.id() == m_iItemDefinitionIndex) {
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 2);
-					grenades |= (1 << 2);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_DECOY.id() == m_iItemDefinitionIndex) {
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 3);
-					grenades |= (1 << 3);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_INCGRENADE.id() == m_iItemDefinitionIndex) {
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 4);
-					grenades |= (1 << 4);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_MOLOTOV.id() == m_iItemDefinitionIndex) {
-					if (weaponhandle == weaponentindex)
-						grenades |= 1 << (8 + 5);
-					grenades |= (1 << 5);
-					continue;
-				}
-				if (ItemDefinitionIndex.WEAPON_TASER.id() == m_iItemDefinitionIndex) {
-					size = 25;
-					xoff = 280;
-				}
-				switch (itemtype) {
-				case PISTOL:
-					xoff = 115;
-					size = 25;
-					break;
-				case AUTOMATIC:
-					xoff = 1;
-					size = 30;
-					break;
-				case SHOTGUN:
-					size = 30;
-					xoff = 1;
-					break;
-				case SNIPER:
-					size = 30;
-					xoff = 1;
-					break;
-				case KNIFE:
-					continue;
-				case OTHER:
-					break;
-				default:
-					break;
-				}
-
-				DrawUtils.setAlign(TextAlign.RIGHT);
-				if (xoff == 0) {
-					lastx -= xspacing;
-					c++;
-					DrawUtils.setAlign(TextAlign.CENTER);
-				}
-				DrawUtils.setTextureColor(0.75f, 0.75f, 0.75f, 0.6f);
-				if (weaponhandle == weaponentindex)
-					DrawUtils.setTextureColor(1f, 1f, 1f, 0.8f);
-				DrawUtils.drawTexture("weapon_" + m_iItemDefinitionIndex, xoff > 0 ? (DrawUtils.getScreenWidth() / 6 - xoff) : lastx, y - 10, -1, size);
-				DrawUtils.setTextureColor(0f, 0f, 0f);
-				if (weaponhandle == weaponentindex)
-					DrawUtils.setTextureColor(1.0f, 0.0f, 0f);
-				DrawUtils.drawTexture("weaponout_" + m_iItemDefinitionIndex, xoff > 0 ? (DrawUtils.getScreenWidth() / 6 - xoff) : lastx, y - 10, -1, size);
-			}
-
-			lastx -= 30 + 30;
-			for (int i = 0; i < 6; i++) {
-				int m_iItemDefinitionIndex = 0;
-				if (i == 0 && (1 << 0 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_HEGRENADE.id();
-				else if (i == 1 && (1 << 1 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_FLASHBANG.id();
-				else if (i == 2 && (1 << 2 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_SMOKEGRENADE.id();
-				else if (i == 3 && (1 << 3 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_DECOY.id();
-				else if (i == 4 && (1 << 4 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_INCGRENADE.id();
-				else if (i == 5 && (1 << 5 & grenades) > 0)
-					m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_MOLOTOV.id();
-				else
-					continue;
-				boolean inuse = (1 << (i + 8) & grenades) > 0;
-				DrawUtils.setAlign(TextAlign.CENTER);
-				DrawUtils.setTextureColor(0.75f, 0.75f, 0.75f, 0.6f);
-				if (inuse)
-					DrawUtils.setTextureColor(1f, 1f, 1f, 0.8f);
-				DrawUtils.drawTexture("weapon_" + m_iItemDefinitionIndex, lastx, y - 10, -1, 25);
-				DrawUtils.setTextureColor(0f, 0f, 0f);
-				if (inuse)
-					DrawUtils.setTextureColor(1.0f, 0.0f, 0f);
-				DrawUtils.drawTexture("weaponout_" + m_iItemDefinitionIndex, lastx, y - 10, -1, 25);
-				lastx -= 20;
-			}
-			DrawUtils.setAlign(TextAlign.LEFT);
-			if (res.m_iPlayerC4.getInt() == resid && (lpteamnum != 2 || activeitem == ItemDefinitionIndex.WEAPON_C4.id())) {
-				DrawUtils.setColor(1.0f, 1.0f, 1.0f, 1f);
-				DrawUtils.fillRectanglew(DrawUtils.getScreenWidth() / 4 + 60, y - 8, 28, 26);
-				DrawUtils.drawTexture("bomb", DrawUtils.getScreenWidth() / 4 + 60, y - 6, 25, -1);
-			}
-
-			DrawUtils.setTextureColor(1f, 1f, 1f);
-			if (res.m_bHasDefuser.getBoolean(resid) && (lpteamnum != 3 || autodefusemod.defuser == resid))
-				DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
-
-			if (res.m_bHasDefuser.getBoolean(resid) && (lpteamnum != 3 || autodefusemod.defuser == resid))
-				DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
+			drawWeapons(entityptr, resid, 320, y);
 		}
 		DrawUtils.setTextureColor(1f, 1f, 1f);
 		ressum.m_iKills.set(team * Integer.BYTES, res.m_iKills.getInt(resid * Integer.BYTES) + ressum.m_iKills.getInt(team * Integer.BYTES));
@@ -496,6 +357,164 @@ public class RankReveal extends Module {
 		ressum.m_iDeaths.set(team * Integer.BYTES, res.m_iDeaths.getInt(resid * Integer.BYTES) + ressum.m_iDeaths.getInt(team * Integer.BYTES));
 		ressum.m_iScore.set(team * Integer.BYTES, res.m_iScore.getInt(resid * Integer.BYTES) + ressum.m_iScore.getInt(team * Integer.BYTES));
 		ressum.m_iPing.set(team * Integer.BYTES, res.m_iPing.getInt(resid * Integer.BYTES) + ressum.m_iPing.getInt(team * Integer.BYTES));
+	}
+	
+	public void drawWeapons(int entityid, int x, int y) {
+		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * entityid);
+		drawWeapons(entityptr, entityid, x, y, 1f);
+	}
+	
+	public void drawWeapons(int entityid, int x, int y, float alpha) {
+		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * entityid);
+		drawWeapons(entityptr, entityid, x, y, alpha);
+	}
+	
+	public void drawWeapons(long entityptr, int entityid, int x, int y) {
+		drawWeapons(entityptr, entityid, x, y, 1f);
+	}
+	
+	public void drawWeapons(long entityptr, int resid, int x, int y, float alpha) {		
+		// String entweapons = "";
+		long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
+		// ArrayList<Integer> equipment = new ArrayList<Integer>();
+
+		int activeitem = 0;
+		int lastx = x + 25;
+		int grenades = 0;
+		for (int w = 0; w < 64; w++) {
+			int weaponentindex = Engine.clientModule().readInt(entityptr + 0x3528 + 4 * (w - 1)) & 0xFFF;
+			if (weaponentindex == 0)
+				continue;
+			long weaponptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + weaponentindex * Offsets.m_dwEntityLoopDistance);
+			if (weaponptr == 0)
+				continue;
+
+			int m_iItemDefinitionIndex = Engine.clientModule().readInt(weaponptr + 0x34c0 + 0x60 + 0x268);
+			// String name = ItemDefinitionIndex.byValue(m_iItemDefinitionIndex).name().replace("WEAPON_", "");
+			// entweapons += name + ", ";
+			if (weaponhandle == weaponentindex)
+				activeitem = m_iItemDefinitionIndex;
+			int size = 25;
+			int xoff = 0;
+			int xspacing = 50;
+			AttributableItemType itemtype = ItemDefinitionIndex.byID(m_iItemDefinitionIndex).type();
+			if (ItemDefinitionIndex.WEAPON_C4.id() == m_iItemDefinitionIndex)
+				continue;
+			if (ItemDefinitionIndex.WEAPON_HEGRENADE.id() == m_iItemDefinitionIndex) {
+				grenades |= (1 << 0);
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 0);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_FLASHBANG.id() == m_iItemDefinitionIndex) {
+				grenades |= (1 << 1);
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 1);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_SMOKEGRENADE.id() == m_iItemDefinitionIndex) {
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 2);
+				grenades |= (1 << 2);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_DECOY.id() == m_iItemDefinitionIndex) {
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 3);
+				grenades |= (1 << 3);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_INCGRENADE.id() == m_iItemDefinitionIndex) {
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 4);
+				grenades |= (1 << 4);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_MOLOTOV.id() == m_iItemDefinitionIndex) {
+				if (weaponhandle == weaponentindex)
+					grenades |= 1 << (8 + 5);
+				grenades |= (1 << 5);
+				continue;
+			}
+			if (ItemDefinitionIndex.WEAPON_TASER.id() == m_iItemDefinitionIndex) {
+				size = 25;
+				xoff = 260;
+			}
+			switch (itemtype) {
+			case PISTOL:
+				xoff = 115;
+				size = 25;
+				break;
+			case AUTOMATIC:
+			case SHOTGUN:
+			case SNIPER:
+				size = 30;
+				xoff = 1;
+				break;
+			case KNIFE:
+				continue;
+			case OTHER:
+			default:
+				break;
+			}
+
+			DrawUtils.setAlign(TextAlign.RIGHT);
+			if (xoff == 0) {
+				lastx -= xspacing;
+				DrawUtils.setAlign(TextAlign.CENTER);
+			}
+			DrawUtils.setTextureColor(0.75f, 0.75f, 0.75f, 0.6f * alpha);
+			if (weaponhandle == weaponentindex)
+				DrawUtils.setTextureColor(1f, 1f, 1f, 0.8f * alpha);
+			DrawUtils.drawTexture("weapon_" + m_iItemDefinitionIndex, xoff > 0 ? (x - xoff) : lastx, y - 10, -100, -size);
+			DrawUtils.setTextureColor(0f, 0f, 0f);
+			if (weaponhandle == weaponentindex)
+				DrawUtils.setTextureColor(1.0f, 0.0f, 0f);
+			DrawUtils.drawTexture("weaponout_" + m_iItemDefinitionIndex, xoff > 0 ? (x - xoff) : lastx, y - 10, -100, -size);
+		}
+
+		lastx -= 210;
+		for (int i = 0; i < 6; i++) {
+			int m_iItemDefinitionIndex = 0;
+			if (i == 0 && (1 << 0 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_HEGRENADE.id();
+			else if (i == 1 && (1 << 1 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_FLASHBANG.id();
+			else if (i == 2 && (1 << 2 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_SMOKEGRENADE.id();
+			else if (i == 3 && (1 << 3 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_DECOY.id();
+			else if (i == 4 && (1 << 4 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_INCGRENADE.id();
+			else if (i == 5 && (1 << 5 & grenades) > 0)
+				m_iItemDefinitionIndex = ItemDefinitionIndex.WEAPON_MOLOTOV.id();
+			else
+				continue;
+			boolean inuse = (1 << (i + 8) & grenades) > 0;
+			DrawUtils.setAlign(TextAlign.CENTER);
+			DrawUtils.setTextureColor(0.75f, 0.75f, 0.75f, 0.6f * alpha);
+			if (inuse)
+				DrawUtils.setTextureColor(1f, 1f, 1f, 0.8f * alpha);
+			DrawUtils.drawTexture("weapon_" + m_iItemDefinitionIndex, lastx, y - 10, -1, 25);
+			DrawUtils.setTextureColor(0f, 0f, 0f);
+			if (inuse)
+				DrawUtils.setTextureColor(1.0f, 0.0f, 0f);
+			DrawUtils.drawTexture("weaponout_" + m_iItemDefinitionIndex, lastx, y - 10, -1, 25);
+			lastx -= 20;
+		}
+		DrawUtils.setAlign(TextAlign.LEFT);
+		if (res.m_iPlayerC4.getInt() == resid && (lpteamnum != 2 || activeitem == ItemDefinitionIndex.WEAPON_C4.id())) {
+			DrawUtils.setColor(1.0f, 1.0f, 1.0f, alpha);
+			DrawUtils.fillRectanglew(DrawUtils.getScreenWidth() / 4 + 60, y - 8, 28, 26);
+			DrawUtils.drawTexture("bomb", DrawUtils.getScreenWidth() / 4 + 60, y - 6, 25, -1);
+		}
+
+		DrawUtils.setTextureColor(1f, 1f, 1f);
+		if (res.m_bHasDefuser.getBoolean(resid) && (lpteamnum != 3 || autodefusemod.defuser == resid))
+			DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
+
+		if (res.m_bHasDefuser.getBoolean(resid) && (lpteamnum != 3 || autodefusemod.defuser == resid))
+			DrawUtils.drawTexture("defuser", DrawUtils.getScreenWidth() / 4 + 63, y - 4, 22, -1);
 	}
 
 	private void drawHeader(int y) {
@@ -513,7 +532,7 @@ public class RankReveal extends Module {
 		if (isCompetitive)
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 8, y, "Rank  Wins");
 
-		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y, "Tea Lea Fri");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 + (isCompetitive ? 90 : -8), y, "Tea Lea Fri  ID");
 	}
 
 	private void drawSum(int y, int team) {
@@ -576,5 +595,5 @@ public class RankReveal extends Module {
 		DrawUtils.setAlign(TextAlign.RIGHT);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 - 93, y + 2, "$" + cashspent);
 	}
-
+	
 }

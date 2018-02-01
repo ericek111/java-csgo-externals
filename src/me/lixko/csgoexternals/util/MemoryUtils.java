@@ -6,6 +6,7 @@ public class MemoryUtils {
 
 	public static String getEntityClassName(long entityaddr) {
 		long vtable = Engine.clientModule().readLong(entityaddr + 8);
+		if(vtable == 0) return "";
 		long fn = Engine.clientModule().readLong(vtable - 8);
 		long cls = Engine.clientModule().readLong(fn + 8);
 		String classname = Engine.clientModule().readString(cls, 64);

@@ -4,6 +4,7 @@ import com.github.jonatino.misc.MemoryBuffer;
 import com.sun.jna.Pointer;
 
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.structs.CSPlayerResource;
@@ -45,11 +46,11 @@ public class AutoDefuse extends Module {
 					continue;
 				// Offsets.m_dwGlobalVars = Engine.clientModule().readLong(Offsets.m_dwGlobalVarsPointer);
 				Engine.clientModule().read(Offsets.m_dwGlobalVars, globalvarsbuf.size(), globalvarsbuf);
-				Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, posbuf.size(), posbuf);
-				Engine.clientModule().read(bombentityaddr + Offsets.m_vecOrigin, bombpos.size(), posbuf);
-				Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, bombpos.size(), Pointer.nativeValue(posbuf) + bombpos.size());
+				Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, posbuf.size(), posbuf);
+				Engine.clientModule().read(bombentityaddr + Netvars.CBaseEntity.m_vecOrigin, bombpos.size(), posbuf);
+				Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, bombpos.size(), Pointer.nativeValue(posbuf) + bombpos.size());
 
-				bombtimer = Engine.clientModule().readFloat(bombentityaddr + Offsets.m_flC4Blow) - globalvars.curtime.getFloat();
+				bombtimer = Engine.clientModule().readFloat(bombentityaddr + Netvars.CPlantedC4.m_flC4Blow) - globalvars.curtime.getFloat();
 				deftime = Engine.clientModule().readFloat(bombentityaddr + 0x3010);
 				countdown = Engine.clientModule().readFloat(bombentityaddr + 0x3024) - globalvars.curtime.getFloat();
 				defuser = Engine.clientModule().readLong(bombentityaddr + 0x302c) & 0xFFF;
@@ -59,8 +60,8 @@ public class AutoDefuse extends Module {
 
 				float distance = (float) MathUtils.calculateDistance(bombpos.x.getFloat(), bombpos.z.getFloat(), lppos.x.getFloat(), lppos.z.getFloat());
 
-				int team = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iTeamNum);
-				int armorv = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_ArmorValue);
+				int team = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_iTeamNum);
+				int armorv = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CCSPlayer.m_ArmorValue);
 				double d = ((distance - 75.68f) / 789.2f);
 				float flDamage = (float) (450.7f * MathUtils.exp(-d * d));
 				bombDamage = Math.max((int) Math.ceil(MathUtils.GetArmourHealth(flDamage, armorv)), 1) - 1;
@@ -116,8 +117,8 @@ public class AutoDefuse extends Module {
 
 		if (!autodefuset || bombtimer < 0)
 			return;
-		int lphealth = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iHealth);
-		int lpteam = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iTeamNum);
+		int lphealth = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_iHealth);
+		int lpteam = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_iTeamNum);
 
 		DrawUtils.setStyle(ChatColor.LARGE);
 		if (bombDamage >= lphealth)

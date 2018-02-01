@@ -8,12 +8,14 @@ import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.CEntInfo;
 import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.structs.CGlowObjectManager;
 import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
+import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
 
 public class Glow extends Module {
@@ -44,6 +46,8 @@ public class Glow extends Module {
 	boolean glowJustDisabled = false;
 
 	CGlobalVars globalvars = new CGlobalVars();
+	
+	String classname = ""; // TODO: Optimize
 
 	public void onLoop() {
 		if (!(glowEnabled || glowJustDisabled))
@@ -60,11 +64,11 @@ public class Glow extends Module {
 			long entityaddr = glowobj.m_pEntity.getLong();
 			if (entityaddr < 1)
 				continue;
-			int team = Engine.clientModule().readInt(entityaddr + Offsets.m_iTeamNum);
-			int health = Engine.clientModule().readInt(entityaddr + Offsets.m_iHealth);
+			int team = Engine.clientModule().readInt(entityaddr + Netvars.CBaseEntity.m_iTeamNum);
+			int health = Engine.clientModule().readInt(entityaddr + Netvars.CBasePlayer.m_iHealth);
 
 			boolean issabomb = false;
-			String classname = MemoryUtils.getEntityClassName(entityaddr);
+			//String classname = MemoryUtils.getEntityClassName(entityaddr);
 			int rendercolor = Engine.clientModule().readInt(entityaddr + 0xa8);
 
 			// if(i < 5)System.out.println(i + ": " + StringFormat.hex(g_glow.lastReadAddress() + i * glowobj.size()));
@@ -79,7 +83,7 @@ public class Glow extends Module {
 			// Engine.clientModule().writeInt(entityaddr + 0xa8 , 0xFF0000FF);
 			health = Math.min(health, 100);
 
-			if (classname.startsWith("4C_C4") || classname.startsWith("11C_PlantedC4")) {
+			/*if (classname.startsWith("4C_C4") || classname.startsWith("11C_PlantedC4")) {
 				glowobj.m_flGlowRed.set(1.0f);
 				glowobj.m_flGlowGreen.set(0.4f);
 				glowobj.m_flGlowBlue.set(0.0f);
@@ -87,7 +91,7 @@ public class Glow extends Module {
 				glowobj.m_bFullBloomRender.set(true);
 				if (classname.startsWith("11C_PlantedC4"))
 					issabomb = true;
-			} else if (team == 2) {
+			} else*/ if (team == 2) {
 				glowobj.m_flGlowRed.set(1.0f);
 				glowobj.m_flGlowGreen.set(health != 0 ? 1.0f - health / 100.0f : 0.0f);
 				glowobj.m_flGlowBlue.set(0.0f);

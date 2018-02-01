@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 import me.lixko.csgoexternals.offsets.ItemDefinitionIndex;
@@ -16,7 +17,7 @@ import me.lixko.csgoexternals.themes.BasicTheme;
 public class DrawUtils {
 
 	public static GL2 gl;
-
+	public static GLU glu;
 	public static GLAutoDrawable drawable;
 	public static BasicTheme theme = new BasicTheme();
 	public static FontRenderer fontRenderer;
@@ -41,7 +42,8 @@ public class DrawUtils {
 			addTexture(texfile.getName().substring(0, texfile.getName().lastIndexOf(".")), texfile);
 		}
 		for (File texfile : textureSourceFile("weapons").listFiles()) {
-			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			int extpos = texfile.getName().lastIndexOf(".");
+			String name = extpos > 0 ? texfile.getName().substring(0, extpos) : texfile.getName();
 			if (name.startsWith("weapon_"))
 				addTexture("weapon_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
 			else
@@ -49,7 +51,8 @@ public class DrawUtils {
 		}
 		textureSourceFile("weapons_outline");
 		for (File texfile : textureSourceFile("weapons_outline").listFiles()) {
-			String name = texfile.getName().substring(0, texfile.getName().lastIndexOf("."));
+			int extpos = texfile.getName().lastIndexOf(".");
+			String name = extpos > 0 ? texfile.getName().substring(0, extpos) : texfile.getName();
 			if (name.startsWith("weapon_"))
 				addTexture("weaponout_" + Enum.valueOf(ItemDefinitionIndex.class, name.toUpperCase()).id(), texfile);
 			else
@@ -110,13 +113,22 @@ public class DrawUtils {
 
 		float ratx = 1f;
 		float raty = 1f;
-		if (width < 0 && height < 0) {
+		if(width == 0 && height == 0) {
+			ratx = 1;
+			raty = 1;
+		} else if(width > 0 && height > 0) {
 			ratx = (tex.width / width);
-			if (height > 0)
-				raty = (tex.height / height);
-			else
-				raty = ratx;
-
+			raty = (tex.height / height);
+		} else if(width > 0 && height == 0) {
+			ratx = (tex.width / width);
+			raty = ratx;
+		} else if(width == 0 && height > 0) {
+			raty = (tex.height / height);
+			ratx = raty;
+		} else if (width < 0 && height < 0) {
+			float scale = Math.max( (float)tex.width / (float)(-width), (float)tex.height / (float)(-height));
+			raty = scale;
+			ratx = scale;
 		} else if (width > 0) {
 			ratx = (tex.width / width);
 			if (height > 0)
@@ -146,7 +158,7 @@ public class DrawUtils {
 
 		tex.mTextureRenderer.setColor(texcolor[0], texcolor[1], texcolor[2], texcolor[3]);
 		tex.mTextureRenderer.beginOrthoRendering((int) (getScreenWidth() * ratx), (int) (getScreenHeight() * raty));
-		tex.mTextureRenderer.drawOrthoRect((int) ((x - xoffset) * ratx), (int) (y * raty), tex.texx, tex.mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
+		tex.mTextureRenderer.drawOrthoRect((int) ( (float)(x - xoffset) * ratx), (int) ((float)y * raty), tex.texx, tex.mTextureRenderer.getHeight() - tex.height, tex.width, tex.height);
 		tex.mTextureRenderer.endOrthoRendering();
 	}
 

@@ -5,10 +5,11 @@ import com.sun.jna.NativeLong;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.sdk.BoneList;
 import me.lixko.csgoexternals.structs.Matrix3x4Mem;
 import me.lixko.csgoexternals.structs.VectorMem;
-import me.lixko.csgoexternals.util.BoneList;
 import me.lixko.csgoexternals.util.MathUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.XKeySym;
@@ -50,9 +51,9 @@ public class AimBot extends Module {
 		if (!Client.theClient.keyboardHandler.isPressed(XKeySym.XK_F))
 			return;
 
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecOrigin, vectorbuf);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, vectorbuf);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, vectorbuf2);
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_angRotation, vectorbuf3);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_angRotation, vectorbuf3);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, vectorbuf4);
 		float[] posOffset = MathUtils.add(vectorbuf.getFloatArray(0, 3), vectorbuf2.getFloatArray(0, 3));
 		float[] viewAngle = vectorbuf3.getFloatArray(0, 2);
@@ -61,7 +62,7 @@ public class AimBot extends Module {
 		System.out.println(StringFormat.dump(punchAngle));
 		float bestval = Float.MAX_VALUE;
 		float[] bestenthitbox = null;
-		int localteam = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iTeamNum);
+		int localteam = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_iTeamNum);
 
 		for (int i = 1; i < 64; i++) {
 			long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + i * Offsets.m_dwEntityLoopDistance);
@@ -69,14 +70,14 @@ public class AimBot extends Module {
 				continue;
 			if (entityptr == Offsets.m_dwLocalPlayer)
 				continue;
-			int team = Engine.clientModule().readInt(entityptr + Offsets.m_iTeamNum);
+			int team = Engine.clientModule().readInt(entityptr + Netvars.CBaseEntity.m_iTeamNum);
 			if (team != 2 && team != 3)
 				continue;
 			if (target == AimBotTarget.ENEMY && team == localteam)
 				continue;
 			if (target == AimBotTarget.TEAM && team != localteam)
 				continue;
-			int health = Engine.clientModule().readInt(entityptr + Offsets.m_iHealth);
+			int health = Engine.clientModule().readInt(entityptr + Netvars.CBasePlayer.m_iHealth);
 			if (health < 1)
 				continue;
 

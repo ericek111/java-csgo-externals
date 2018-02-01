@@ -2,6 +2,7 @@ package me.lixko.csgoexternals.modules;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.Const;
 
@@ -19,7 +20,7 @@ public class Bunnyhop extends Module {
 						continue;
 
 					if (Engine.clientModule().readInt(Offsets.input.alt1) == 5) {
-						long m_fFlags = Engine.clientModule().readLong(Offsets.m_dwLocalPlayer + Offsets.m_fFlags);
+						long m_fFlags = Engine.clientModule().readLong(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_fFlags);
 						// TODO: Add randomization settings.
 						if (false && (m_fFlags & Const.FL_ONGROUND) > 0)
 							Engine.clientModule().writeInt(Offsets.input.jump, 6);

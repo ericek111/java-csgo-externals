@@ -4,6 +4,7 @@ import com.github.jonatino.misc.MemoryBuffer;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.Studio;
 import me.lixko.csgoexternals.structs.Mstudiobone_t;
@@ -80,21 +81,22 @@ public class BoneESP extends Module {
 			if (isDormant)
 				continue;
 
-			int health = Engine.clientModule().readInt(entityptr + Offsets.m_iHealth);
+			int health = Engine.clientModule().readInt(entityptr + Netvars.CBasePlayer.m_iHealth);
 			if (health < 1)
 				continue;
 
 			if (health < 3 && health > 0) {
 				colorBuf[i] = new float[] { 0f, 1f, 0f, 1f };
 			} else {
-				int team = Engine.clientModule().readInt(entityptr + Offsets.m_iTeamNum);
+				int team = Engine.clientModule().readInt(entityptr + Netvars.CBaseEntity.m_iTeamNum);
 				if (team == 2) {
 					colorBuf[i] = new float[] { 1f, health != 0 ? 1.0f - health / 100.0f : 0.0f, 0f, 1f };
 				} else if (team == 3) {
 					colorBuf[i] = new float[] { 0f, health != 0 ? 1.0f - health / 100.0f : 0.0f, 1f, 1f };
 				}
 			}
-
+			
+			// C_LocalTempEntity::DrawStudioModel(int)
 			long studioModelptr = Engine.engineModule().readLong(entityptr + 0x2FC0);
 			long studioModel = Engine.engineModule().readLong(studioModelptr);
 			// 0x9C = offsetof(studiohdr_t, numbones) > numBones, boneIndex

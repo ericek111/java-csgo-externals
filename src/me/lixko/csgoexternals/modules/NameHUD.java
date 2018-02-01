@@ -2,6 +2,7 @@ package me.lixko.csgoexternals.modules;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
@@ -13,7 +14,8 @@ public class NameHUD extends Module {
 
 	long lastspottedtime = 0;
 	String lastspottedname = "";
-	int lastspottedent = 0;
+	int lastspottedenti = 0;
+	long lastspottedentptr = 0;
 	int lastspottedteam = 0;
 	int lastspottedhealth = 0;
 
@@ -21,9 +23,10 @@ public class NameHUD extends Module {
 	public void onUIRender() {
 		if (!this.isToggled())
 			return;
+		//System.out.println(DrawUtils.getScreenWidth() / 6);
 		if (lastspottedtime + 1500 < System.currentTimeMillis())
 			return;
-		if (lastspottedent == 0)
+		if (lastspottedenti == 0)
 			return;
 		DrawUtils.setAlign(TextAlign.CENTER);
 		if (lastspottedteam == 2)
@@ -43,31 +46,35 @@ public class NameHUD extends Module {
 		DrawUtils.setTextColor(0.80f, 0.1f, 0.1f, alpha);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, DrawUtils.getScreenHeight() / 2 - 80, "" + ChatColor.LARGE + lastspottedhealth);
 		DrawUtils.enableTextBackgroundColor();
+		
+		rankreveal.drawWeapons(lastspottedentptr, lastspottedenti, DrawUtils.getScreenWidth() / 2 + 100, DrawUtils.getScreenHeight() / 2 - 110, alpha);
 	}
 
 	@Override
 	public void onLoop() {
 		if (!this.isToggled())
 			return;
+		//if(true) return;
 		int inCross = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_iCrosshairIndex);
-		if (inCross == lastspottedent) {
+		if (inCross == lastspottedenti && lastspottedtime + 100 > System.currentTimeMillis()) {
 			lastspottedtime = System.currentTimeMillis();
 			return;
 		}
 
 		if (inCross > 0) {
 			long cEnt = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * inCross);
+			lastspottedentptr = cEnt;
 			if (cEnt > 0) {
-				int cHealth = Engine.clientModule().readInt(cEnt + Offsets.m_iHealth);
+				int cHealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 				if (cHealth > 0) {
 					long nameptr = rankreveal.resbuf.getLong(0xF78 + (inCross) * 8);
 					if (nameptr > 0) {
 						String name = Engine.clientModule().readString(nameptr, 64);
-						lastspottedent = inCross;
+						lastspottedenti = inCross;
 						lastspottedname = name;
 						lastspottedtime = System.currentTimeMillis();
-						lastspottedteam = Engine.clientModule().readInt(cEnt + Offsets.m_iTeamNum);
-						lastspottedhealth = Engine.clientModule().readInt(cEnt + Offsets.m_iHealth);
+						lastspottedteam = Engine.clientModule().readInt(cEnt + Netvars.CBaseEntity.m_iTeamNum);
+						lastspottedhealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 					}
 
 				}
