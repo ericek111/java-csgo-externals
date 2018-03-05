@@ -20,9 +20,6 @@ public class DownloadFixer extends Module {
 	public void onEngineLoaded() {
 		long TheDownloadManagerMov = PatternScanner.getAddressForPattern(Engine.engineModule(), "55 48 8D 3D ?? ?? ?? ?? 48 89 E5 5D E9 BF FF FF FF") + 1;
 		downloadManager = Engine.engineModule().GetAbsoluteAddress(TheDownloadManagerMov, 3, 7);
-		System.out.println(Offsets.modDirectory);
-		this.onLoop();
-		System.exit(0);
 	}
 	
 	@Override
