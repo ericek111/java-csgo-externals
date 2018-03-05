@@ -1,5 +1,6 @@
 package me.lixko.csgoexternals;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.script.ScriptException;
@@ -8,11 +9,18 @@ import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.modules.Module;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.ProfilerUtil;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
 public class EventHandler {
-
+	
+	HashMap<Module, Long> uirendertimes = new HashMap<>();
+	HashMap<Module, Long> worldrendertimes = new HashMap<>();
+	long rendertime = 0;
+	int rtindex = 0;
+	public static boolean PROFILER = false;
+	
 	public EventHandler() {
 	}
 
@@ -68,15 +76,27 @@ public class EventHandler {
 	}
 
 	public void onUIRender() {
+		if(PROFILER) rtindex++;
+		//ProfilerUtil.start();
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			try {
+				if(PROFILER) rendertime = System.nanoTime();
 				eventModule.onUIRender();
-			} catch (Exception ex) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				if(PROFILER) {
+					long oldrt = 0l;
+					if(rtindex == 1) oldrt = System.nanoTime() - rendertime;
+					else oldrt = uirendertimes.get(eventModule)  + (System.nanoTime() - rendertime);
+					uirendertimes.put(eventModule, oldrt);
+					//System.out.println(uirendertimes.size());
+					if(rtindex == 100) {
+						long rt = (uirendertimes.put(eventModule, 0l) / rtindex);
+						if(rt > 3000)
+							System.out.println("U: " + eventModule.getName() + ": " + rt);
+					}
+					//ProfilerUtil.measure("UI render of " + eventModule.getName());
 				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 		try {
@@ -85,7 +105,7 @@ public class EventHandler {
 		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
 		}
-		String str = "";
+		/*String str = "";
 		for (Map.Entry<Integer, String> entry : Client.theClient.moduleManager.cachedStatusText.entrySet())
 			str += str == "" ? entry.getValue() : " + " + entry.getValue();
 
@@ -93,19 +113,29 @@ public class EventHandler {
 		DrawUtils.setAlign(TextAlign.CENTER);
 		DrawUtils.enableStringBackground();
 		DrawUtils.drawString(DrawUtils.drawable.getSurfaceWidth() / 2, 15, str);
-		DrawUtils.setAlign(TextAlign.LEFT);
+		DrawUtils.setAlign(TextAlign.LEFT);*/
 	}
 
 	public void onWorldRender() {
+		//ProfilerUtil.start();
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
 			try {
+				if(PROFILER) rendertime = System.nanoTime();
 				eventModule.onWorldRender();
+				if(PROFILER) {
+					long oldrt = 0;
+					if(rtindex == 1) oldrt = System.nanoTime() - rendertime;
+					else oldrt = worldrendertimes.get(eventModule) + (System.nanoTime() - rendertime);
+					worldrendertimes.put(eventModule, oldrt);
+					if(rtindex == 100) {
+						long rt = (worldrendertimes.put(eventModule, 0l) / rtindex);
+						if(rt > 3000)
+							System.out.println("W: " + eventModule.getName() + ": " + rt);
+					}
+					//ProfilerUtil.measure("World render of " + eventModule.getName());
+				}				
 			} catch (Exception ex) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				ex.printStackTrace();
 			}
 		}
 		try {
@@ -113,6 +143,10 @@ public class EventHandler {
 				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onWorldRender");
 		} catch (NoSuchMethodException | ScriptException e) {
 			e.printStackTrace();
+		}
+		if(PROFILER && rtindex == 100) {
+			rtindex = 0;
+			System.out.println("================================");
 		}
 	}
 

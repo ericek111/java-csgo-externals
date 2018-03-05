@@ -63,31 +63,43 @@ public class Injector {
 		// attach to the process
 		ptrace.attach(pid);
 		ProfilerUtil.measure("Attached.");
+		
+		//long mmaddr = mmap_imm(pid, 128, 0, 0, 0);
+		//System.out.println(StringFormat.hex(mmaddr));
+		//ptrace.cont(pid);
+		//System.exit(0);
 
 		// wait for the process to stop, otherwise we may kill the process
-		if (wait_stopped(pid) == 0) {
+		// not necessary, ptrace_next_syscall uses wait_stopped.
+		/*if (wait_stopped(pid) == 0) {
 			ProfilerUtil.measure("Failed to wait until target process stopped!");
 			return false;
 		}
-		ProfilerUtil.measure("Process stopped is in stopped state!");
+		ProfilerUtil.measure("Process stopped is in stopped state!");*/
 
 		//  Wait until process has just returned from a system call before proceeding
 		ptrace_next_syscall(pid);
 		ProfilerUtil.measure("Process exited from syscall!");
+		System.out.println("RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
+		//ptrace.cont(pid);
+		//System.exit(0);
 
 		// save state
 		//System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, bakregs.rip.offset())));
-		ptrace.getregs(pid, Pointer.nativeValue(bakregsbuf));
-		ProfilerUtil.measure("Saved registers.");
-		ptrace.read(pid, bakregs.rip.getLong(), backupbuf);
-		ProfilerUtil.measure("Saved " + backupbuf.size() + " bytes from RIP " + StringFormat.hex(bakregs.rip.getLong()));
+		//ptrace.getregs(pid, Pointer.nativeValue(bakregsbuf));
+		//ProfilerUtil.measure("Saved registers.");
+		//ptrace.read(pid, bakregs.rip.getLong(), backupbuf);
+		//System.out.println(StringFormat.dumpObj(backupbuf.array(), false));
+		//ProfilerUtil.measure("Saved " + backupbuf.size() + " bytes from RIP " + StringFormat.hex(bakregs.rip.getLong()));
 
 		// allocate space and copy the payload
 		long payload_addr = mmap(pid, shellcode_size, 0, 0, 0);
+		System.out.println("RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
 		ProfilerUtil.measure("Allocated " + shellcode_size + " B at " + StringFormat.hex(payload_addr));
 		//ptrace.cont(pid);
 		//ptrace.detach(pid);
 		//System.exit(0);
+		
 		ptrace.write(pid, payload_addr, shellcodebuf);
 
 		// System.out.println("Allocating new stack...");
@@ -100,28 +112,84 @@ public class Injector {
 		long code_cave = mmap(pid, 128, 0, 0, 0);
 		
 		System.out.println("Allocated 128 B for the code cave @ " + StringFormat.hex(code_cave));
-
+		
 		// launch the payload
 		launch(pid, code_cave, 128, stack, payload_addr, shellcode_size, 0, 0);
 		
+
+		
+		// restores process state
+		ptrace.setregs(pid, Pointer.nativeValue(bakregsbuf));
+		System.out.println("Writing original bytes.");
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		// restores process state
-		ptrace.setregs(pid, Pointer.nativeValue(bakregsbuf));
 		ptrace.write(pid, payload_addr, backupbuf);
+		System.out.println("Resuming...");
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		ptrace.cont(pid);
 		
 		return true;
 	}
+	
+	public long mmap_imm(int pid, int len, long base_address, int protections, int flags) {
+		// https://github.com/eklitzke/ptrace-call-userspace/blob/master/call_fprintf.c
+		wait_stopped(pid);
+		//ptrace_next_syscall(pid);
+		
+		user_regs_struct cregs = new user_regs_struct();
+		MemoryBuffer cregsbuf = new MemoryBuffer(cregs.size());
+		cregs.setSource(cregsbuf);
 
+		user_regs_struct origregs = new user_regs_struct();
+		MemoryBuffer origregsbuf = new MemoryBuffer(cregs.size());
+		origregs.setSource(origregsbuf);
+		
+		ptrace.getregs(pid, Pointer.nativeValue(origregsbuf));
+		cregsbuf.setBytes(origregsbuf);
+		
+		cregs.rax.set((long) 9); // mmap
+		cregs.rdi.set((long) base_address);
+		cregs.rsi.set((long) len); // length
+		cregs.rdx.set((long) (protections > 0 ? protections : MMAP_PROTS));
+		cregs.r10.set((long) (flags > 0 ? flags : MMAP_FLAGS));
+		cregs.r9.set((long) -1); // fd
+		cregs.r8.set((long) 0); // offset
+		
+		long old = ptrace.peektext(pid, cregs.rip.getLong());
+		ptrace.poketext(pid, cregs.rip.getLong(), 0xffe0050f); // SYSCALL = 0f 05, little endian, JMP %rax = ff e0
+		//System.out.println(StringFormat.dumpObj(ptrace.read(pid, cregs.rip.getLong(), 8).array(), false));
+		
+		System.out.println(StringFormat.dumpObj(cregs));
+		System.out.println("RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
+		ptrace.setregs(pid, Pointer.nativeValue(cregsbuf));
+		ptrace.singlestep(pid);
+		ptrace.getregs(pid, Pointer.nativeValue(cregsbuf));
+		
+		long out = cregs.rax.getLong();
+		if (out == -1) {
+			System.err.println("Failed to mmap()!");
+			return 0;
+		}
+		System.out.println("> mmap() returned " + out + " / " + StringFormat.hex(out));
+		
+		System.out.println(StringFormat.dumpObj(cregs));
+		
+		ptrace.setregs(pid, Pointer.nativeValue(origregsbuf));
+		ptrace.poketext(pid, origregs.rip.getLong(), old);
+		
+		return out;
+	}
 	public long mmap(int pid, int len, long base_address, int protections, int flags) throws IOException {
 		//ProfilerUtil.measure("mmap: ");
 
-		IntByReference status = new IntByReference();
+		//IntByReference status = new IntByReference();
 
 		user_regs_struct cregs = new user_regs_struct();
 		MemoryBuffer cregsbuf = new MemoryBuffer(cregs.size());
@@ -138,13 +206,10 @@ public class Injector {
 		
 		// put arguments in the proper registers
 		// TODO: 32-bit support
-		if (archWidth == 32) {
-		} else {
-			cregs.rdi.set((long) base_address);
-			cregs.rsi.set((long) len);
-			cregs.rdx.set((long) (protections > 0 ? protections : MMAP_PROTS));
-			cregs.r10.set((long) (flags > 0 ? flags : MMAP_FLAGS));
-		}
+		cregs.rdi.set((long) base_address);
+		cregs.rsi.set((long) len);
+		cregs.rdx.set((long) (protections > 0 ? protections : MMAP_PROTS));
+		cregs.r10.set((long) (flags > 0 ? flags : MMAP_FLAGS));
 
 		File mmapbin = new File(mmapPayload);
 		int mmap_size = (int) mmapbin.length();
@@ -153,11 +218,12 @@ public class Injector {
 		mmap_size &= ~0x07;
 		mmap_size += 0x08;
 		MemoryBuffer mmapbuf = new MemoryBuffer(mmap_size);
-
+		MemoryBuffer bakbuf = new MemoryBuffer(mmap_size);
+		
 		for (int i = 0; i < mmapbuf.size(); i++) {
 			mmapbuf.setByte(i, (byte) 0x90);
 		}
-
+		
 		mmapbuf.setBytes(Files.readAllBytes(mmapbin.toPath()));
 		// System.out.println("Loaded shellcode (" + mmapbuf.size() + " B) @ " + StringFormat.hex(cregs.rip.getLong()));
 		// System.out.println(StringFormat.hex(Files.readAllBytes(mmapbin.toPath())));
@@ -170,6 +236,7 @@ public class Injector {
 		
 		// write mmap code to target process instruction pointer
 		ptrace.setregs(pid, Pointer.nativeValue(cregsbuf));
+		ptrace.read(pid, cregs.rip.getLong(), bakbuf);
 		ptrace.write(pid, cregs.rip.getLong(), mmapbuf);
 		ptrace.cont(pid);
 
@@ -190,7 +257,9 @@ public class Injector {
 
 		// restore registers
 		ptrace.setregs(pid, Pointer.nativeValue(origregsbuf));
-
+		// restore instruction data
+		ptrace.write(pid, cregs.rip.getLong(), bakbuf);
+		
 		return out;
 	}
 

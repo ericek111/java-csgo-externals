@@ -1182,6 +1182,15 @@ public class Netvars {
 	public static class CWaterBullet { // DT_WaterBullet
 	}
 
+	public static class CWorldVguiText { // DT_WorldVguiText
+		public static final long m_bEnabled = 0xf65; // int
+		public static final long m_szDisplayText = 0xf66; // const char *
+		public static final long m_szDisplayTextOption = 0x1166; // const char *
+		public static final long m_szFont = 0x1266; // const char *
+		public static final long m_iTextPanelWidth = 0x12ac; // int
+		public static final long m_clrText = 0x12a6; // int
+	}
+
 	public static class CVGuiScreen { // DT_VGuiScreen
 		public static final long m_flWidth = 0xf70; // float
 		public static final long m_flHeight = 0xf74; // float

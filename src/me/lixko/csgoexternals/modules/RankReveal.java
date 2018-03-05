@@ -16,6 +16,7 @@ import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.structs.CSPlayerResource;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
@@ -52,7 +53,7 @@ public class RankReveal extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(10);
-					if (Offsets.m_dwPlayerResourcesPointer == 0 || Offsets.m_dwPlayerResources == 0 || Offsets.m_dwLocalPlayer == 0) {
+					if (!Engine.IsInGame()) {
 						shouldDraw = false;
 						continue;
 					}
@@ -209,7 +210,8 @@ public class RankReveal extends Module {
 	}
 
 	private void drawEntity(int resid, int yi, int team) {
-		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + resid * Offsets.m_dwEntityLoopDistance);
+		long entityptr =  MemoryUtils.getEntity(resid);
+		if(entityptr == 0) return;
 		int enthealth = res.m_iHealth.getInt(resid * Integer.BYTES);
 		int entarmor = res.m_iArmor.getInt(resid * Integer.BYTES);
 		int money = Engine.clientModule().readInt(entityptr + Netvars.CCSPlayer.m_iAccount);
@@ -279,7 +281,7 @@ public class RankReveal extends Module {
 		}
 
 		if (yi > 11) {
-			DrawUtils.disableStringBackground();
+			//DrawUtils.disableStringBackground();
 			DrawUtils.setAlign(TextAlign.RIGHT);
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 248, y + 2, ChatColor.MEDIUM + "" + res.m_iKills.getInt(resid * Integer.BYTES));
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 2 + 296, y + 2, ChatColor.MEDIUM + "" + res.m_iAssists.getInt(resid * Integer.BYTES));
@@ -288,7 +290,7 @@ public class RankReveal extends Module {
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 54, y + 2, ChatColor.MEDIUM + "" + res.m_iPing.getInt(resid * Integer.BYTES));
 			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 * 3 - 25, y + 2, ChatColor.MEDIUM + "" + res.m_iScore.getInt(resid * Integer.BYTES));
 			DrawUtils.setAlign(TextAlign.LEFT);
-			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 120 + 200, y + 2, "" + ChatColor.MEDIUM + ChatColor.WHITE + clans[resid] + " " + (team == 2 ? ChatColor.TCHAT : ChatColor.CTCHAT) + names[resid]);
+			DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 120 + 200, y + 2, "" + ChatColor.MEDIUM + ChatColor.WHITE + clans[resid] + " " + (team == 2 ? ChatColor.TCHAT : ChatColor.CTCHAT) + names[resid] /*+ StringFormat.hex(names[resid].getBytes())*/);
 			DrawUtils.enableStringBackground();
 			if (mvps > 0) {
 				DrawUtils.setAlign(TextAlign.RIGHT);
@@ -360,12 +362,12 @@ public class RankReveal extends Module {
 	}
 	
 	public void drawWeapons(int entityid, int x, int y) {
-		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * entityid);
+		long entityptr = MemoryUtils.getEntity(entityid);
 		drawWeapons(entityptr, entityid, x, y, 1f);
 	}
 	
 	public void drawWeapons(int entityid, int x, int y, float alpha) {
-		long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * entityid);
+		long entityptr = MemoryUtils.getEntity(entityid);
 		drawWeapons(entityptr, entityid, x, y, alpha);
 	}
 	
@@ -373,7 +375,8 @@ public class RankReveal extends Module {
 		drawWeapons(entityptr, entityid, x, y, 1f);
 	}
 	
-	public void drawWeapons(long entityptr, int resid, int x, int y, float alpha) {		
+	public void drawWeapons(long entityptr, int resid, int x, int y, float alpha) {	
+		if(entityptr == 0) return;
 		// String entweapons = "";
 		long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
 		// ArrayList<Integer> equipment = new ArrayList<Integer>();
@@ -385,7 +388,7 @@ public class RankReveal extends Module {
 			int weaponentindex = Engine.clientModule().readInt(entityptr + 0x3528 + 4 * (w - 1)) & 0xFFF;
 			if (weaponentindex == 0)
 				continue;
-			long weaponptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + weaponentindex * Offsets.m_dwEntityLoopDistance);
+			long weaponptr = MemoryUtils.getEntity(weaponentindex);
 			if (weaponptr == 0)
 				continue;
 

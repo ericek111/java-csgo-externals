@@ -9,6 +9,7 @@ import com.jogamp.opengl.glu.GLU;
 
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.ProfilerUtil;
 
 public class JOGL2Renderer implements GLEventListener {
 
@@ -29,7 +30,7 @@ public class JOGL2Renderer implements GLEventListener {
 			}
 			while (Client.theClient.isRunning) {
 				try {
-					Thread.sleep(1);
+					Thread.sleep(2);
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
@@ -45,19 +46,31 @@ public class JOGL2Renderer implements GLEventListener {
 	});
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
+	public void display(GLAutoDrawable drawable) {		
 		if (!Client.theClient.isRunning)
 			return;
+		
 		final GL2 gl = drawable.getGL().getGL2();
-
+		if(Engine.isInGame != 6) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
+			gl.glClearColor(0f, 0f, 0f, 0f);
+			gl.glFlush();
+			return;
+		}
+		
+		ProfilerUtil.start();
 		init2D(drawable, gl);
 		Client.theClient.eventHandler.onUIRender();
 		gl.glFlush();
-
+		
+		//ProfilerUtil.measure("2D render");
 		init3D(drawable, gl);
 		Client.theClient.eventHandler.onWorldRender();
 		gl.glFlush();
-
+		
+		//ProfilerUtil.measure("3D render");
 		this.needsDataUpdate = true;
 	}
 

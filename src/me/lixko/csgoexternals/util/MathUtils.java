@@ -2,7 +2,7 @@ package me.lixko.csgoexternals.util;
 
 public class MathUtils {
 
-	public static double M_RADPI = 180 / Math.PI;
+	public static double M_RADPI = 180f / Math.PI;
 
 	public static float[] calculateAngle(float[] a, float[] b) {
 		if (a.length > 2 && b.length > 2) {
@@ -53,10 +53,14 @@ public class MathUtils {
 			angles[0] = 89.0f;
 		if (angles[0] > 89.0f)
 			angles[0] = 89.0f;
-		if (angles[1] < -180.0f)
+		while (angles[1] < -180.0f)
 			angles[1] += 360.0f;
-		if (angles[1] > 180.0f)
+		while (angles[1] > 180.0f)
 			angles[1] -= 360.0f;
+		while (angles[2] < -180.0f)
+			angles[2] += 360.0f;
+		while (angles[2] > 180.0f)
+			angles[2] -= 360.0f;
 		return angles;
 	}
 
@@ -225,7 +229,7 @@ public class MathUtils {
 	}
 
 	public static float[] VectorAngles(float[] dir) {
-		float[] angles = new float[2];
+		float[] angles = new float[3];
 		double hyp = Math.sqrt((dir[0] * dir[0]) + (dir[1] * dir[1]));
 		angles[0] = (float) (Math.atan(dir[2] / hyp) * M_RADPI);
 		angles[1] = (float) (Math.atan(dir[1] / dir[0]) * M_RADPI);
@@ -235,11 +239,11 @@ public class MathUtils {
 	}
 
 	public static float[] CalcAngle(float[] playerpos, float[] enemypos) {
-		float[] aim = new float[2];
+		float[] aim = new float[3];
 		float[] delta = csubtract(playerpos, enemypos);
-		double hyp = Math.sqrt((delta[0] * delta[0]) + (delta[1] * delta[1]));
-		aim[0] = (float) (Math.atan(delta[2] / hyp) * M_RADPI);
-		aim[1] = (float) (Math.atan(delta[1] / delta[0]) * M_RADPI);
+		double hyp = Math.sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
+		aim[0] = (float) (Math.atan(delta[2] / hyp) * 180f / Math.PI);
+		aim[1] = (float) (Math.atan(delta[1] / delta[0]) * 180f / Math.PI);
 		if (delta[0] >= 0.0)
 			aim[1] += 180.0f;
 		return aim;

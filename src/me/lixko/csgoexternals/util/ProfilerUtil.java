@@ -9,12 +9,11 @@ public class ProfilerUtil {
 	}
 
 	public static void measure(String text) {
-		System.out.println(text);
-		if(true) return;
+		//System.out.println(text);
 		if (firstnanos.get() == 0) {
 			firstnanos.set(System.nanoTime());
 			lastnanos.set(System.nanoTime());
-			System.out.println("[PROFILER] Started measurement.");
+			//System.out.println("[PROFILER] Started measurement.");
 			return;
 		}
 

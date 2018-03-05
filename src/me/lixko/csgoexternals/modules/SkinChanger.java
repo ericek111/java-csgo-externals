@@ -6,6 +6,7 @@ import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.BaseAttributableItem;
+import me.lixko.csgoexternals.util.MemoryUtils;
 
 public class SkinChanger extends Module {
 
@@ -25,7 +26,7 @@ public class SkinChanger extends Module {
 						int weaponentindex = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3528 + 4 * (w - 1)) & 0xFFF;
 						if (weaponentindex == 0)
 							continue;
-						long weaponptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + weaponentindex * Offsets.m_dwEntityLoopDistance);
+						long weaponptr = MemoryUtils.getEntity(weaponentindex);
 						if (weaponptr == 0)
 							continue;
 						Engine.clientModule().read(weaponptr + 0x34c0, itemobjbuf);

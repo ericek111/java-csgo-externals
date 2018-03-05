@@ -9,11 +9,12 @@ import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.structs.VectorMem;
 
 public class LocalPlayerPosition {
-	private VectorMem lpvec = new VectorMem();
+	public VectorMem lpvec = new VectorMem();
 	private MemoryBuffer lpvecbuf = new MemoryBuffer(lpvec.size());
 	private float pos[] = new float[3], viewoffset[] = new float[3], vieworigin[] = new float[3];
-	private float pitch, yaw;
+	private float pitch, yaw, origyaw;
 	public int fov, defaultfov;
+	private float[] viewangles = new float[3], viewpunch = new float[3], aimpunch = new float[3];
 
 	public LocalPlayerPosition() {
 		lpvec.setSource(lpvecbuf);
@@ -25,19 +26,28 @@ public class LocalPlayerPosition {
 		if(lpobstarget == Const.ENT_ENTRY_MASK) {
 			lpaddr = Offsets.m_dwLocalPlayer;
 		} else {
-			lpaddr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * lpobstarget);
+			lpaddr = MemoryUtils.getEntity(lpobstarget);
 		}
 		
 		if(true) {
 			Engine.clientModule().read(lpaddr + Netvars.CBaseEntity.m_vecOrigin, lpvec.size(), lpvecbuf);
-			pos = lpvec.getVector();
+			lpvec.copyTo(pos);
+			
+			Engine.clientModule().read(lpaddr + 0x3758, lpvec.size(), lpvecbuf);
+			lpvec.copyTo(viewpunch);
+			
+			Engine.clientModule().read(lpaddr + 0x3764, lpvec.size(), lpvecbuf);
+			lpvec.copyTo(aimpunch);
+			
 			Engine.clientModule().read(lpaddr + Offsets.m_vecViewOffset, lpvec.size(), lpvecbuf);
 			viewoffset = lpvec.getVector();
 			vieworigin = MathUtils.cadd(pos, viewoffset);
-
-			Engine.clientModule().read(lpaddr + Netvars.CBaseEntity.m_angRotation, lpvecbuf.size(), lpvecbuf);
+			
+			Engine.clientModule().read(Offsets.m_dwClientState + Offsets.m_vecViewAngles, lpvecbuf.size(), lpvecbuf);
+			origyaw = lpvec.y.getFloat();
 			yaw = 90 - lpvec.y.getFloat();
 			pitch = lpvec.x.getFloat();
+			lpvec.copyTo(viewangles);
 		} else {
 			Engine.clientModule().read(Offsets.g_vecCurrentRenderOrigin, lpvec.size(), lpvecbuf);
 			vieworigin = lpvec.getVector();
@@ -86,6 +96,18 @@ public class LocalPlayerPosition {
 
 	public float getYaw() {
 		return this.yaw;
+	}
+
+	public float[] getViewAngles() {
+		return this.viewangles;
+	}
+	
+	public float[] getViewPunch() {
+		return this.viewpunch;
+	}
+	
+	public float[] getAimPunch() {
+		return this.aimpunch;
 	}
 
 }

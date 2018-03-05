@@ -9,6 +9,7 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
@@ -42,7 +43,7 @@ public class Spectators extends Module {
 	spectators.clear();
 	int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
 	for (int i = 1; i < 64; i++) {
-		long entptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * i);
+		long entptr = MemoryUtils.getEntity(i);
 		if (rankreveal.res.m_bAlive.getBoolean(i))
 			continue;
 		if (entptr == 0 || entptr == Offsets.m_dwLocalPlayer)

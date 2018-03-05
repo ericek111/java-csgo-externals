@@ -15,6 +15,7 @@ import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MathUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.bsp.BSPParser;
 import me.lixko.csgoexternals.util.bsp.BSPParser.Entity;
@@ -27,9 +28,10 @@ public class VisibleTest extends Module {
 	
 	@Override
 	public void onWorldRender() {
+		if(true) return;
 		if (!Client.theClient.isRunning)
 			return;
-		if(true) return;
+		
 		for (Entity e : Engine.bsp.pEntities) {
 			if (e.properties.get("classname").equals("info_player_terrorist")) {
 				float[] origin = BSPParser.GetCoordsFromString(e.properties.get("origin"));
@@ -89,7 +91,7 @@ public class VisibleTest extends Module {
 		entvec.setSource(vecbuf);
 		DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
 		for (int i = 1; i < 64; i++) {
-			long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + i * Offsets.m_dwEntityLoopDistance);
+			long entityptr = MemoryUtils.getEntity(i);
 			if (entityptr == 0)
 				continue;
 			if (entityptr == Offsets.m_dwLocalPlayer)
@@ -129,7 +131,7 @@ public class VisibleTest extends Module {
 			int boneIndex = studiohdr.boneindex.getInt();
 			DrawUtils.setColor(0x00FFFFFF);
 			for (int bi = 0; bi < numBones; bi++) {
-				float[] bone1 = AimBot.GetBonePosition(entityptr, bi);
+				float[] bone1 = AimBotGhetto.GetBonePosition(entityptr, bi);
 				Engine.engineModule().read(studioModel + boneIndex + bi * studiobone.size(), studiobonebuf);
 				int parentBone = studiobone.parent.getInt();
 				if (parentBone == -1 || (studiobone.flags.getInt() & Studio.BONE_USED_BY_HITBOX) == 0)
@@ -140,7 +142,7 @@ public class VisibleTest extends Module {
 					DrawUtils.setTextColor(0xFF0000FF);
 				}
 				DrawUtils.draw3DString(parentBone + "", bone1[0], bone1[2], -bone1[1], pitch, roll, scale*0.4f);
-				float[] bone2 = AimBot.GetBonePosition(entityptr, parentBone);
+				float[] bone2 = AimBotGhetto.GetBonePosition(entityptr, parentBone);
 				DrawUtils.drawLine(bone1, bone2);
 			}
 			/*boolean isEntityVisible = Engine.bsp.isVisible(DrawUtils.lppos.getViewOrigin(), entvec.getVector());

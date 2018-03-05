@@ -6,6 +6,7 @@ import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.TextAlign;
 
 public class NameHUD extends Module {
@@ -62,7 +63,7 @@ public class NameHUD extends Module {
 		}
 
 		if (inCross > 0) {
-			long cEnt = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * inCross);
+			long cEnt = MemoryUtils.getEntity(inCross);
 			lastspottedentptr = cEnt;
 			if (cEnt > 0) {
 				int cHealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
@@ -76,9 +77,7 @@ public class NameHUD extends Module {
 						lastspottedteam = Engine.clientModule().readInt(cEnt + Netvars.CBaseEntity.m_iTeamNum);
 						lastspottedhealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 					}
-
 				}
-
 			}
 		}
 	}

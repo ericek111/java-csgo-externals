@@ -308,7 +308,7 @@ public class StringFormat {
 	public static String dump(float[] arr) {
 		String str = "";
 		for (int i = 0; i < arr.length; i++) {
-			str += "[" + i + "] " + arr[i] + ", ";
+			str += String.format("[%d] %.3f, ", i, arr[i]);
 		}
 		return str;
 	}

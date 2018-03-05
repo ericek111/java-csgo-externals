@@ -70,8 +70,14 @@ public final class Engine {
 
 	public static ThreadLocal<Display> dpy = ThreadLocal.withInitial(() -> x11.XOpenDisplay(null));
 	public static BSPRenderer bsp;
+	
+	public static MemoryBuffer entlistbuffer = new MemoryBuffer(Long.BYTES * 4 * 65);
+	public static long tick = 0;
+	public static int isInGame = 0;
+	public static String[] cmdargs;
 
 	public void init(String[] args) throws InterruptedException, IOException {
+		this.cmdargs = args;
 		/*localprocess = Processes.byName("csgo.exe");
 		localprocess.initModules();
 		Module clientdll = localprocess.findModule("client.dll");
@@ -86,16 +92,17 @@ public final class Engine {
 			Thread.sleep(500);
 		}*/
 		
-		Injector inj = new Injector();
-		inj.doStuff();
-		System.exit(0);
-		
 		boolean injector = false;
 		for (String arg : args) {
 			if (arg.equalsIgnoreCase("-inj"))
 				injector = true;
 		}
-
+		
+		if (injector) {
+			Injector inj = new Injector();
+			inj.doStuff();
+			System.exit(0);
+		}
 		if (injector) {
 
 			ProfilerUtil.start();
@@ -379,36 +386,18 @@ public final class Engine {
 		Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
 		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
 		Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
-		
+		Client.theClient.commandManager.executeCommand("bind HOME testmodule forceupdate");
 		//Client.theClient.commandManager.executeCommand("bind END testmodule toshowinc");
-		
-		/*
-		Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
-		int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Offsets.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
-		long entptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + Offsets.m_dwEntityLoopDistance * lpobstarget);
-		long lastinair = 0;
-		boolean printedbhop = false;
-		while (Client.theClient.isRunning) {
-			long m_fFlags = Engine.clientModule().readLong(entptr + Offsets.m_fFlags);
-			//System.out.println(Long.toBinaryString(m_fFlags));
-			if ((m_fFlags & Const.FL_ONGROUND) > 0) {
-				//System.out.println(".");
-				lastinair = System.nanoTime();
-				printedbhop = false;
-			} else {
-				System.out.println(System.nanoTime());
-				if(!printedbhop) {
-					printedbhop = true;
-					System.out.println(System.nanoTime() - lastinair);
-				}
-
-			}
-			Thread.sleep(0, 1000);
-		}*/
 		
 		while (Client.theClient.isRunning) {
 			last_tick = System.nanoTime();
-
+			//System.out.println(last_tick);
+			isInGame = engineModule.readInt(Offsets.m_dwClientState + Offsets.m_bIsInGame);
+			if(isInGame != 6) {
+				Thread.sleep(1000);
+				continue;
+			}
+			
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			if (Offsets.m_dwLocalPlayer < 1) {
 				Thread.sleep(1000);
@@ -425,6 +414,9 @@ public final class Engine {
 			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3998);
 			if (DrawUtils.lppos.fov == 0)
 				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3AF4);
+			
+			if (tick % 1000 == 0)
+				Engine.clientModule.read(Offsets.m_dwEntityList, entlistbuffer);
 
 			if (tps_sleep > 0)
 				Thread.sleep(tps_sleep);
@@ -439,7 +431,7 @@ public final class Engine {
 			// System.out.println("Looping! " + Math.floor(adjust*1e5)/1e5 + " /
 			// " + tps_sleep + " - " + (System.nanoTime() - last_tick) + " > " +
 			// ((System.nanoTime() - last_tick) / 1e9));
-
+			tick++;
 		}
 
 		Client.theClient.shutdownClient();
@@ -520,7 +512,7 @@ public final class Engine {
 		animator.start();        
 		
 		
-		Pixmap pmap = x11.XCreatePixmap(dpy.get(), xwin, window.getWidth(), window.getHeight(), 1);
+		/*Pixmap pmap = x11.XCreatePixmap(dpy.get(), xwin, window.getWidth(), window.getHeight(), 1);
 		XGCValues shape_xgcv = new XGCValues();
 		GC shape_gc = x11.XCreateGC(dpy.get(), pmap, new NativeLong(0), shape_xgcv);
 		x11.XSetForeground(dpy.get(), shape_gc, new NativeLong(0)); // 1 to paint
@@ -528,7 +520,17 @@ public final class Engine {
 		//xext.XShapeCombineMask(dpy.get(), xwin, Xext.ShapeInput, 0, 0, pmap, Xext.ShapeSet);
 		
 		x11.XFreePixmap(dpy.get(), pmap);
-		x11.XFreeGC(dpy.get(), shape_gc);
+		x11.XFreeGC(dpy.get(), shape_gc);*/
+		
+		
+		
+		/*XGCValues shape_xgcv = new XGCValues();
+		Pixmap imap = x11.XCreatePixmap(dpy.get(), xwin, 100, 100, 0);
+		GC igc = x11.XCreateGC(dpy.get(), imap, new NativeLong(0), shape_xgcv);
+		x11.XSetForeground(dpy.get(), igc, new NativeLong(1)); // 1 to paint
+		x11.XFillRectangle(dpy.get(), imap, igc, 0, 0, 100, 100);
+
+		xext.XShapeCombineMask(dpy.get(), xwin, Xext.ShapeInput, 0, 0, imap, Xext.ShapeSet);*/
 
 		
 		 // XAllowEvents(g_display, AsyncBoth, CurrentTime);
@@ -566,6 +568,11 @@ public final class Engine {
 
 	public static Module engineModule() {
 		return engineModule;
+	}
+	
+	public static boolean IsInGame() {
+		//return true;
+		return isInGame == 6;
 	}
 
 	private static void waitUntilFound(String message, Clause clause) {

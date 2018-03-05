@@ -1,6 +1,11 @@
 package me.lixko.csgoexternals.offsets;
 
+import java.util.Arrays;
+
+import com.github.jonatino.misc.MemoryBuffer;
+
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 
 public final class Offsets {
@@ -19,7 +24,7 @@ public final class Offsets {
 	public static String GAMERULES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
 	public static String CLIENTCLASSHEAD_SIGNATURE = "44 89 E8 BA 01 00 00 00 44 89 E9 C1 F8 05 D3 E2 48 98 41 09 94 82 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 8B 53 14 48 8B 00 48 85 C0"; // +26 GAA
 
-	public static String GAMEDIRECTORY_SIGNATURE = "F6 48 81 EC 28 02 00 00 48 8B 3D ?? ?? ?? ?? E8";
+	public static String GAMEDIRECTORY_SIGNATURE = "55 BA 04 01 00 00 48 89 E5 48 81 EC 10 01 00 00 48 8B 3D ?? ?? ?? ?? 48 8D B5 F0 FE FF FF";
 	public static String ENGINEPOINTER1_SIGNATURE = "48 8D 3D ?? ?? ?? ?? 31 F6 48 89 E5 5D E9 8D FF"; // g_SplitScreenMgr
 	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 38 48 8B 07 48 8B";
 	public static String SPLITSCREENMGR_SIGNATURE = "55 89 FE 48 8D 3D ?? ?? ?? ?? 48 89 E5 5D E9 AD FF FF FF";
@@ -44,11 +49,13 @@ public final class Offsets {
 	public static long m_dwGlobalVarsPointer;
 	public static long m_dwGameRules;
 	public static long m_dwClientClassHead;
+	public static long m_dwServerDetail;
+	public static long m_dwViewAngleBasePointer;
 
-	public static long m_dwEnginePointer;
+	public static long m_dwClientState;
 	public static long m_dwModelCache;
 	//public static long m_szGameDirectory;
-	public static String gameDirectory;
+	public static String modDirectory;
 
 	// Globals
 	public static long g_vecCurrentRenderOrigin;
@@ -74,20 +81,39 @@ public final class Offsets {
 	public static long m_Local = 0x36f0;
 	public static long m_iLastCrosshairIndex = 0xBBD4;
 	public static long m_iCrosshairIndex = 0xBBB8;
+	public static long m_vecViewAngles = 0x8E20;
 
-	public static long m_nDeltaTick = 0x174;
+	public static long m_nDeltaTick = 0x20C;
+	public static long m_szMapFile = 0x220;
+	public static long m_bIsInGame = 0x1A0;
 	
 	public static NetvarDumper netvars = new NetvarDumper();
 
 	public static void load() {
+		//Engine.clientModule().write(Engine.clientModule().start() + 0x789f2B, new MemoryBuffer(new byte[] { (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90 }));		
+		long clientclassheadlea = PatternScanner.getAddressForPattern(Engine.clientModule(), CLIENTCLASSHEAD_SIGNATURE) + 26;
+		long clientclassheadptr = Engine.clientModule().GetAbsoluteAddress(clientclassheadlea, 3, 7);
+		m_dwClientClassHead = Engine.clientModule().readLong(clientclassheadptr);
+		m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
 		
-		/*long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), SPLITSCREENMGR_SIGNATURE);
-		long g_SplitScreenMgr = Engine.engineModule().GetAbsoluteAddress(foundSplitScreenMgrlea, 6, 10);
-		System.out.println(StringFormat.hex(g_SplitScreenMgr));
-		long clientstateptr = Engine.engineModule().readLong(g_SplitScreenMgr + 8) + 8;
-		long clientstate = Engine.engineModule().readLong(clientstateptr);
-		System.out.println(StringFormat.hex(clientstate));
-		boolean ispaused = Engine.engineModule().readBoolean(clientstate + 0x220);
+		netvars.initialize();
+		
+		for (String arg : Engine.cmdargs) {
+			if (arg.equalsIgnoreCase("-netvars"))
+				System.exit(0);
+		}
+		
+		// set $engine_addr = 0x7fc51e24f000
+		// grep -m1 -ioP '[\da-f]+(?=-.+engine_client\.so)' /proc/$(pidof csgo_linux64)/maps
+		// set $unk = (int64_t(*)(int64_t)) $engine_addr+0x2FBC70
+		// call $unk(-1)
+		// p/f *($unk(0)+0x8E20)
+		// p/f *(((int64_t(*)(int64_t)) $engine_addr+0x2FBC70)(0)+0x8E20)
+		long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), SPLITSCREENMGR_SIGNATURE) + 3;
+		long g_SplitScreenMgr = Engine.engineModule().GetAbsoluteAddress(foundSplitScreenMgrlea, 3, 7);		
+		m_dwClientState = Engine.engineModule().readLong(g_SplitScreenMgr + 8) + 8;
+		
+		/*boolean ispaused = Engine.engineModule().readBoolean(clientstate + 0x220);
 		
 		int ingame = Engine.engineModule().readInt(clientstate + 0x1A0);
 		int maxclients = Engine.engineModule().readInt(clientstate + 0x3A8);
@@ -164,16 +190,11 @@ public final class Offsets {
 		long gamerulesptr = Engine.clientModule().readLong(gamerulesptrptr);
 		m_dwGameRules = Engine.clientModule().readLong(gamerulesptr);
 
-		/*long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 8;
+		long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 16;
 		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
 		long m_szGameDirectory = Engine.engineModule().readLong(gamedirptr);
-		gameDirectory = Engine.engineModule().readString(m_szGameDirectory, 256);*/
-		//System.out.println(gameDirectory);
-		
-		long clientclassheadlea = PatternScanner.getAddressForPattern(Engine.clientModule(), CLIENTCLASSHEAD_SIGNATURE) + 26;
-		long clientclassheadptr = Engine.clientModule().GetAbsoluteAddress(clientclassheadlea, 3, 7);
-		m_dwClientClassHead = Engine.clientModule().readLong(clientclassheadptr);
-		m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
+		modDirectory = Engine.engineModule().readString(m_szGameDirectory, 256);
+		// System.out.println(modDirectory);
 		
 		long setupcurrentview = PatternScanner.getAddressForPattern(Engine.clientModule(), SETUPCURRENTVIEW_SIGNATURE);
 		g_matCurrentCamInverse = Engine.clientModule().GetAbsoluteAddress(setupcurrentview + 2, 2, 6);
@@ -181,23 +202,14 @@ public final class Offsets {
 		//g_vecCurrentRenderAngles = Engine.clientModule().GetAbsoluteAddress(setupcurrentview + 81, 2, 6);
 		g_vecCurrentRenderAngles = Engine.clientModule().GetAbsoluteAddress(setupcurrentview - 0x70 + 1, 3, 7);
 		
-		
 		//long dunno1 = PatternScanner.getAddressForPattern(Engine.clientModule(), "01 89 05 DD 68 BF 01 8B 83 C8 00 00 00 89 05 ?? ?? ?? ?? 8B 83 CC 00 00 00 89 05 ?? ?? ?? ?? 8B 83 D0 00 00 00 89 05 ?? ?? ?? ?? 8B 83 D4 00 00 00 89 05 ?? ?? ?? ?? 8B  83 D8 00 00 00 89 05 0D");
 		//g_vecCurrentRenderOrigin = Engine.clientModule().GetAbsoluteAddress(dunno1 + 15, 2, 6);
 		//g_vecCurrentRenderAngles = Engine.clientModule().GetAbsoluteAddress(setupcurrentview + 81, 2, 6);
 		//g_vecCurrentRenderAngles = Engine.clientModule().GetAbsoluteAddress(dunno1 + 51, 2, 6);
 		
-		System.out.println("g_matCurrentCamInverse: " + StringFormat.hex(g_matCurrentCamInverse));
-		System.out.println("g_vecCurrentRenderOrigin: " + StringFormat.hex(g_vecCurrentRenderOrigin));
-		System.out.println("g_vecCurrentRenderAngles: " + StringFormat.hex(g_vecCurrentRenderAngles));
+		//System.out.println("g_matCurrentCamInverse: " + StringFormat.hex(g_matCurrentCamInverse));
+		//System.out.println("g_vecCurrentRenderOrigin: " + StringFormat.hex(g_vecCurrentRenderOrigin));
+		//System.out.println("g_vecCurrentRenderAngles: " + StringFormat.hex(g_vecCurrentRenderAngles));
 		
-		/*while(g_matCurrentCamInverse > 0) {
-			float angle1 = Engine.clientModule().readFloat(g_vecCurrentRenderAngles+4);
-			System.out.println(angle1);
-		}*/
-		//System.exit(0);
-		netvars.initialize();
-
 	}
-
 }

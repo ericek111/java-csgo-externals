@@ -10,6 +10,7 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.CSPlayerResource;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.TextAlign;
 import me.lixko.csgoexternals.util.XKeySym;
 
@@ -39,7 +40,7 @@ public class AutoJoinCT extends Module {
 					int tCount = 0, ctCount = 0;
 					
 					for(int i = 1; i < 64; i++) {
-						long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + i * Offsets.m_dwEntityLoopDistance);
+						long entityptr = MemoryUtils.getEntity(i);
 						if(entityptr == 0 || Offsets.m_dwLocalPlayer == entityptr) continue;
 						
 						int t = Engine.clientModule().readInt(entityptr + Netvars.CBaseEntity.m_iTeamNum);

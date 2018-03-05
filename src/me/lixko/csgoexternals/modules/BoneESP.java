@@ -9,6 +9,7 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.Studio;
 import me.lixko.csgoexternals.structs.Mstudiobone_t;
 import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
 
 public class BoneESP extends Module {
 
@@ -25,7 +26,7 @@ public class BoneESP extends Module {
 		public void run() {
 			while (Client.theClient.isRunning) {
 				try {
-					Thread.sleep(20);
+					Thread.sleep(15);
 					if (!thismodule.isToggled() || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
@@ -71,7 +72,7 @@ public class BoneESP extends Module {
 		int procMutex = (bonesBufMutex + 1) % bonesBuf.length;
 		bonesBuf[procMutex] = new float[64][Studio.MAXSTUDIOBONES][2][3];
 		for (int i = 1; i < 64; i++) {
-			long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + i * Offsets.m_dwEntityLoopDistance);
+			long entityptr = MemoryUtils.getEntity(i);
 			if (entityptr == 0)
 				continue;
 			if (entityptr == Offsets.m_dwLocalPlayer)
@@ -103,13 +104,13 @@ public class BoneESP extends Module {
 			int[] studioHdrData = Engine.engineModule().read(studioModel + 0x9C, 2 * Integer.BYTES).getIntArray(0, 2);
 
 			for (int bi = 0; bi < studioHdrData[0]; bi++) {
-				bonesBuf[procMutex][i][bi][0] = AimBot.GetBonePosition(entityptr, bi);
+				bonesBuf[procMutex][i][bi][0] = AimBotGhetto.GetBonePosition(entityptr, bi);
 				int parentBone = Engine.engineModule().readInt(studioModel + studioHdrData[1] + bi * studiobone.size() + 4);
 				int flags = Engine.engineModule().readInt(studioModel + studioHdrData[1] + bi * studiobone.size() + 0xA0);
 
 				if (parentBone == -1 || (flags & Studio.BONE_USED_BY_HITBOX) == 0 || parentBone > Studio.MAXSTUDIOBONES)
 					continue;
-				bonesBuf[procMutex][i][bi][1] = AimBot.GetBonePosition(entityptr, parentBone);
+				bonesBuf[procMutex][i][bi][1] = AimBotGhetto.GetBonePosition(entityptr, parentBone);
 			}
 		}
 		bonesBufMutex = procMutex;

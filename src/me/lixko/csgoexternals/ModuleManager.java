@@ -20,14 +20,17 @@ public class ModuleManager {
 
 	public void registerModules() {
 		registerModule(new AimBot());
+		registerModule(new AimBotGhetto());
 		registerModule(new AutoDefuse());
 		// registerModule(new AutoPlant());
 		registerModule(new Bunnyhop());
 		registerModule(new DisablePP());
+		registerModule(new DownloadFixer());
 		registerModule(new FOVChanger());
 		registerModule(new Glow());
 		registerModule(new NoFlash());
 		registerModule(new NoHands());
+		registerModule(new RCS());
 		registerModule(new SkinChanger());
 		registerModule(new TestModule());
 
