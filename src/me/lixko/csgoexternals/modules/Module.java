@@ -87,6 +87,9 @@ public class Module {
 	public void onRegister() {
 	}
 
+	public void onPreLoop() {		
+	}
+	
 	public void onLoop() {
 	}
 

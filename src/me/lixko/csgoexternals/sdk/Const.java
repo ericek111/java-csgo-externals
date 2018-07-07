@@ -1,6 +1,8 @@
 package me.lixko.csgoexternals.sdk;
 
 public class Const {
+	public static final int MAXPLAYERS = 64;
+	
 	// \(\s*([0-9]*)\s*<*\s([0-9]*)\s\)
 	// (#define)\s*(\w*)\s*([(0-9 <\-*+/'|)\w]*) > public static final int $2 = $3;
 	// (\w*)\s*=\s*([0-9]*), > $1,

@@ -20,7 +20,7 @@ public class NetvarDumper {
 	
 	public static boolean DUMP = true;
 	public static boolean JAVASTYLE = true;
-	String packagename = this.getClass().getPackage().getName();
+	final String packagename = this.getClass().getPackage().getName();
 	String classname = "Netvars";
 	StringBuilder sb = new StringBuilder();
 	
@@ -34,11 +34,12 @@ public class NetvarDumper {
 			netvarsjava = new File(new File(FileUtil.formatPath("")).getParent() + "/src/" + packagename.replace('.', File.separatorChar) + "/" + classname + ".java");
 			appendln("package " + packagename + ";\n");
 			appendln("public class " + classname + " { ");
-	}
+		}
 		while(true) {
 			ccbs.readFrom(ccbsbuf);
 
 			String className = Engine.clientModule().readString(ccbs.m_pNetworkName, 64);
+			System.out.println(className);
 			walkTable(ccbs.m_pRecvTable, 2, className);
 
 			if(ccbs.m_pNext == 0) break;
@@ -130,7 +131,6 @@ public class NetvarDumper {
 		String tableName = Engine.clientModule().readString(table.m_pNetTableName, 64);
 		SendPropType type = SendPropType.values()[Engine.clientModule().readInt(table.m_pProps + (table.m_nProps-1) * prop.size() + 8)];
 		if(type == SendPropType.DPT_DataTable) {
-			//walkTable(table.m_pProps, level + 1, tableName);
 			walkTable(Engine.clientModule().readLong(table.m_pProps + (table.m_nProps-1) * prop.size() + 64), level + 1, tableName);
 		}
 	

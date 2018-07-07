@@ -20,13 +20,13 @@ public class DownloadFixer extends Module {
 	public void onEngineLoaded() {
 		long TheDownloadManagerMov = PatternScanner.getAddressForPattern(Engine.engineModule(), "55 48 8D 3D ?? ?? ?? ?? 48 89 E5 5D E9 BF FF FF FF") + 1;
 		downloadManager = Engine.engineModule().GetAbsoluteAddress(TheDownloadManagerMov, 3, 7);
+		//this.onPreLoop();
+		//System.exit(0);
 	}
 	
 	@Override
-	public void onLoop() {
-		if(downloadManager == 0)
-			return;
-		
+	public void onPreLoop() {
+		//System.out.println("lmao");
 		long m_activeRequest = Engine.engineModule().readLong(downloadManager + 4 * 8);
 		if(m_activeRequest == 0)
 			return;
@@ -35,8 +35,8 @@ public class DownloadFixer extends Module {
 		
 		// m_lastPercent - 9 * 8
 		// "Downloading %s%s.\n",
-        // *(_QWORD *)(a1 + 32) + 20LL,   - m_activeRequest->baseURL
-        // *(_QWORD *)(a1 + 32) + 532LL); - m_activeRequest->gamePath
+		// *(_QWORD *)(a1 + 32) + 20LL,   - m_activeRequest->baseURL
+		// *(_QWORD *)(a1 + 32) + 532LL); - m_activeRequest->gamePath
 		
 		// CUtlVector< RequestContext * > m_queuedRequests;
 		long m_queuedRequests_List = Engine.engineModule().readLong(downloadManager);
@@ -59,6 +59,8 @@ public class DownloadFixer extends Module {
 			String baseURL = Engine.engineModule().readString(curReq + 20, 256);
 			String gamePath = Engine.engineModule().readString(curReq + 532, 256);
 			
+			System.out.println(baseURL + gamePath);
+			
 			try {
 				final URL url = new URL(baseURL + gamePath);
 				final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -74,6 +76,8 @@ public class DownloadFixer extends Module {
 				
 				final InputStream in = url.openStream();
 				final Path path = Paths.get(Offsets.modDirectory + File.separator + gamePath);
+				if(path.toFile().exists())
+					path.toFile().delete();
 				Files.createDirectories(path.getParent());
 	            Files.copy(in, path);
 			    Engine.engineModule().writeInt(curReq + 8, 2);

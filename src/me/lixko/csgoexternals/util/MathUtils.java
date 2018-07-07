@@ -478,4 +478,20 @@ public class MathUtils {
 		}
 
 	}
+	
+	public static float clamp(float val, float low, float high) {
+		if(val < low)
+			return low;
+		if(val > high)
+			return high;
+		return val;
+	}
+	
+	public static double clamp(double val, double low, double high) {
+		if(val < low)
+			return low;
+		if(val > high)
+			return high;
+		return val;
+	}
 }

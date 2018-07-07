@@ -14,6 +14,7 @@ import java.util.BitSet;
 import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.sdk.DemoFormat;
 import me.lixko.csgoexternals.sdk.DemoFormat.SVC_Messages;
+import me.lixko.csgoexternals.structs.PlayerInfo;
 import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.bsp.BSPParser.Entity;
 
@@ -24,6 +25,7 @@ public class DemoParser {
 	public DemoFormat.democmdinfo_t[] cmdinfoarr = StringFormat.fill(new DemoFormat.democmdinfo_t[DemoFormat.MAX_SPLITSCREEN_CLIENTS], () -> new DemoFormat.democmdinfo_t());
 	public DemoFormat.dem_msg cmd;
 	public ArrayList<SendTable> sendTables = new ArrayList<>();
+	public PlayerInfo[] userinfoEntries = StringFormat.fill(new PlayerInfo[Const.MAXPLAYERS + 1], () -> new PlayerInfo());
 	
 	boolean demofinished = false;
 	int demotick = 0;
@@ -83,7 +85,7 @@ public class DemoParser {
 			}
 				break;
 
-			case dem_datatables: {		
+			case dem_datatables: {
 				byte[] chunk = ProtoBuf.readIBytes(stream);
 				ByteBuffer chunkbuf = ByteBuffer.wrap(chunk);
 				chunkbuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -107,55 +109,60 @@ public class DemoParser {
 					sendTables.add(sendTable);
 					//System.out.println(sendTable.netTableName);
 				}
+				
+				int serverClasses = chunkbuf.getShort();
+				int serverClassBits = (int) Math.ceil(Math.log(serverClasses) / Math.log(2.0));
+ 				System.out.println("Server classes: " + serverClasses + " / bits: " + serverClassBits);
+ 				
+ 				for(int i = 0; i < serverClasses; i++) {
+ 					int classId = chunkbuf.getShort();
+ 					if(classId != i)
+ 						throw new Exception("Invalid server class entry (" + classId + ") for " + i);
+ 					
+ 					String name = this.readCString(chunkbuf);
+ 					String dtName = this.readCString(chunkbuf);
+ 					SendTable dataTable = this.findTableByName(dtName);
+ 					if(dataTable == null) 
+ 						throw new Exception("Invalid DataTable for " + i + ": " + dtName + " in " + name);
+ 					
+ 				}
 
 			}
 				break;
 
 			case dem_stringtables: {
 				byte[] chunk = ProtoBuf.readIBytes(stream);
-				// if(true) break;
-				//ByteBuffer chunkbuf = ByteBuffer.wrap(chunk);
-				//chunkbuf.order(ByteOrder.LITTLE_ENDIAN);
-				
-				//System.out.println(chunk.length * 8);
 				ArrayDataStream chunkbuf = new ArrayDataStream(chunk);
-				
-				//System.exit(0);
+
 				int numTables = chunkbuf.get() & 0xff;
 				for(int i = 0; i < numTables; i++) {
 					//String tableName = readCString(chunkbuf);
 					String tableName = chunkbuf.getString();
 					
-					int numEntries = (chunkbuf.get() & 0xFF) | ((chunkbuf.get() & 0xFF) << 8);
-					// int numEntries = chunkbuf.getShort() & 0xffff;
-					// System.out.println(numEntries + " entries in " + tableName + " (" + i + "/" + (numTables - 1) + ") " + "   @ " + chunkbuf.bitIndex());
-					
+					int numEntries = chunkbuf.getUShort();
+					System.out.println("#" + i + ": " + tableName + " / " + numEntries);
+
 					for(int entryIndex = 0; entryIndex < numEntries; entryIndex++) {
 						String entry = chunkbuf.getString();
 						// System.out.println(" > " + entry + "   @ " + chunkbuf.bitIndex() + ", #" + entryIndex);
 						//dumpBuf(chunkbuf, 16);
+						
 						if(chunkbuf.getBitBoolean()) { // hasUserData
-							/*dumpBuf(chunkbuf, 16);
-							int lower = chunkbuf.getByte() & 0xff;
-							int upper = chunkbuf.getByte() & 0xff;
-							chunkbuf.back(8 * 2);
-							int tog = chunkbuf.getBits(16, false);
-							System.out.println(StringFormat.bin(tog) + " = " + StringFormat.hex(tog));
-							chunkbuf.back(8 * 2);
-							
-							int togc = lower | upper << 8;
-							System.out.println(StringFormat.bin(togc) + " = " + StringFormat.hex(togc));
-							
-							System.out.println(StringFormat.hex(lower) + " / " + StringFormat.hex(upper));*/
 							int userDataSize = chunkbuf.getUShort();
-							
-							// System.out.println(userDataSize + " = " + StringFormat.hex(userDataSize));
+
 							byte[] userData = new byte[userDataSize];
 							chunkbuf.get(userData);
+							
+							ByteBuffer userDataBuf = ByteBuffer.wrap(userData);
+							if(tableName.equals("userinfo")) {
+								int idx = Integer.parseInt(entry);
+								//if(!userinfo[idx].checkBounds(userDataBuf))
+								//	throw new Exception("Buffer underflow, needs " + userinfo[idx].size() + ", remaining " + userDataBuf.remaining());
+								userinfoEntries[idx].readFrom(userDataBuf, ByteOrder.BIG_ENDIAN);
+							}
 						}
 						// System.out.println(" P " + entry + "   @ " + chunkbuf.bitIndex() + ", #" + entryIndex);
 					}
-					// System.out.println(".@ " + chunkbuf.bitIndex());
 
 					// handle client-side entries
 					if(chunkbuf.getBitBoolean()) {
@@ -172,13 +179,9 @@ public class DemoParser {
 								byte[] userData = new byte[userDataSize];
 								chunkbuf.get(userData);
 							}
-							
 							// System.out.println(" @ " + chunkbuf.bitIndex() + ", #" + x);
-
 						}
 					}
-					//dumpBuf(chunkbuf, 16);
-					//if(i >= 0) System.exit(0);
 				}
 			}
 				break;
@@ -236,14 +239,14 @@ public class DemoParser {
 
 		int start = stream.position();
 		byte[] chunk = ProtoBuf.readIBytes(stream);
-		if(true) return;
+		//if(true) return;
 		ByteBuffer chunkbuf = ByteBuffer.wrap(chunk);
 		
 		while(chunkbuf.remaining() > 0) {
 			int cmd = ProtoBuf.readVarInt32(chunkbuf);
 			
 			byte[] byteArraydata = ProtoBuf.readVBytes(chunkbuf);
-			System.out.println(cmd);
+			System.out.println(cmd + " / " + byteArraydata.length);
 			// Const.NET_MAX_PAYLOAD
 		}
 		//if (size > Const.NET_MAX_PAYLOAD)
@@ -314,6 +317,14 @@ public class DemoParser {
 			else
 				System.out.print(' ');
 		}
+	}
+	
+	public SendTable findTableByName(String name) {
+		for(SendTable st : sendTables) {
+			if(st.netTableName.equals(name))
+				return st;
+		}
+		return null;
 	}
 
 }

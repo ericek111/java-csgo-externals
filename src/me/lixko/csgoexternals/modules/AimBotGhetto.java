@@ -1,7 +1,13 @@
 package me.lixko.csgoexternals.modules;
 
+import java.nio.FloatBuffer;
+
 import com.github.jonatino.misc.MemoryBuffer;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 import com.sun.jna.NativeLong;
+import com.sun.jna.platform.unix.X11;
+import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
@@ -10,16 +16,36 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.BoneList;
 import me.lixko.csgoexternals.structs.Matrix3x4Mem;
 import me.lixko.csgoexternals.structs.VectorMem;
+import me.lixko.csgoexternals.util.ChatColor;
+import me.lixko.csgoexternals.util.DrawUtils;
+import me.lixko.csgoexternals.util.GLGraph;
 import me.lixko.csgoexternals.util.MathUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
+import me.lixko.csgoexternals.util.PID;
 import me.lixko.csgoexternals.util.StringFormat;
+import me.lixko.csgoexternals.util.TextAlign;
 import me.lixko.csgoexternals.util.XKeySym;
 
 public class AimBotGhetto extends Module {
 
 	Module thismod = this;
-	AimBotMode mode = AimBotMode.NEAREST;
-	AimBotTarget target = AimBotTarget.BOTH;
+	AimBotMode mode = AimBotMode.CROSSHAIR;
+	AimBotTarget target = AimBotTarget.ENEMY;
+	
+	VectorMem vecpos = new VectorMem();
+	Matrix3x4Mem matrixstr = new Matrix3x4Mem();
+	MemoryBuffer vectorbuf = new MemoryBuffer(vecpos.size());
+	MemoryBuffer vectorbuf2 = new MemoryBuffer(vecpos.size());
+	MemoryBuffer vectorbuf3 = new MemoryBuffer(vecpos.size());
+	MemoryBuffer vectorbuf4 = new MemoryBuffer(vecpos.size());
+	MemoryBuffer matrixbuf = new MemoryBuffer(matrixstr.size());
+	MemoryBuffer entityBones = new MemoryBuffer(matrixstr.size());
+	
+	PID pidX = new PID(3.0f, 7f, 0f);
+	PID pidY = new PID(3.7f, 24f, 0.11f);
+	
+	// 3 / 0 / 0.5
+	GLGraph xAngleGraph, xErrGraph, yAngleGraph, yErrGraph, xOutGraph, yOutGraph;
 
 	public static float[] GetBonePosition(long entityptr, int bone) {
 		// https://www.unknowncheats.me/forum/1779179-post3.html
@@ -34,33 +60,110 @@ public class AimBotGhetto extends Module {
 		x[2] = matrixstr.f23.getFloat();
 		return x;
 	}
-
+	
+	@Override
+	public void onEngineLoaded() {
+		vecpos.setSource(vectorbuf);
+		xAngleGraph = new GLGraph(DrawUtils.gl, 50f, 450f, 300f, 300f, 1f, 400);
+		yAngleGraph = new GLGraph(DrawUtils.gl, 50f, 250f, 300f, 300f, 0.5f, 400);
+		xErrGraph = new GLGraph(DrawUtils.gl, 50f, 450f, 300f, 300f, 1f, 400);
+		yErrGraph = new GLGraph(DrawUtils.gl, 50f, 250f, 300f, 300f, 0.5f, 400);
+		xOutGraph = new GLGraph(DrawUtils.gl, 50f, 450f, 300f, 300f, 1f, 400);
+		yOutGraph = new GLGraph(DrawUtils.gl, 50f, 250f, 300f, 300f, 0.5f, 400);
+		
+		xAngleGraph.setColor(0f, 1f, 0f, 1f);
+		yAngleGraph.setColor(0f, 1f, 0f, 1f);
+		xErrGraph.setColor(1f, 0f, 0f, 1f);
+		yErrGraph.setColor(1f, 0f, 0f, 1f);
+		xOutGraph.setColor(0f, 1f, 1f, 1f);
+		yOutGraph.setColor(0f, 1f, 1f, 1f);
+		
+		xOutGraph.setOscillationFinder(true);
+		//yOutGraph.setOscillationFinder(true);
+		
+		xOutGraph.setOscFinderThreshold(0.2f);
+		yOutGraph.setOscFinderThreshold(0.2f);
+		
+		for(int i = 0; i < xErrGraph.maxSamples(); i++) {
+			
+			//xErrGraph.putSample((float) Math.sin(((float) i / 100f) * Math.PI) * 100f);
+			//xErrGraph.putSample((float)(i * 10));
+		}
+		
+		/*for(int i = 0; i < color_data.capacity() / 3; i++) {
+			color_data.put(new float[] { 1f, 0f, 0f });
+		}*/
+		
+		/*vboIndices = temp[1];
+        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vboIndices);
+        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indices.capacity() * BufferUtil.SIZEOF_SHORT,
+                            indices, GL.GL_STATIC_DRAW);
+        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0);*/
+	}
+	
+	@Override
+	public void onUIRender() {
+		DrawUtils.setColor(0f, 0f, 0f, 0.5f);
+		DrawUtils.fillRectanglew(30f, 50f, 340f, 600f);
+		xAngleGraph.render();
+		yAngleGraph.render();
+		xOutGraph.render();
+		yOutGraph.render();
+		xErrGraph.render();
+		yErrGraph.render();
+		
+		DrawUtils.setAlign(TextAlign.RIGHT);
+		DrawUtils.setStyle(ChatColor.LARGE);
+		
+		DrawUtils.setTextColor(0xffaaa5FF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 210, DrawUtils.getScreenHeight() - 25, "P");
+		DrawUtils.setTextColor(0xffd3b6FF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 140, DrawUtils.getScreenHeight() - 25, "I");
+		DrawUtils.setTextColor(0xfdffabFF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 70, DrawUtils.getScreenHeight() - 25, "D");
+		DrawUtils.setTextColor(0xFFFFFFFF);
+		
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 300, DrawUtils.getScreenHeight() - 50, "" + (Math.round(1f / xOutGraph.getLastOscillationPeriod() * 100f) / 100f));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 260, DrawUtils.getScreenHeight() - 50, "X:");
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 300, DrawUtils.getScreenHeight() - 80, "" + (Math.round(1f / yOutGraph.getLastOscillationPeriod() * 100f) / 100f));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 260, DrawUtils.getScreenHeight() - 80, "Y:");
+		DrawUtils.setTextColor(0xFF0000FF);
+		
+		DrawUtils.setTextColor(0xffaaa5FF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 200, DrawUtils.getScreenHeight() - 50, "" + (Math.round(pidX.getP() * 100f) / 100f));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 200, DrawUtils.getScreenHeight() - 80, "" + (Math.round(pidY.getP() * 100f) / 100f));
+		DrawUtils.setTextColor(0xffd3b6FF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 130, DrawUtils.getScreenHeight() - 50, "" + (Math.round(pidX.getI() * 100f) / 100f));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 130, DrawUtils.getScreenHeight() - 80, "" + (Math.round(pidY.getI() * 100f) / 100f));
+		DrawUtils.setTextColor(0xfdffabFF);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 60, DrawUtils.getScreenHeight() - 50, "" + (Math.round(pidX.getD() * 100f) / 100f));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() - 60, DrawUtils.getScreenHeight() - 80, "" + (Math.round(pidY.getD() * 100f) / 100f));
+	}
+	
 	@Override
 	public void onLoop() {
-		if (true)
-			return;
-		VectorMem vecpos = new VectorMem();
-		Matrix3x4Mem matrixstr = new Matrix3x4Mem();
-		MemoryBuffer vectorbuf = new MemoryBuffer(vecpos.size());
-		MemoryBuffer vectorbuf2 = new MemoryBuffer(vecpos.size());
-		MemoryBuffer vectorbuf3 = new MemoryBuffer(vecpos.size());
-		MemoryBuffer vectorbuf4 = new MemoryBuffer(vecpos.size());
-		MemoryBuffer matrixbuf = new MemoryBuffer(matrixstr.size());
-		MemoryBuffer entityBones = new MemoryBuffer(matrixstr.size());
-		vecpos.setSource(vectorbuf);
-
-		if (!Client.theClient.keyboardHandler.isPressed(XKeySym.XK_F))
-			return;
-
+		//xErrGraph.putSample((float) Math.sin(((float) (loopi % 500) / 100f) * Math.PI) * 100f);
+		//xErrGraph.putSample(loopi % 100);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, vectorbuf);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, vectorbuf2);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_angRotation, vectorbuf3);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, vectorbuf4);
 		float[] posOffset = MathUtils.add(vectorbuf.getFloatArray(0, 3), vectorbuf2.getFloatArray(0, 3));
-		float[] viewAngle = vectorbuf3.getFloatArray(0, 2);
-		float[] punchAngle = vectorbuf4.getFloatArray(0, 2);
+		float[] viewAngle = vectorbuf3.getFloatArray(0, 3);
+		float[] punchAngle = vectorbuf4.getFloatArray(0, 3);
+		
+		xAngleGraph.putSample(viewAngle[0]);
+		yAngleGraph.putSample(viewAngle[1]);	
+		
+		if (!Client.theClient.keyboardHandler.isPressed(XKeySym.XK_F))
+			return;
+		
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-		System.out.println(StringFormat.dump(punchAngle));
 		float bestval = Float.MAX_VALUE;
 		float[] bestenthitbox = null;
 		int localteam = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_iTeamNum);
@@ -136,7 +239,17 @@ public class AimBotGhetto extends Module {
 		float[] anglesDir = MathUtils.VectorAngles(normalizedDir);
 		float[] clampedDir = MathUtils.ClampAngle(anglesDir);
 		float[] diffAngles = MathUtils.ClampAngle(MathUtils.add(MathUtils.subtract(viewAngle, clampedDir), punchAngle));
-		Engine.xtest.XTestFakeRelativeMotionEvent(Engine.dpy.get(), (int) diffAngles[1], -(int) diffAngles[0], new NativeLong(1));
+		//System.out.println(StringFormat.dump(diffAngles));
+		xErrGraph.putSample(diffAngles[0]);
+		yErrGraph.putSample(diffAngles[1]);
+		//float outX = pidX.step(diffAngles[0]);
+		//float outY = pidX.step(diffAngles[1]);
+		
+		float outX = MathUtils.clamp(pidX.step(diffAngles[0]), -50f, 50f);
+		float outY = MathUtils.clamp(pidY.step(diffAngles[1]), -50f, 50f);
+		xOutGraph.putSample(outX);
+		yOutGraph.putSample(outY);
+		Engine.xtest.XTestFakeRelativeMotionEvent(Engine.dpy.get(), (int) outY, -(int) outX, new NativeLong(1));
 		Engine.x11.XFlush(Engine.dpy.get());
 		// System.out.println(StringFormat.dump(diffAngles) + " / " + StringFormat.dump(viewAngle) + " " + StringFormat.dump(clampedDir));
 
@@ -144,6 +257,56 @@ public class AimBotGhetto extends Module {
 		// Engine.xtest.XTestFakeMotionEvent(Engine.dpy.get(), 30, 0, 0, new NativeLong(0));
 
 		// System.out.println(x);
+	}
+	
+	@Override
+	public void onKeyPress(KeySym sym) {
+		if (sym.intValue() == XKeySym.XK_KP_Add) {
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_7)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(0.1f, 0f, 0f);
+				else
+					pidX.changePID(0.1f, 0f, 0f);
+			} 
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_8)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(0f, 1f, 0f);
+				else
+					pidX.changePID(0f, 1f, 0f);
+			} 
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_9)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(0f, 0f, 0.1f);
+				else
+					pidX.changePID(0f, 0f, 0.1f);
+			}
+		} else if (sym.intValue() == XKeySym.XK_KP_Subtract) {
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_7)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(-0.1f, 0f, 0f);
+				else
+					pidX.changePID(-0.1f, 0f, 0f);
+			} 
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_8)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(0f, -1f, 0f);
+				else
+					pidX.changePID(0f, -1f, 0f);
+			} 
+			if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_KP_9)) {
+				if (Client.theClient.keyboardHandler.isPressed(XKeySym.XK_Control_L))
+					pidY.changePID(0f, 0f, -0.1f);
+				else
+					pidX.changePID(0f, 0f, -0.1f);
+			}
+		} else if (sym.intValue() == XKeySym.XK_f) {
+			xAngleGraph.empty();
+			yAngleGraph.empty();
+			xOutGraph.empty();
+			yOutGraph.empty();
+			xErrGraph.empty();
+			yErrGraph.empty();
+		}
 	}
 
 	public enum AimBotMode {

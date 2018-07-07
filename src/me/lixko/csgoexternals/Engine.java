@@ -390,13 +390,20 @@ public final class Engine {
 		//Client.theClient.commandManager.executeCommand("bind END testmodule toshowinc");
 		
 		while (Client.theClient.isRunning) {
+			try {
+				Client.theClient.eventHandler.onPreLoop();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				Thread.sleep(100);
+			}
+			
 			last_tick = System.nanoTime();
 			//System.out.println(last_tick);
-			isInGame = engineModule.readInt(Offsets.m_dwClientState + Offsets.m_bIsInGame);
+			/*isInGame = engineModule.readInt(Offsets.m_dwClientState + Offsets.m_bIsInGame);
 			if(isInGame != 6) {
 				Thread.sleep(1000);
 				continue;
-			}
+			}*/
 			
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			if (Offsets.m_dwLocalPlayer < 1) {
@@ -504,12 +511,16 @@ public final class Engine {
 
 		window.addGLEventListener(renderer);
 		window.setSize(1920, 1080);
+		window.setPosition(1920, 0);
+		//window.setPosition(0, 0);
 		window.setTitle("Java CS:GO externals");
 		
 		x11.XChangeWindowAttributes(dpy.get(), xwin, new NativeLong(lmask), attr);
 		window.setVisible(true);
 		// window.setAlwaysOnTop(true);
-		animator.start();        
+		animator.start();
+		
+		System.out.println("started animator");
 		
 		
 		/*Pixmap pmap = x11.XCreatePixmap(dpy.get(), xwin, window.getWidth(), window.getHeight(), 1);

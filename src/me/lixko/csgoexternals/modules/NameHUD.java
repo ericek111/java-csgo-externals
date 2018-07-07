@@ -22,7 +22,7 @@ public class NameHUD extends Module {
 
 	@Override
 	public void onUIRender() {
-		if (!this.isToggled())
+		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0)
 			return;
 		//System.out.println(DrawUtils.getScreenWidth() / 6);
 		if (lastspottedtime + 1500 < System.currentTimeMillis())

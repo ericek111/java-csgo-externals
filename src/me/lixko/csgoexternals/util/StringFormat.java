@@ -330,7 +330,7 @@ public class StringFormat {
 		if (obj instanceof Byte) {
 			result.append(Integer.toHexString((byte) obj & 0xFF));
 			return result.toString();
-		} else if (obj instanceof Character || obj instanceof String || obj instanceof Float || obj instanceof Integer) {
+		} else if (obj instanceof Character || obj instanceof String || obj instanceof Float || obj instanceof Integer || obj instanceof Long) {
 			result.append(obj);
 			return result.toString();
 		} else if (obj.getClass().isPrimitive()) {
@@ -426,6 +426,7 @@ public class StringFormat {
 				result += "null";
 			else {
 				result += dumpObj(aobj, "", level + 2, curfield, numindices);
+				//result += aobj.getClass().isPrimitive();
 			}
 			if (!numindices)
 				result += " ";

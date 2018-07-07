@@ -27,7 +27,9 @@ public final class Main {
 			if(demop) {
 				//DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/7_1_1946.dem"));
 				//DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/jb.dem"));
-				DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/jb.dem"));
+				//DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/jb07-03-2018_00-05_bug.dem"));
+				//DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/jb11-03-2018_03-00.dem"));
+				DemoParser demp = new DemoParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/hante.dem"));
 				demp.parse();
 				System.exit(0);				
 			}

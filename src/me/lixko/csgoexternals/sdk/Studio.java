@@ -1,5 +1,10 @@
 package me.lixko.csgoexternals.sdk;
 
+import com.github.jonatino.misc.MemoryBuffer;
+
+import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.util.BufferStruct;
+
 public class Studio {
 
 	public static final int STUDIO_VERSION = 48;
@@ -229,5 +234,570 @@ public class Studio {
 	public static final int STUDIO_AL_LOCAL = 0x1000; // layer is a local context sequence
 	// 0x2000
 	public static final int STUDIO_AL_POSE = 0x4000; // layer blends using a pose parameter instead of parent cycle
+	
+	// TODO: Reimplement empty methods
+	public static class Studiohdr_t extends BufferStruct {
+		public int id;
+		public int version;
+
+		public int checksum; // this has to be the same in the phy and vtx files to load!
+
+		// const char *
+		public String pszName() {
+			if (studiohdr2index > 0 && pStudioHdr2().pszName() > 0)
+				return Engine.engineModule().readString(pStudioHdr2().pszName(), 64);
+			else
+				return name;
+		}
+
+		@StringLength(size = 64, charset = "ASCII")
+		public String name = new String();
+		public int length;
+
+		public float[] eyeposition = new float[3]; // ideal eye position
+
+		public float[] illumposition = new float[3]; // illumination center
+
+		public float[] hull_min = new float[3]; // ideal movement hull size
+		public float[] hull_max = new float[3];
+
+		public float[] view_bbmin = new float[3]; // clipping bounding box
+		public float[] view_bbmax = new float[3];
+
+		public int flags;
+
+		public int numbones; // bones
+		public int boneindex;
+
+		//inline mstudiobone_t *pBone( int i ) const { Assert( i >= 0 && i < numbones); return (mstudiobone_t *)(((byte *)this) + boneindex) + i; };
+		// maps local sequence bone to global bone
+		public int RemapSeqBone(int iSequence, int iLocalBone) {
+			return 0;
+		}
+
+		// maps local animations bone to global bone
+		public int RemapAnimBone(int iAnim, int iLocalBone) {
+			return 0;
+		}
+
+		public int numbonecontrollers; // bone controllers
+		public int bonecontrollerindex;
+		//inline mstudiobonecontroller_t *pBonecontroller( int i ) const { Assert( i >= 0 && i < numbonecontrollers); return (mstudiobonecontroller_t *)(((byte *)this) + bonecontrollerindex) + i; };
+
+		public int numhitboxsets;
+		public int hitboxsetindex;
+
+		// Look up hitbox set by index
+		// mstudiohitboxset_t*
+		public long pHitboxSet(int i) {
+			//Assert(i>=0&&i<numhitboxsets);
+			return this.lastRead() + hitboxsetindex + i;
+		};
+
+		// Calls through to hitbox to determine size of specified set
+		// mstudiobbox_t *
+		public long pHitbox(int i, int set) {
+			return 0;
+			//mstudiohitboxset_t const * s = pHitboxSet(set);if(!s)return NULL;
+			//return s->pHitbox(i);
+		};
+
+		// Calls through to set to get hitbox count for set
+		public int iHitboxCount(int set) {
+			return 0;
+			//mstudiohitboxset_t const * s = pHitboxSet(set);if(!s)return 0;
+			//return s->numhitboxes;
+		};
+
+		// file local animations? and sequences
+		//private:
+		public int numlocalanim; // animations/poses
+		public int localanimindex; // animation descriptions
+		//inline mstudioanimdesc_t *pLocalAnimdesc( int i )  { if (i < 0 || i >= numlocalanim) i = 0; return (mstudioanimdesc_t *)(((byte *)this) + localanimindex) + i; };
+
+		public int numlocalseq; // sequences
+		public int localseqindex;
+		//inline mstudioseqdesc_t *pLocalSeqdesc( int i ) const { if (i < 0 || i >= numlocalseq) i = 0; return (mstudioseqdesc_t *)(((byte *)this) + localseqindex) + i; };
+
+		//public:
+		public boolean SequencesAvailable() {
+			if (numincludemodels == 0) {
+				return true;
+			}
+
+			return (GetVirtualModel() != 0);
+		}
+
+		public int GetNumSeq() {
+			return 0;
+		}
+
+		// mstudioanimdesc_t&
+		public long pAnimdesc(int i) {
+			return 0;
+		}
+
+		// mstudioseqdesc_t&
+		public long pSeqdesc(int i) {
+			return 0;
+		}
+
+		// maps seq local anim reference to global anim index
+		public int iRelativeAnim(int baseseq, int relanim) {
+			return 0;
+		}
+
+		// maps seq local seq reference to global seq index
+		public int iRelativeSeq(int baseseq, int relseq) {
+			return 0;
+		}
+
+		//private:
+		public int activitylistversion; // initialization flag - have the sequences been indexed?
+		public int eventsindexed;
+
+		//public:
+		public int GetSequenceActivity(int iSequence) {
+			return 0;
+		}
+
+		public void SetSequenceActivity(int iSequence, int iActivity) {
+		}
+
+		public int GetActivityListVersion() {
+			return 0;
+		}
+
+		public void SetActivityListVersion(int version) {
+		}
+
+		public int GetEventListVersion() {
+			return 0;
+		}
+
+		public void SetEventListVersion(int version) {
+		}
+
+		// raw textures
+		public int numtextures;
+		public int textureindex;
+		//inline mstudiotexture_t *pTexture( int i ) const { Assert( i >= 0 && i < numtextures ); return (mstudiotexture_t *)(((byte *)this) + textureindex) + i; }; 
+
+		// raw textures search paths
+		public int numcdtextures;
+		public int cdtextureindex;
+
+		// char*
+		public long pCdtexture(int i) {
+			return this.lastRead() + ((MemoryBuffer) this.source())._lastreadsrc.readInt(this.lastRead() + cdtextureindex + i);
+		};
+
+		// replaceable textures tables
+		public int numskinref;
+		public int numskinfamilies;
+		public int skinindex;
+
+		// short*
+		public long pSkinref(int i) {
+			return this.lastRead() + skinindex + i;
+		};
+
+		public int numbodyparts;
+		public int bodypartindex;
+
+		// mstudiobodyparts_t*
+		public long pBodypart(int i) {
+			return this.lastRead() + bodypartindex + i;
+		};
+
+		// queryable attachable points
+		//private:
+		public int numlocalattachments;
+		public int localattachmentindex;
+
+		// mstudioattachment_t*
+		public long pLocalAttachment(int i) {
+			//Assert( i >= 0 && i < numlocalattachments);
+			return this.lastRead() + localattachmentindex + i;
+		};
+
+		//public:
+		public int GetNumAttachments() {
+			return 0;
+		}
+
+		// const mstudioattachment_t&
+		public long pAttachment(int i) {
+			return 0;
+		}
+
+		public int GetAttachmentBone(int i) {
+			return 0;
+		}
+
+		// used on my tools in hlmv, not persistant
+		public void SetAttachmentBone(int iAttachment, int iBone) {
+		}
+
+		// animation node to animation node transition graph
+		//private:
+		public int numlocalnodes;
+		public int localnodeindex;
+		public int localnodenameindex;
+
+		// char*
+		public long pszLocalNodeName(int iNode) {
+			//Assert( iNode >= 0 && iNode < numlocalnodes);
+
+			return this.lastRead() + ((MemoryBuffer) this.source())._lastreadsrc.readInt(this.lastRead() + localnodenameindex + iNode);
+		}
+
+		// byte*
+		public long pLocalTransition(int i) {
+			//Assert( i >= 0 && i < (numlocalnodes * numlocalnodes));
+			return this.lastRead() + localnodeindex + i;
+		};
+
+		//public:
+		public int EntryNode(int iSequence) {
+			return 0;
+		}
+
+		public int ExitNode(int iSequence) {
+			return 0;
+		}
+
+		// char*
+		public long pszNodeName(int iNode) {
+			return 0;
+		}
+
+		public int GetTransition(int iFrom, int iTo) {
+			return 0;
+		}
+
+		public int numflexdesc;
+		public int flexdescindex;
+
+		// mstudioflexdesc_t*
+		public long pFlexdesc(int i) {
+			// Assert( i >= 0 && i < numflexdesc);
+			return this.lastRead() + flexdescindex + i;
+		};
+
+		public int numflexcontrollers;
+		public int flexcontrollerindex;
+
+		// mstudioflexcontroller_t* pFlexcontroller(LocalFlexController_t i)
+		public long pFlexcontroller(int i) {
+			//Assert( numflexcontrollers == 0 || ( i >= 0 && i < numflexcontrollers ) );
+			return this.lastRead() + flexcontrollerindex + i;
+		};
+
+		public int numflexrules;
+		public int flexruleindex;
+
+		// mstudioflexrule_t*
+		public long pFlexRule(int i) {
+			//Assert( i >= 0 && i < numflexrules);
+			return this.lastRead() + flexruleindex + i;
+		};
+
+		public int numikchains;
+		public int ikchainindex;
+
+		// mstudioikchain_t*
+		public long pIKChain(int i) {
+			//Assert( i >= 0 && i < numikchains);
+			return this.lastRead() + ikchainindex + i;
+		};
+
+		public int nummouths;
+		public int mouthindex;
+
+		// mstudiomouth_t*
+		public long pMouth(int i) {
+			//Assert( i >= 0 && i < nummouths);
+			return this.lastRead() + mouthindex + i;
+		};
+
+		//private:
+		public int numlocalposeparameters;
+		public int localposeparamindex;
+
+		// mstudioposeparamdesc_t*
+		public long pLocalPoseParameter(int i) {
+			//Assert( i >= 0 && i < numlocalposeparameters);
+			return this.lastRead() + localposeparamindex + i;
+		};
+
+		//public:
+		public int GetNumPoseParameters() {
+			return 0;
+		}
+
+		// const mstudioposeparamdesc_t&
+		public long pPoseParameter(int i) {
+			return 0;
+		}
+
+		public int GetSharedPoseParameter(int iSequence, int iLocalPose) {
+			return 0;
+		}
+
+		public int surfacepropindex;
+
+		// char*
+		public long pszSurfaceProp() {
+			return this.lastRead() + surfacepropindex;
+		}
+
+		// Key values
+		public int keyvalueindex;
+		public int keyvaluesize;
+
+		// const char*
+		public long KeyValueText() {
+			return keyvaluesize != 0 ? this.lastRead() + keyvalueindex : 0;
+		}
+
+		public int numlocalikautoplaylocks;
+		public int localikautoplaylockindex;
+
+		// mstudioiklock_t*
+		public long pLocalIKAutoplayLock(int i) {
+			//Assert( i >= 0 && i < numlocalikautoplaylocks);
+			return this.lastRead() + localikautoplaylockindex + i;
+		};
+
+		public int GetNumIKAutoplayLocks() {
+			return 0;
+		}
+
+		// const mstudioiklock_t &
+		public long pIKAutoplayLock(int i) {
+			return 0;
+		}
+
+		public int CountAutoplaySequences() {
+			return 0;
+		}
+
+		// int CopyAutoplaySequences( unsigned short *pOut, int outCount );
+		public int CopyAutoplaySequences(long pOut, int outCount) {
+			return 0;
+		}
+
+		// int	GetAutoplayList( unsigned short **pOut );
+		public int GetAutoplayList(long pOut) {
+			return 0;
+		}
+
+		// The collision model mass that jay wanted
+		public float mass;
+		public int contents;
+
+		// external animations, models, etc.
+		public int numincludemodels;
+		public int includemodelindex;
+
+		// mstudiomodelgroup_t *
+		public long pModelGroup(int i) {
+			//Assert( i >= 0 && i < numincludemodels);
+			return this.lastRead() + includemodelindex + i;
+		};
+
+		// implementation specific call to get a named model
+		// const studiohdr_t * indModel( void **cache, char const *modelname )
+		public long FindModel(long cache, long modelname) {
+			return 0;
+		}
+
+		// implementation specific back pointer to virtual data
+		public long virtualModel;
+
+		// virtualmodel_t*
+		public long GetVirtualModel() {
+			if (numincludemodels == 0)
+				return 0;
+			return 0;
+			// TODO: Implement from https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/mp/src/public/studio_generic_io.cpp#L15
+		}
+
+		// for demand loaded animation blocks
+		public int szanimblocknameindex;
+
+		// char*
+		public long pszAnimBlockName() {
+			return this.lastRead() + szanimblocknameindex;
+		}
+
+		public int numanimblocks;
+		public int animblockindex;
+
+		// mstudioanimblock_t*
+		public long pAnimBlock(int i) {
+			//Assert( i > 0 && i < numanimblocks);
+			return this.lastRead() + animblockindex + i;
+		};
+
+		public long animblockModel;
+
+		// byte *
+		public long GetAnimBlock(int i) {
+			return 0;
+			// return modelinfo->GetAnimBlock( this, iBlock );
+		}
+
+		public int bonetablebynameindex;
+
+		// const byte*
+		public long GetBoneTableSortedByName() {
+			return this.lastRead() + bonetablebynameindex;
+		}
+
+		// used by tools only that don't cache, but persist mdl's peer data
+		// engine uses virtualModel to back link to cache pointers
+		public long pVertexBase;
+		public long pIndexBase;
+
+		// if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+		// this value is used to calculate directional components of lighting 
+		// on static props
+		public byte constdirectionallightdot;
+
+		// set during load of mdl data to track *desired* lod configuration (not actual)
+		// the *actual* clamped root lod is found in studiohwdata
+		// this is stored here as a global store to ensure the staged loading matches the rendering
+		public byte rootLOD;
+
+		// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+		// to be set as root LOD:
+		//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+		//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+		public byte numAllowedRootLODs;
+
+		public byte unused;
+
+		public int unused4; // zero out if version < 47
+
+		public int numflexcontrollerui;
+		public int flexcontrolleruiindex;
+
+		// mstudioflexcontrollerui_t*
+		public long pFlexControllerUI(int i) {
+			//Assert( i >= 0 && i < numflexcontrollerui);
+			return this.lastRead() + flexcontrolleruiindex + i;
+		}
+
+		public float flVertAnimFixedPointScale;
+
+		public float VertAnimFixedPointScale() {
+			return ((flags & STUDIOHDR_FLAGS_VERT_ANIM_FIXED_POINT_SCALE) > 0) ? flVertAnimFixedPointScale : 1.0f / 4096.0f;
+		}
+
+		public int unused3;
+
+		// FIXME: Remove when we up the model version. Move all fields of studiohdr2_t into studiohdr_t.
+		public int studiohdr2index;
+
+		private studiohdr2_t _pStudioHdr2 = null;
+
+		// studiohdr2_t*
+		public studiohdr2_t pStudioHdr2() {
+			if (_pStudioHdr2 == null) {
+				this._pStudioHdr2 = new studiohdr2_t();
+				this._pStudioHdr2.readFrom(Engine.engineModule(), this.lastRead() + studiohdr2index);
+			}
+			return this._pStudioHdr2;
+
+		}
+
+		// Src bone transforms are transformations that will convert .dmx or .smd-based animations into .mdl-based animations
+		public int NumSrcBoneTransforms() {
+			return studiohdr2index > 0 ? pStudioHdr2().numsrcbonetransform : 0;
+		}
+
+		// const mstudiosrcbonetransform_t*
+		public long SrcBoneTransform(int i) {
+			//Assert( i >= 0 && i < NumSrcBoneTransforms());
+			return this.lastRead() + pStudioHdr2().srcbonetransformindex + i;
+		}
+
+		public int IllumPositionAttachmentIndex() {
+			return studiohdr2index > 0 ? pStudioHdr2().IllumPositionAttachmentIndex() : 0;
+		}
+
+		public float MaxEyeDeflection() {
+			return studiohdr2index > 0 ? pStudioHdr2().MaxEyeDeflection() : 0.866f;
+		} // default to cos(30) if not set
+			// mstudiolinearbone_t*
+
+		public long pLinearBones() {
+			return studiohdr2index > 0 ? pStudioHdr2().pLinearBones() : 0;
+		}
+
+		public int BoneFlexDriverCount() {
+			return studiohdr2index > 0 ? pStudioHdr2().m_nBoneFlexDriverCount : 0;
+		}
+
+		// const mstudioboneflexdriver_t*
+		public long BoneFlexDriver(int i) {
+			//Assert( i >= 0 && i < BoneFlexDriverCount() );
+			return studiohdr2index > 0 ? pStudioHdr2().pBoneFlexDriver(i) : 0;
+		}
+
+		// NOTE: No room to add stuff? Up the .mdl file format version 
+		// [and move all fields in studiohdr2_t into studiohdr_t and kill studiohdr2_t],
+		// or add your stuff to studiohdr2_t. See NumSrcBoneTransforms/SrcBoneTransform for the pattern to use.
+		public int unused2;
+
+	}
+
+	public static class studiohdr2_t extends BufferStruct {
+		// NOTE: For forward compat, make sure any methods in this struct
+		// are also available in studiohdr_t so no leaf code ever directly references
+		// a studiohdr2_t structure
+
+		public int numsrcbonetransform;
+		public int srcbonetransformindex;
+
+		public int illumpositionattachmentindex;
+
+		public int IllumPositionAttachmentIndex() {
+			return illumpositionattachmentindex;
+		}
+
+		public float flMaxEyeDeflection;
+
+		public float MaxEyeDeflection() {
+			return flMaxEyeDeflection != 0.0f ? flMaxEyeDeflection : 0.866f;
+		} // default to cos(30) if not set
+
+		public int linearboneindex;
+
+		// mstudiolinearbone_t *
+		public long pLinearBones() {
+			return linearboneindex > 0 ? this.lastRead() + linearboneindex : 0;
+		}
+
+		public int sznameindex;
+
+		// char *
+		public long pszName() {
+			return (sznameindex > 0) ? this.lastRead() + sznameindex : 0;
+		}
+
+		public int m_nBoneFlexDriverCount;
+		public int m_nBoneFlexDriverIndex;
+
+		// mstudioboneflexdriver_t *
+		public long pBoneFlexDriver(int i) {
+			//Assert( i >= 0 && i < m_nBoneFlexDriverCount );
+			return this.lastRead() + m_nBoneFlexDriverIndex + i;
+		}
+
+		public int[] reserved = new int[56];
+	};
 
 }

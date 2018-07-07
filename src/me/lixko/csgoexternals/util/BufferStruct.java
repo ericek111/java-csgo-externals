@@ -17,16 +17,20 @@ public class BufferStruct {
 	private int read = 0;
 	private int size = 0;
 	private int fieldlen = 0;
-
-	public BufferStruct() {
+	private long lastReadAddr = 0;
+	private Object source;
+	
+	public boolean checkBounds(ByteBuffer buf) {
+		return buf.remaining() >= this.countStruct();
 	}
-
+	
 	public void readFrom(ByteBuffer buf, ByteOrder order) {
 		buf.order(order);
 		readFrom(buf);
 	}
 	
 	public void readFrom(ByteBuffer buf) {
+		source = buf;
 		for (Field f : this.getClass().getDeclaredFields()) {
 			if (!Modifier.isPublic(f.getModifiers()) || f.isAnnotationPresent(SkipField.class))
 				continue;
@@ -49,7 +53,13 @@ public class BufferStruct {
 			}
 		}
 	}
-
+	
+	public void readFrom(Module module, long address) {
+		MemoryBuffer buf = new MemoryBuffer(this.size());
+		module.read(address, buf);
+		this.readFrom(buf, 0);
+	}
+	
 	public void readFrom(Module module, long address, MemoryBuffer buf) {
 		module.read(address, buf);
 		this.readFrom(buf, 0);
@@ -61,6 +71,8 @@ public class BufferStruct {
 
 	public void readFrom(MemoryBuffer buf, int offset) {
 		read = offset;
+		this.lastReadAddr = buf._lastreadaddress;
+		source = buf;
 		for (Field f : this.getClass().getDeclaredFields()) {
 			if (!Modifier.isPublic(f.getModifiers()) || f.isAnnotationPresent(SkipField.class))
 				continue;
@@ -120,7 +132,7 @@ public class BufferStruct {
 				else if (value instanceof Character)
 					Array.set(arr, i, buf.getChar());
 				else if (value instanceof Boolean)
-					Array.set(arr, i, buf.get());
+					Array.set(arr, i, buf.get() > 0);
 				else if (value instanceof Short)
 					Array.set(arr, i, buf.getShort());
 				else if (value instanceof Integer)
@@ -287,7 +299,7 @@ public class BufferStruct {
 			size += Float.BYTES;
 		else if (obj instanceof Double)
 			size += Double.BYTES;
-		else if (obj instanceof String) {
+		else if (obj instanceof String || f.getType().isAssignableFrom(String.class)) {
 			//TODO: Implement zero-terminated strings with variable length
 			if (!f.isAnnotationPresent(StringLength.class))
 				return;
@@ -296,8 +308,8 @@ public class BufferStruct {
 		} else if (BufferStruct.class.isAssignableFrom(f.getType()))
 			size += ((BufferStruct) obj).countStruct();
 		else
-			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + f.getName() + " of " + obj.getClass().getName());
-		//System.err.println(f.getName() + " > " + size);
+			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + (f != null && obj != null ? (f.getName() + " of " + obj.getClass().getName()) : ""));
+		// System.err.println(f.getName() + " > " + size);
 	}
 
 	public void readField(Field f, ByteBuffer buf) throws IllegalArgumentException, IllegalAccessException {
@@ -316,7 +328,7 @@ public class BufferStruct {
 		else if (obj instanceof Character)
 			f.set(this, buf.getChar());
 		else if (obj instanceof Boolean)
-			f.set(this, buf.get());
+			f.set(this, buf.get() > 0);
 		else if (obj instanceof Short)
 			f.set(this, buf.getShort());
 		else if (obj instanceof Integer)
@@ -327,7 +339,7 @@ public class BufferStruct {
 			f.set(this, buf.getFloat());
 		else if (obj instanceof Double)
 			f.set(this, buf.getDouble());
-		else if (obj instanceof String) {
+		else if (obj instanceof String || f.getType().isAssignableFrom(String.class)) {
 			if (!f.isAnnotationPresent(StringLength.class))
 				return;
 			int len = f.getAnnotation(StringLength.class).size();
@@ -344,7 +356,7 @@ public class BufferStruct {
 		} else if (BufferStruct.class.isAssignableFrom(f.getType()))
 			((BufferStruct) obj).readFrom(buf);
 		else
-			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + f.getName() + " of " + obj.getClass().getName());
+			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + f.getName() + " of " + (obj != null ? obj.getClass() != null ? obj.getClass().getName() : "[NULL class]" : "[NULL obj]"));
 	}
 
 	public void readField(Field f, MemoryBuffer buf) throws IllegalArgumentException, IllegalAccessException {
@@ -401,7 +413,7 @@ public class BufferStruct {
 		} else if (BufferStruct.class.isAssignableFrom(f.getType()))
 			((BufferStruct) obj).readFrom(buf, read);
 		else
-			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + f.getName() + " of " + obj.getClass().getName());
+			throw new IllegalArgumentException("Non-primitive types are not implemented yet! " + f.getName() + " of " + (obj != null ? obj.getClass() != null ? obj.getClass().getName() : "[NULL class]" : "[NULL obj]"));
 	}
 
 	public int size() {
@@ -409,7 +421,15 @@ public class BufferStruct {
 			countStruct();
 		return this.size;
 	}
-
+	
+	public long lastRead() {
+		return this.lastReadAddr;
+	}
+	
+	public Object source() {
+		return this.source;
+	}
+	
 	public void afterRead() {
 	}
 
@@ -427,6 +447,11 @@ public class BufferStruct {
 	public @interface StringLength {
 		int size() default 1;
 		String charset() default "UTF-8";
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface PointerToStruct {
+		public boolean isPointer() default true;
 	}
 
 }

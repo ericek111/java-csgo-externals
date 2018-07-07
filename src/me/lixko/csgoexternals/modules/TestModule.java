@@ -2,13 +2,11 @@ package me.lixko.csgoexternals.modules;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.github.jonatino.misc.MemoryBuffer;
-import com.sun.jna.platform.unix.X11.KeySym;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
@@ -16,15 +14,17 @@ import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.sdk.Const;
 import me.lixko.csgoexternals.sdk.Studio;
+import me.lixko.csgoexternals.sdk.Studio.Studiohdr_t;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
-import me.lixko.csgoexternals.structs.Matrix3x4Mem;
 import me.lixko.csgoexternals.structs.Matrix4x4Mem;
 import me.lixko.csgoexternals.structs.Mstudiobone_t;
-import me.lixko.csgoexternals.structs.Studiohdr_t;
+import me.lixko.csgoexternals.structs.Mstudioseqdesc_t;
 import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MathUtils;
+import me.lixko.csgoexternals.util.MemoryUtils;
+import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.bsp.BSPParser;
 
 public class TestModule extends Module {
@@ -41,9 +41,23 @@ public class TestModule extends Module {
 	int toshowi = 0;
 	int distmapsize = 0;
 	
+	long lastr = 0;
 	@SuppressWarnings("static-access")
 	@Override
 	public void onUIRender() {
+		if (true) return;
+
+		VectorMem vavec = new VectorMem();
+		MemoryBuffer vecbuf = new MemoryBuffer(lporigin.size());
+		vavec.setSource(vecbuf);
+				
+		Engine.engineModule().read(Offsets.m_dwLocalPlayer, vecbuf);
+
+		DrawUtils.setTextColor(DrawUtils.theme.textColor);
+		DrawUtils.setStyle(ChatColor.MEDIUM, ChatColor.AQUA);
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, StringFormat.dump(vavec.getVector()));
+		
+		
 		if (true) return;
 		int obstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + m_hObserverTarget) & Const.ENT_ENTRY_MASK;
 		if(obstarget != Const.ENT_ENTRY_MASK) {
@@ -97,12 +111,11 @@ public class TestModule extends Module {
 
 	@Override
 	public void onWorldRender() {
-		//if (true) return;
 		if (!Client.theClient.isRunning)
 			return;
-		//if (true)	return;
+		if (true)	return;
 		
-		if(true) {
+		if(false) {
 		int x = 0;
 		DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
 		TreeMap<Float, Integer> distmap = new TreeMap<>();
@@ -142,7 +155,6 @@ public class TestModule extends Module {
 			}
 		}
 		}
-		if(true) return;
 		
 		MemoryBuffer vecbuf = new MemoryBuffer(lporigin.size());
 		VectorMem entvec = new VectorMem();
@@ -151,10 +163,10 @@ public class TestModule extends Module {
 		MemoryBuffer studiobuf = new MemoryBuffer(studiohdr.size());
 		MemoryBuffer studiobonebuf = new MemoryBuffer(studiobone.size());
 		studiobone.setSource(studiobonebuf);
-		studiohdr.setSource(studiobuf);
+		//studiohdr.setSource(studiobuf);
 		entvec.setSource(vecbuf);
 		for (int i = 1; i < 64; i++) {
-			long entityptr = Engine.clientModule().readLong(Offsets.m_dwEntityList + i * Offsets.m_dwEntityLoopDistance);
+			long entityptr = MemoryUtils.getEntity(i);
 			if (entityptr == 0)
 				continue;
 			if (entityptr == Offsets.m_dwLocalPlayer)
@@ -186,26 +198,47 @@ public class TestModule extends Module {
 			else
 				DrawUtils.setTextColor(ChatColor.AQUA.color);
 
-			long studioModelptr = Engine.engineModule().readLong(entityptr + 0x2FC0);
+			long studioModelptr = Engine.clientModule().readLong(entityptr + 0x2FC0);
+			long entityModelName = Engine.clientModule().readLong(entityptr + 0x370);
+			long entityModelIndex = Engine.clientModule().readInt(entityptr + 0x28C);
 			long studioModel = Engine.engineModule().readLong(studioModelptr);
-
+			
 			Engine.engineModule().read(studioModel, studiobuf);
-			int numBones = studiohdr.numbones.getInt();
-			int boneIndex = studiohdr.boneindex.getInt();
+			Engine.engineModule().readString(entityModelName, 64);
+			studiohdr.readFrom(studiobuf);
+			//System.out.println(studiohdr.numincludemodels);
+			//System.out.println(StringFormat.hex(Engine.engineModule().readLong(studioModelptr + 8)));
+			
+			
+			/*final int AIMSEQUENCE_LAYER = 1;	// Aim sequence uses layers 0 and 1 for the weapon idle animation (needs 2 layers so it can blend).
+			final int ACT_CSGO_RELOAD = 976;
+			long seqdesc = studioModel + Engine.engineModule().readInt(studioModel + 192) + 212 * AIMSEQUENCE_LAYER;
+			float weight = Engine.engineModule().readFloat(seqdesc + 20);
+			int result = Engine.engineModule().readInt(seqdesc + 16);
+			Mstudioseqdesc_t seqdescs = new Mstudioseqdesc_t();
+			;
+			
+			seqdescs.readFrom(Engine.engineModule(), seqdesc);
+			System.out.println(StringFormat.hex(seqdescs.activity));
+			System.out.println(StringFormat.hex(result) + " / " + weight);*/
+
+			
+			int numBones = studiohdr.numbones;
+			int boneIndex = studiohdr.boneindex;
 			DrawUtils.setColor(0x00FFFFFF);
 			for (int bi = 0; bi < numBones; bi++) {
-				float[] bone1 = AimBot.GetBonePosition(entityptr, bi);
+				float[] bone1 = AimBotGhetto.GetBonePosition(entityptr, bi);
 				Engine.engineModule().read(studioModel + boneIndex + bi * studiobone.size(), studiobonebuf);
 				int parentBone = studiobone.parent.getInt();
 				if (parentBone == -1 || (studiobone.flags.getInt() & Studio.BONE_USED_BY_HITBOX) == 0)
 					continue;
 
 				DrawUtils.draw3DString(parentBone + "", bone1[0], bone1[2], -bone1[1], pitch, roll, scale*0.4f);
-				float[] bone2 = AimBot.GetBonePosition(entityptr, parentBone);
+				float[] bone2 = AimBotGhetto.GetBonePosition(entityptr, parentBone);
 				DrawUtils.drawLine(bone1, bone2);
 			}
 
-			// DrawUtils.draw3DString(numBones + "", ex, ey + scale * 20 * 1, ez, pitch, roll, scale);
+			DrawUtils.draw3DString(studiohdr.name + "", ex, ey + scale * 20 * 1, ez, pitch, roll, scale);
 
 			// String name = studiohdr.name.getString();
 			// DrawUtils.draw3DString(name, ex, ey + scale * 20 * 2, ez, pitch, roll, scale);
@@ -217,8 +250,8 @@ public class TestModule extends Module {
 	}
 	
 	public boolean onCommand(String command) {
-		if(command.equals("toshowinc")) {
-			toshowi++;
+		if(command.equals("forceupdate")) {
+			Engine.engineModule().writeInt(Offsets.m_dwClientState + Offsets.m_nDeltaTick, -1);
 		}
 		return true;
 	}
@@ -227,5 +260,11 @@ public class TestModule extends Module {
 	public void onEngineLoaded() {
 		lporigin.setSource(lpvecbuf);
 		m_hObserverTarget = Offsets.netvars.get("CBasePlayer", "m_hObserverTarget");
+	}
+	
+	// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/game/shared/animation.cpp#L888
+	// returns Activity
+	public static int GetSequenceActivity(long entity, int sequence) {
+		return 0;
 	}
 }

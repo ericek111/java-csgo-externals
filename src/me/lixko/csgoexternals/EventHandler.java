@@ -61,6 +61,19 @@ public class EventHandler {
 		return false;
 	}
 
+	// Gets executed regardless of inGame
+	public void onPreLoop() {
+		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
+			eventModule.onPreLoop();
+		}
+		try {
+			if (Client.theClient.jsinitialized)
+				Client.theClient.jsinvocable.invokeMethod(Client.theClient.jsengine.eval("EventHandler"), "onPreLoop");
+		} catch (NoSuchMethodException | ScriptException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void onLoop() {
 		Client.theClient.moduleManager.cachedStatusText.clear();
 		for (Module eventModule : Client.theClient.moduleManager.activeModules) {
