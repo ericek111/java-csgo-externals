@@ -7,6 +7,7 @@ import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.ChatColor;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
+import me.lixko.csgoexternals.util.StringFormat;
 import me.lixko.csgoexternals.util.TextAlign;
 
 public class NameHUD extends Module {
@@ -65,18 +66,15 @@ public class NameHUD extends Module {
 		if (inCross > 0) {
 			long cEnt = MemoryUtils.getEntity(inCross);
 			lastspottedentptr = cEnt;
+			System.out.println(StringFormat.hex(cEnt));
 			if (cEnt > 0) {
 				int cHealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 				if (cHealth > 0) {
-					long nameptr = rankreveal.resbuf.getLong(0xF78 + (inCross) * 8);
-					if (nameptr > 0) {
-						String name = Engine.clientModule().readString(nameptr, 64);
-						lastspottedenti = inCross;
-						lastspottedname = name;
-						lastspottedtime = System.currentTimeMillis();
-						lastspottedteam = Engine.clientModule().readInt(cEnt + Netvars.CBaseEntity.m_iTeamNum);
-						lastspottedhealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
-					}
+					lastspottedenti = inCross;
+					lastspottedname = rankreveal.names[inCross];
+					lastspottedtime = System.currentTimeMillis();
+					lastspottedteam = Engine.clientModule().readInt(cEnt + Netvars.CBaseEntity.m_iTeamNum);
+					lastspottedhealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 				}
 			}
 		}

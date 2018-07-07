@@ -78,8 +78,8 @@ public final class Offsets {
 	public static long m_dwBoneMatrix = 0x2C70; // CBaseAnimating->m_pStudioBones 0x2C44 + 2C
 
 	public static long m_Local = 0x36f0;
-	public static long m_iLastCrosshairIndex = 0xBBD4;
-	public static long m_iCrosshairIndex = 0xBBB8;
+	public static long m_iLastCrosshairIndex = 0xBBD4; // outdated
+	public static long m_iCrosshairIndex = 0xBBD0;
 	public static long m_vecViewAngles = 0x8E20;
 
 	public static long m_nDeltaTick = 0x20C;
@@ -117,9 +117,6 @@ public final class Offsets {
 		long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), ENGINEPOINTER_SIGNATURE);
 		long g_SplitScreenMgr = Engine.engineModule().GetAbsoluteAddress(foundSplitScreenMgrlea, 3, 7);
 		m_dwClientState = Engine.engineModule().readLong(g_SplitScreenMgr);
-		
-		
-		// 48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 8B 38 48 8B 07
 		
 		/*boolean ispaused = Engine.engineModule().readBoolean(clientstate + 0x220);
 		
@@ -161,12 +158,10 @@ public final class Offsets {
 		long playerresourcemov = PatternScanner.getAddressForPattern(Engine.clientModule(), PLAYERRESOURCES_SIGNATURE);
 		m_dwPlayerResourcesPointer = Engine.clientModule().GetAbsoluteAddress(playerresourcemov, 3, 7);
 
-		System.out.println("----------------------------");
 		long entitylistmov = PatternScanner.getAddressForPattern(Engine.clientModule(), ENTITYLIST_SIGNATURE) + 18;
 		m_dwEntityList = Engine.clientModule().GetAbsoluteAddress(entitylistmov, 3, 7);
 		m_dwEntityList = Engine.clientModule().readLong(m_dwEntityList);
 		m_dwEntityList = Engine.clientModule().readLong(m_dwEntityList) + 8;
-		System.out.println("----------------------------");
 
 		long localplayerlea = PatternScanner.getAddressForPattern(Engine.clientModule(), LOCALPLAYER_SIGNATURE);
 		m_dwLocalPlayerPointer = Engine.clientModule().GetCallAddress(localplayerlea + 7);

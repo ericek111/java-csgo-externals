@@ -40,24 +40,20 @@ public class Spectators extends Module {
 		if (loopc < 90)
 			return;
 		loopc = 0;
-	spectators.clear();
-	int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
-	for (int i = 1; i < 64; i++) {
-		long entptr = MemoryUtils.getEntity(i);
-		if (rankreveal.res.m_bAlive.getBoolean(i))
-			continue;
-		if (entptr == 0 || entptr == Offsets.m_dwLocalPlayer)
-			continue;
-		int obs = Engine.clientModule().readInt(entptr + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
-		if (obs == Const.ENT_ENTRY_MASK || obs != lpobstarget)
-			continue;
-
-		long nameptr = rankreveal.resbuf.getLong(0xF78 + i * 8);
-		if (nameptr == 0)
-			continue;
-		String name = Engine.clientModule().readString(nameptr, 64);
-		spectators.add(name);
-	}
+		spectators.clear();
+		int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
+		for (int i = 1; i < 64; i++) {
+			long entptr = MemoryUtils.getEntity(i);
+			if (rankreveal.res.m_bAlive.getBoolean(i))
+				continue;
+			if (entptr == 0 || entptr == Offsets.m_dwLocalPlayer)
+				continue;
+			int obs = Engine.clientModule().readInt(entptr + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
+			if (obs == Const.ENT_ENTRY_MASK || obs != lpobstarget)
+				continue;
+	
+			spectators.add(rankreveal.names[i]);
+		}
 
 	}
 

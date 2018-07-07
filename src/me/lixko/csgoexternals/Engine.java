@@ -398,12 +398,12 @@ public final class Engine {
 			}
 			
 			last_tick = System.nanoTime();
-			//System.out.println(last_tick);
-			/*isInGame = engineModule.readInt(Offsets.m_dwClientState + Offsets.m_bIsInGame);
-			if(isInGame != 6) {
+
+			//isInGame = engineModule.readInt(Offsets.m_dwClientState + Offsets.m_bIsInGame);
+			if(!IsInGame()) {
 				Thread.sleep(1000);
 				continue;
-			}*/
+			}
 			
 			Offsets.m_dwLocalPlayer = clientModule.readLong(Offsets.m_dwLocalPlayerPointer);
 			if (Offsets.m_dwLocalPlayer < 1) {
@@ -582,8 +582,8 @@ public final class Engine {
 	}
 	
 	public static boolean IsInGame() {
-		//return true;
-		return isInGame == 6;
+		return true;
+		//return isInGame == 6;
 	}
 
 	private static void waitUntilFound(String message, Clause clause) {
