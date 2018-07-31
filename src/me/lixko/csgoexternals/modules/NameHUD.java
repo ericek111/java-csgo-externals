@@ -66,7 +66,6 @@ public class NameHUD extends Module {
 		if (inCross > 0) {
 			long cEnt = MemoryUtils.getEntity(inCross);
 			lastspottedentptr = cEnt;
-			System.out.println(StringFormat.hex(cEnt));
 			if (cEnt > 0) {
 				int cHealth = Engine.clientModule().readInt(cEnt + Netvars.CBasePlayer.m_iHealth);
 				if (cHealth > 0) {

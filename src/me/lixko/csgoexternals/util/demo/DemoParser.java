@@ -57,6 +57,8 @@ public class DemoParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
 	}
 
 	public boolean demoLoop() throws Exception {
