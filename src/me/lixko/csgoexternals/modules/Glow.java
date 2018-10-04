@@ -148,6 +148,7 @@ public class Glow extends Module {
 			// glowobj.m_bFullBloomRender.set(true);
 			// glowobj.m_flGlowAlpha.set(0.5f);
 			// glowobj.m_nGlowStyle.set(3);
+			glowobj.m_flGlowAlpha.set(0.35f);
 
 			long glowptr = Pointer.nativeValue(g_glow);
 

@@ -36,3 +36,7 @@ Some compositors have problems with my [click-through transparent overlay](https
 - [JOGL](https://github.com/sgothel/jogl) - Java™ Binding for the OpenGL® API.  
   - Native X11 wrapper needs to be **patched** by jogl_patch.txt. You need to download both [jogl-all.jar](https://github.com/ericek111/java-csgo-externals/releases/download/1.0/jogl-all.jar) and [jogl-all-natives-linux-amd64.jar](https://github.com/ericek111/java-csgo-externals/releases/download/1.0/jogl-all-natives-linux-amd64.jar).
 - [Gson](https://github.com/google/gson) - A Java serialization/deserialization library that can convert Java Objects into JSON and back. [Download JAR.](https://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar)
+
+### Credits
+Thank you, [**ekknod**](https://github.com/ekknod), for your work on external interface parsing and convar editing in your [CS:GO external SDK](https://github.com/ekknod).
+

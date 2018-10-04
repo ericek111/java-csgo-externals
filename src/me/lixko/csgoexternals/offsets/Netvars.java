@@ -243,7 +243,7 @@ public class Netvars {
 		public static class DT_CSGameRules { // m_arrTournamentActiveCasterAccounts
 		}
 
-		public static final long DT_CSGameRules = 0x0; // DataTable[79] / cs_gamerules_data
+		public static final long DT_CSGameRules = 0x0; // DataTable[80] / cs_gamerules_data
 	}
 
 	public static class CWeaponCubemap { // DT_WeaponCubemap
@@ -278,12 +278,13 @@ public class Netvars {
 
 	public static class CPlantedC4 { // DT_PlantedC4
 		public static final long m_bBombTicking = 0x3001; // int
-		public static final long m_flC4Blow = 0x300c; // float
-		public static final long m_flTimerLength = 0x3010; // float
-		public static final long m_flDefuseLength = 0x3020; // float
-		public static final long m_flDefuseCountDown = 0x3024; // float
-		public static final long m_bBombDefused = 0x3028; // int
-		public static final long m_hBombDefuser = 0x302c; // int
+		public static final long m_nBombSite = 0x3004; // int
+		public static final long m_flC4Blow = 0x3010; // float
+		public static final long m_flTimerLength = 0x3014; // float
+		public static final long m_flDefuseLength = 0x3024; // float
+		public static final long m_flDefuseCountDown = 0x3028; // float
+		public static final long m_bBombDefused = 0x302c; // int
+		public static final long m_hBombDefuser = 0x3030; // int
 	}
 
 	public static class CCSTeam { // DT_CSTeam
@@ -334,30 +335,30 @@ public class Netvars {
 		}
 
 		public static final long DT_CSTeamExclusive = 0x0; // DataTable[1] / csteamdata
-		public static final long m_angEyeAngles_0 = 0xbb48; // float
-		public static final long m_angEyeAngles_1 = 0xbb4c; // float
-		public static final long m_iAddonBits = 0xab84; // int
-		public static final long m_iPrimaryAddon = 0xab88; // int
-		public static final long m_iSecondaryAddon = 0xab8c; // int
-		public static final long m_iThrowGrenadeCounter = 0x4190; // int
-		public static final long m_bWaitForNoAttack = 0x4194; // int
-		public static final long m_bIsRespawningForDMBonus = 0x4195; // int
+		public static final long m_angEyeAngles_0 = 0xbb58; // float
+		public static final long m_angEyeAngles_1 = 0xbb5c; // float
+		public static final long m_iAddonBits = 0xab94; // int
+		public static final long m_iPrimaryAddon = 0xab98; // int
+		public static final long m_iSecondaryAddon = 0xab9c; // int
+		public static final long m_iThrowGrenadeCounter = 0x4194; // int
+		public static final long m_bWaitForNoAttack = 0x4198; // int
+		public static final long m_bIsRespawningForDMBonus = 0x4199; // int
 		public static final long m_iPlayerState = 0x415c; // int
-		public static final long m_iAccount = 0xbb30; // int
-		public static final long m_iStartAccount = 0xabb4; // int
-		public static final long m_totalHitsOnServer = 0xabb8; // int
-		public static final long m_bInBombZone = 0x418c; // int
-		public static final long m_bInBuyZone = 0x418d; // int
-		public static final long m_bInNoDefuseArea = 0x418e; // int
-		public static final long m_bKilledByTaser = 0x41a5; // int
-		public static final long m_iMoveState = 0x41a8; // int
-		public static final long m_iClass = 0xbb40; // int
-		public static final long m_ArmorValue = 0xbb44; // int
-		public static final long m_angEyeAngles = 0xbb48; // Vector
-		public static final long m_bHasDefuser = 0xbb54; // int
-		public static final long m_bNightVisionOn = 0xaba9; // int
-		public static final long m_bHasNightVision = 0xabaa; // int
-		public static final long m_bInHostageRescueZone = 0xbb55; // int
+		public static final long m_iAccount = 0xbb40; // int
+		public static final long m_iStartAccount = 0xabc4; // int
+		public static final long m_totalHitsOnServer = 0xabc8; // int
+		public static final long m_bInBombZone = 0x4190; // int
+		public static final long m_bInBuyZone = 0x4191; // int
+		public static final long m_bInNoDefuseArea = 0x4192; // int
+		public static final long m_bKilledByTaser = 0x41a9; // int
+		public static final long m_iMoveState = 0x41ac; // int
+		public static final long m_iClass = 0xbb50; // int
+		public static final long m_ArmorValue = 0xbb54; // int
+		public static final long m_angEyeAngles = 0xbb58; // Vector
+		public static final long m_bHasDefuser = 0xbb64; // int
+		public static final long m_bNightVisionOn = 0xabb9; // int
+		public static final long m_bHasNightVision = 0xabba; // int
+		public static final long m_bInHostageRescueZone = 0xbb65; // int
 		public static final long m_bIsDefusing = 0x4160; // int
 		public static final long m_bIsGrabbingHostage = 0x4161; // int
 		public static final long m_bIsScoped = 0x4156; // int
@@ -371,61 +372,62 @@ public class Netvars {
 		public static final long m_iNumGunGameTRKillPoints = 0x4174; // int
 		public static final long m_iNumGunGameKillsWithCurrentWeapon = 0x4178; // int
 		public static final long m_iNumRoundKills = 0x417c; // int
-		public static final long m_fMolotovUseTime = 0x4184; // float
-		public static final long m_fMolotovDamageTime = 0x4188; // float
-		public static final long m_szArmsModel = 0x41af; // const char *
-		public static final long m_hCarriedHostage = 0xabc4; // int
-		public static final long m_hCarriedHostageProp = 0xabc8; // int
+		public static final long m_fMolotovUseTime = 0x4188; // float
+		public static final long m_fMolotovDamageTime = 0x418c; // float
+		public static final long m_szArmsModel = 0x41b3; // const char *
+		public static final long m_hCarriedHostage = 0xabd4; // int
+		public static final long m_hCarriedHostageProp = 0xabd8; // int
 		public static final long m_bIsRescuing = 0x4162; // int
-		public static final long m_flGroundAccelLinearFracLastTime = 0xabb0; // float
-		public static final long m_bCanMoveDuringFreezePeriod = 0x41ac; // int
-		public static final long m_isCurrentGunGameLeader = 0x41ad; // int
-		public static final long m_isCurrentGunGameTeamLeader = 0x41ae; // int
-		public static final long m_flGuardianTooFarDistFrac = 0x4198; // float
-		public static final long m_flDetectedByEnemySensorTime = 0x419c; // float
-		public static final long m_iMatchStats_Kills = 0xac2c; // int[29] / m_iMatchStats_Kills
-		public static final long m_iMatchStats_Damage = 0xaca4; // int[29] / m_iMatchStats_Damage
-		public static final long m_iMatchStats_EquipmentValue = 0xad1c; // int[29] / m_iMatchStats_EquipmentValue
-		public static final long m_iMatchStats_MoneySaved = 0xad94; // int[29] / m_iMatchStats_MoneySaved
-		public static final long m_iMatchStats_KillReward = 0xae0c; // int[29] / m_iMatchStats_KillReward
-		public static final long m_iMatchStats_LiveTime = 0xae84; // int[29] / m_iMatchStats_LiveTime
-		public static final long m_iMatchStats_Deaths = 0xaefc; // int[29] / m_iMatchStats_Deaths
-		public static final long m_iMatchStats_Assists = 0xaf74; // int[29] / m_iMatchStats_Assists
-		public static final long m_iMatchStats_HeadShotKills = 0xafec; // int[29] / m_iMatchStats_HeadShotKills
-		public static final long m_iMatchStats_Objective = 0xb064; // int[29] / m_iMatchStats_Objective
-		public static final long m_iMatchStats_CashEarned = 0xb0dc; // int[29] / m_iMatchStats_CashEarned
-		public static final long m_iMatchStats_UtilityDamage = 0xb154; // int[29] / m_iMatchStats_UtilityDamage
-		public static final long m_iMatchStats_EnemiesFlashed = 0xb1cc; // int[29] / m_iMatchStats_EnemiesFlashed
-		public static final long m_rank = 0xbb08; // int[5] / m_rank
-		public static final long m_unMusicID = 0xbb20; // int
-		public static final long m_bHasHelmet = 0xbb38; // int
-		public static final long m_bHasHeavyArmor = 0xbb39; // int
-		public static final long m_nHeavyAssaultSuitCooldownRemaining = 0xbb3c; // int
-		public static final long m_flFlashDuration = 0xabe8; // float
-		public static final long m_flFlashMaxAlpha = 0xabe4; // float
-		public static final long m_iProgressBarDuration = 0xab90; // int
-		public static final long m_flProgressBarStartTime = 0xab94; // float
-		public static final long m_hRagdoll = 0xabc0; // int
-		public static final long m_cycleLatch = 0xbcd8; // int
-		public static final long m_unCurrentEquipmentValue = 0xbb00; // int
-		public static final long m_unRoundStartEquipmentValue = 0xbb02; // int
-		public static final long m_unFreezetimeEndEquipmentValue = 0xbb04; // int
-		public static final long m_bIsControllingBot = 0xc20a; // int
-		public static final long m_bHasControlledBotThisRound = 0xc218; // int
-		public static final long m_bCanControlObservedBot = 0xc20b; // int
-		public static final long m_iControlledBotEntIndex = 0xc20c; // int
-		public static final long m_bIsAssassinationTarget = 0xc209; // int
-		public static final long m_bHud_MiniScoreHidden = 0xbb76; // int
-		public static final long m_bHud_RadarHidden = 0xbb77; // int
-		public static final long m_nLastKillerIndex = 0xbb78; // int
-		public static final long m_nLastConcurrentKilled = 0xbb7c; // int
-		public static final long m_nDeathCamMusic = 0xbb80; // int
-		public static final long m_bIsHoldingLookAtWeapon = 0xc16d; // int
-		public static final long m_bIsLookingAtWeapon = 0xc16c; // int
+		public static final long m_flGroundAccelLinearFracLastTime = 0xabc0; // float
+		public static final long m_bCanMoveDuringFreezePeriod = 0x41b0; // int
+		public static final long m_isCurrentGunGameLeader = 0x41b1; // int
+		public static final long m_isCurrentGunGameTeamLeader = 0x41b2; // int
+		public static final long m_flGuardianTooFarDistFrac = 0x419c; // float
+		public static final long m_flDetectedByEnemySensorTime = 0x41a0; // float
+		public static final long m_iMatchStats_Kills = 0xac3c; // int[29] / m_iMatchStats_Kills
+		public static final long m_iMatchStats_Damage = 0xacb4; // int[29] / m_iMatchStats_Damage
+		public static final long m_iMatchStats_EquipmentValue = 0xad2c; // int[29] / m_iMatchStats_EquipmentValue
+		public static final long m_iMatchStats_MoneySaved = 0xada4; // int[29] / m_iMatchStats_MoneySaved
+		public static final long m_iMatchStats_KillReward = 0xae1c; // int[29] / m_iMatchStats_KillReward
+		public static final long m_iMatchStats_LiveTime = 0xae94; // int[29] / m_iMatchStats_LiveTime
+		public static final long m_iMatchStats_Deaths = 0xaf0c; // int[29] / m_iMatchStats_Deaths
+		public static final long m_iMatchStats_Assists = 0xaf84; // int[29] / m_iMatchStats_Assists
+		public static final long m_iMatchStats_HeadShotKills = 0xaffc; // int[29] / m_iMatchStats_HeadShotKills
+		public static final long m_iMatchStats_Objective = 0xb074; // int[29] / m_iMatchStats_Objective
+		public static final long m_iMatchStats_CashEarned = 0xb0ec; // int[29] / m_iMatchStats_CashEarned
+		public static final long m_iMatchStats_UtilityDamage = 0xb164; // int[29] / m_iMatchStats_UtilityDamage
+		public static final long m_iMatchStats_EnemiesFlashed = 0xb1dc; // int[29] / m_iMatchStats_EnemiesFlashed
+		public static final long m_rank = 0xbb18; // int[5] / m_rank
+		public static final long m_unMusicID = 0xbb30; // int
+		public static final long m_bHasHelmet = 0xbb48; // int
+		public static final long m_bHasHeavyArmor = 0xbb49; // int
+		public static final long m_nHeavyAssaultSuitCooldownRemaining = 0xbb4c; // int
+		public static final long m_flFlashDuration = 0xabf8; // float
+		public static final long m_flFlashMaxAlpha = 0xabf4; // float
+		public static final long m_iProgressBarDuration = 0xaba0; // int
+		public static final long m_flProgressBarStartTime = 0xaba4; // float
+		public static final long m_hRagdoll = 0xabd0; // int
+		public static final long m_cycleLatch = 0xbce8; // int
+		public static final long m_unCurrentEquipmentValue = 0xbb10; // int
+		public static final long m_unRoundStartEquipmentValue = 0xbb12; // int
+		public static final long m_unFreezetimeEndEquipmentValue = 0xbb14; // int
+		public static final long m_bIsControllingBot = 0xc21a; // int
+		public static final long m_bHasControlledBotThisRound = 0xc228; // int
+		public static final long m_bCanControlObservedBot = 0xc21b; // int
+		public static final long m_iControlledBotEntIndex = 0xc21c; // int
+		public static final long m_bIsAssassinationTarget = 0xc219; // int
+		public static final long m_bHud_MiniScoreHidden = 0xbb86; // int
+		public static final long m_bHud_RadarHidden = 0xbb87; // int
+		public static final long m_nLastKillerIndex = 0xbb88; // int
+		public static final long m_nLastConcurrentKilled = 0xbb8c; // int
+		public static final long m_nDeathCamMusic = 0xbb90; // int
+		public static final long m_bIsHoldingLookAtWeapon = 0xc17d; // int
+		public static final long m_bIsLookingAtWeapon = 0xc17c; // int
 		public static final long m_iNumRoundKillsHeadshots = 0x4180; // int
-		public static final long m_flLowerBodyYawTarget = 0x42b8; // float
-		public static final long m_bStrafing = 0x42bc; // int
-		public static final long m_flThirdpersonRecoil = 0xc1b8; // float
+		public static final long m_unTotalRoundDamageDealt = 0x4184; // int
+		public static final long m_flLowerBodyYawTarget = 0x42c0; // float
+		public static final long m_bStrafing = 0x42c4; // int
+		public static final long m_flThirdpersonRecoil = 0xc1c8; // float
 	}
 
 	public static class CCSRagdoll { // DT_CSRagdoll
