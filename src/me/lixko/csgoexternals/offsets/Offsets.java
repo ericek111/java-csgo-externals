@@ -34,7 +34,7 @@ public final class Offsets {
 	public static String CLIENTCLASSHEAD_SIGNATURE = "44 89 EA B8 01 00 00 00 44 89 E9 C1 FA 05 D3 E0 48 63 D2 41 09 04 91 48 8B 05 ?? ?? ?? ?? 8B 53 14 48 8B 00 48 85 C0 75 1B E9";
 	
 	public static String GAMEDIRECTORY_SIGNATURE = "55 BA 04 01 00 00 48 89 E5 48 81 EC 10 01 00 00 48 8B 3D ?? ?? ?? ?? 48 8D B5 F0 FE FF FF";
-	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 8B 38 48 8B 07";
+	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 8D 3D ?? ?? ?? ?? 48 89 E5 FF 50 28";
 	public static String MDLCACHE_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 31 F6 48 89 E5 5D 48 8B 38 48 8B 07 48 8B 40 48 FF E0"; // _g_pMDLCache
 	
 	/**
@@ -82,11 +82,12 @@ public final class Offsets {
 	public static long m_vecVelocity = 0x148;
 	public static long m_vecBaseVelocity = 0x154;
 	public static long m_bSpotted = 0xECD;
-	public static long m_dwBoneMatrix = 0x2C70; // CBaseAnimating->m_pStudioBones 0x2C44 + 2C
+	// CBaseAnimating->m_pStudioBones 0x2C44 + 2C, DT_BaseAnimating->m_nForceBone + 2C
+	public static long m_dwBoneMatrix = 0x2C70;
 
 	public static long m_Local = 0x36f0;
 	public static long m_iLastCrosshairIndex = 0xBBD4; // outdated
-	public static long m_iCrosshairIndex = 0xBBD0;
+	public static long m_iCrosshairIndex = 0xBBE0;
 	public static long m_vecViewAngles = 0x8E20;
 
 	public static long m_nDeltaTick = 0x20C;
@@ -102,13 +103,18 @@ public final class Offsets {
 		System.out.println(StringFormat.hex(g_MDLCache));
 		System.exit(0);*/
 		
-		//Engine.clientModule().write(Engine.clientModule().start() + 0x789f2B, new MemoryBuffer(new byte[] { (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90 }));		
-		long clientclassheadlea = PatternScanner.getAddressForPattern(Engine.clientModule(), CLIENTCLASSHEAD_SIGNATURE) + 23;
-		m_dwClientClassHead = Engine.clientModule().GetAbsoluteAddress(clientclassheadlea, 3, 7);
-		m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
-		m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
+		//Engine.clientModule().write(Engine.clientModule().start() + 0x789f2B, new MemoryBuffer(new byte[] { (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90, (byte) 0x90 }));
+		try {
+			long clientclassheadlea = PatternScanner.getAddressForPattern(Engine.clientModule(), CLIENTCLASSHEAD_SIGNATURE) + 23;
+			m_dwClientClassHead = Engine.clientModule().GetAbsoluteAddress(clientclassheadlea, 3, 7);
+			m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
+			m_dwClientClassHead = Engine.clientModule().readLong(m_dwClientClassHead);
+			
+			netvars.initialize();	
+		} catch (Exception ex) {
+			
+		}
 		
-		netvars.initialize();
 		
 		for (String arg : Engine.cmdargs) {
 			if (arg.equalsIgnoreCase("-netvars"))
@@ -123,7 +129,8 @@ public final class Offsets {
 		// p/f *(((int64_t(*)(int64_t)) $engine_addr+0x2FBC70)(0)+0x8E20)
 		long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), ENGINEPOINTER_SIGNATURE);
 		long g_SplitScreenMgr = Engine.engineModule().GetAbsoluteAddress(foundSplitScreenMgrlea, 3, 7);
-		m_dwClientState = Engine.engineModule().readLong(g_SplitScreenMgr);
+		m_dwClientState = Engine.engineModule().readLong(g_SplitScreenMgr + 8) + 8;
+
 		
 		/*boolean ispaused = Engine.engineModule().readBoolean(clientstate + 0x220);
 		

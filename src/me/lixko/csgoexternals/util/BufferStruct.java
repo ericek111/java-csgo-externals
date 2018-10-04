@@ -448,9 +448,16 @@ public class BufferStruct {
 		int size() default 1;
 		String charset() default "UTF-8";
 	}
-	
+
+	// TODO: Implement
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface PointerToStruct {
+		public boolean isPointer() default true;
+	}
+	
+	// TODO: Implement
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface StringPointer {
 		public boolean isPointer() default true;
 	}
 

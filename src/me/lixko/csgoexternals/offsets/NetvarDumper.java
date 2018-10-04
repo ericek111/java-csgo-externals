@@ -39,7 +39,6 @@ public class NetvarDumper {
 			ccbs.readFrom(ccbsbuf);
 
 			String className = Engine.clientModule().readString(ccbs.m_pNetworkName, 64);
-			System.out.println(className);
 			walkTable(ccbs.m_pRecvTable, 2, className);
 
 			if(ccbs.m_pNext == 0) break;

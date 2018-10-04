@@ -1,50 +1,29 @@
 package me.lixko.csgoexternals;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.util.Collections;
 
 import com.github.jonatino.misc.MemoryBuffer;
-import com.github.jonatino.natives.unix.ptrace;
-import com.github.jonatino.natives.unix.unix;
 import com.github.jonatino.process.Module;
 import com.github.jonatino.process.Process;
 import com.github.jonatino.process.Processes;
-import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
 import com.sun.jna.platform.unix.X11;
 import com.sun.jna.platform.unix.X11.XTest;
 import com.sun.jna.platform.unix.X11.XVisualInfo;
 import com.sun.jna.platform.unix.X11.Xext;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.PointerByReference;
-import com.sun.jna.platform.unix.X11.Atom;
 import com.sun.jna.platform.unix.X11.Colormap;
 import com.sun.jna.platform.unix.X11.Display;
-import com.sun.jna.platform.unix.X11.GC;
-import com.sun.jna.platform.unix.X11.Pixmap;
 import com.sun.jna.platform.unix.X11.Visual;
 import com.sun.jna.platform.unix.X11.Window;
-import com.sun.jna.platform.unix.X11.XGCValues;
 import com.sun.jna.platform.unix.X11.XSetWindowAttributes;
 
+import me.lixko.csgoexternals.elf.ElfModule;
+import me.lixko.csgoexternals.offsets.Convars;
 import me.lixko.csgoexternals.offsets.Offsets;
-import me.lixko.csgoexternals.offsets.PatternScanner;
-import me.lixko.csgoexternals.sdk.Const;
-import me.lixko.csgoexternals.structs.ExampleBufStruct;
-import me.lixko.csgoexternals.structs.user_regs_struct;
 import me.lixko.csgoexternals.util.DrawUtils;
-import me.lixko.csgoexternals.util.Injector;
 import me.lixko.csgoexternals.util.MemoryUtils;
-import me.lixko.csgoexternals.util.ProfilerUtil;
 import me.lixko.csgoexternals.util.StringFormat;
-import me.lixko.csgoexternals.util.WMCtrl;
-import me.lixko.csgoexternals.util.bsp.BSPParser;
 import me.lixko.csgoexternals.util.bsp.BSPRenderer;
-import me.lixko.csgoexternals.util.demo.DemoParser;
 
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
@@ -57,7 +36,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 public final class Engine {
 
 	private static Process process, localprocess = Processes.byId(MemoryUtils.getPID());
-	private static Module clientModule, engineModule;
+	private static ElfModule clientModule, engineModule, materialModule;
 
 	private static final int TARGET_TPS = 200;
 	private long tps_sleep = (long) ((1f / TARGET_TPS) * 1000);
@@ -78,301 +57,26 @@ public final class Engine {
 
 	public void init(String[] args) throws InterruptedException, IOException {
 		this.cmdargs = args;
-		/*localprocess = Processes.byName("csgo.exe");
-		localprocess.initModules();
-		Module clientdll = localprocess.findModule("client.dll");
-		System.out.println(StringFormat.hex(clientdll.start()));
-		long lpaddr = PatternScanner.getAddressForPattern(clientdll, "A3 ?? ?? ?? ?? C7 05 ?? ?? ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 59 C3 6A ??");
-		System.out.println(StringFormat.hex(lpaddr));
-		System.out.println(StringFormat.hex(lpaddr - clientdll.start()));
-		boolean xddd = true;
-		while(xddd) {
-			int health = clientdll.readInt(clientdll.start() + 0xA9ADEC + 0xFC);
-			System.out.println(health);
-			Thread.sleep(500);
-		}*/
-		
-		boolean injector = false;
-		for (String arg : args) {
-			if (arg.equalsIgnoreCase("-inj"))
-				injector = true;
-		}
-		
-		if (injector) {
-			Injector inj = new Injector();
-			inj.doStuff();
-			System.exit(0);
-		}
-		if (injector) {
-
-			ProfilerUtil.start();
-			user_regs_struct cregs = new user_regs_struct();
-			MemoryBuffer cregsbuf = new MemoryBuffer(cregs.size());
-			cregs.setSource(cregsbuf);
-
-			IntByReference status = new IntByReference();
-			Process exampleproc = Processes.byName("example");
-			if(exampleproc == null) System.exit(0);
-			int pid = exampleproc.id();
-			Module examplemod = exampleproc.findModule("example");
-
-			File shellcodebin = new File("/home/erik/Dokumenty/Java/linux-csgo-externals/res/linux_thread_injection/thread_shellcode.bin");
-			int shellcode_size = (int) shellcodebin.length();
-
-			// Make it aligned on 8 bytes boundary
-			shellcode_size &= ~0x07;
-			shellcode_size += 0x08;
-			MemoryBuffer shellcodebuf = new MemoryBuffer(shellcode_size);
-			MemoryBuffer backupbuf = new MemoryBuffer(shellcode_size);
-			shellcodebuf.setBytes(Files.readAllBytes(shellcodebin.toPath()));
-
-			System.out.println("Loaded shellcode (" + shellcodebuf.size() + " B).\nAttaching...");
-
-			ProfilerUtil.measure("Shellcode loaded.");
-
-			ptrace.attach(pid);
-			unix.waitpid(pid, status, 0);
-			System.out.println("SIGTERM: " + StringFormat.hex(status.getValue()));
-
-			ptrace.syscall(pid);
-
-			// while(!unix.WIFSTOPPED(status.getValue())) { Thread.sleep(1); }
-			// 89 7D FC 8B 05 F0 09 20 00 8B 55 FC 89 C6 BF 34
-			// 07 40 00 B8 00 00 00 00 E8 48 FE FF FF 90 C9 C3
-			long printcyka = PatternScanner.getAddressForPattern(examplemod, "89 7D FC 8B 05 F0 09 20 00 8B 55 FC 89 C6 BF 34 07 40 00 B8 00 00 00 00 E8 48 FE FF FF 90 C9 C3") + 32;
-			System.out.println("Found printcyka: " + StringFormat.hex(printcyka));
-			// byte callrax[] = new byte[] { (byte) 0x48, (byte)0xff, (byte)0xd0, (byte)0xCC }; // jmp rax; db 0xCC
-			// byte callrax[] = new byte[] { (byte)0xff, (byte)0xe3, (byte)0xCC }; // jmp rax; db 0xCC
-
-			byte callrax[] = new byte[] { (byte) 0x55, (byte) 0x48, (byte) 0x89, (byte) 0xE5, (byte) 0xBF, (byte) 0x46, (byte) 0x07, (byte) 0x40, (byte) 0x00, (byte) 0xE8, (byte) 0x17, (byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0x90, (byte) 0x5D, (byte) 0xC3, (byte) 0xCC };
-
-			int buf_size = callrax.length;
-			buf_size &= ~0x07;
-			buf_size += 0x08;
-
-			MemoryBuffer callraxbuf = new MemoryBuffer(buf_size);
-			callraxbuf.setBytes(callrax);
-
-			// 55 48 89 E5 BF 46 07 40 00 E8 17 FE FF FF 90 5D C3 = 17
-			// 0x55, 0x48, 0x89, 0xE5, 0xBF, 0x46, 0x07, 0x40, 0x00, 0xE8, 0x17, 0xFE, 0xFF, 0xFF, 0x90, 0x5D, 0xC3 = 17 + 0xCC
-
-			MemoryBuffer bkbuf = new MemoryBuffer(buf_size);
-			// ptrace.getregs(pid, Pointer.nativeValue(cregsbuf));
-			// System.out.println(cregs.toString());
-
-			// System.out.println(StringFormat.hex(cregs.rip.getLong()) + " / " + StringFormat.hex(cregs.cs.getLong()) + " / " + StringFormat.hex(printcyka) + " / " + StringFormat.hex(examplemod.start()));
-			// System.out.println(StringFormat.hex(ptrace.read_by_reg(pid, cregs.rip.offset())) + " ");
-			// System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-			// ptrace.read(pid, cregs.rip.getLong(), bkbuf);
-			// ptrace.write(pid, cregs.rip.getLong(), callrax);
-			// ptrace.pokeuser(pid, cregs.rbx.offset(), printcyka);
-			/*
-			 * System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-			 * ptrace.detach(pid);
-			 * System.exit(0);
-			 */
-
-			int step = 0;
-			while (step < 1000) {
-				if (-1 == unix.waitpid(pid, status, 0)) {
-					System.out.println("An error has occured while waiting for pid " + pid + " (" + StringFormat.hex(status.getValue()) + ")");
-				}
-				if (unix.WIFEXITED(status.getValue())) {
-					System.out.println("The victim program has exited..");
-				}
-				if (unix.WIFSTOPPED(status.getValue())) {
-					if (0 == step && (1 == ptrace.peekuser(pid, cregs.orig_rax.offset()))) {
-						ProfilerUtil.measure("Step 0");
-						ptrace.syscall(pid);
-						step++;
-					} else if (step == 1) {
-						System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-						ProfilerUtil.measure("Step 1");
-						ptrace.getregs(pid, Pointer.nativeValue(cregsbuf));
-						// System.out.println(cregs.toString());
-
-						System.out.printf("Injecting %d bytes into the victim process.\n", shellcode_size);
-
-						ptrace.read(pid, cregs.rip.getLong(), bkbuf);
-						ptrace.write(pid, cregs.rip.getLong(), callraxbuf);
-						// ptrace.pokeuser(pid, cregs.rbx.offset(), printcyka);
-						System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-						ptrace.singlestep(pid);
-						System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-						step = 3;
-					} else if (step == 2) {
-						if (0xCC == (ptrace.read_by_reg_R(pid, cregs.rip.offset()) & 0xFF)) {
-							ProfilerUtil.measure("Step 2");
-							System.out.printf("breakpoint: signal = %d\n", unix.WSTOPSIG(status.getValue()));
-							// ptrace.pokeuser(pid, cregs.rip.offset(), ptrace.peekuser(pid, cregs.rip.offset()) + 1);
-							System.out.println("Injected code has allocated memory at " + StringFormat.hex(ptrace.peekuser(pid, cregs.rax.offset())) + ".");
-							System.out.println("Injected code is going to copy the remote thread procedure.");
-							ptrace.singlestep(pid);
-							step++;
-						} else {
-							ptrace.singlestep(pid);
-							System.out.println("> RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())) + " = " + StringFormat.hex(ptrace.read_by_reg_R(pid, cregs.rip.offset())));
-
-						}
-					} else if (step == 3) {
-
-						if (0xCC != (ptrace.read_by_reg_R(pid, cregs.rip.offset()) & 0xFF)) {
-							System.out.print(".");
-							ptrace.singlestep(pid);
-							continue;
-						}
-						System.out.println();
-						ProfilerUtil.measure("Step 3");
-
-						ptrace.write(pid, cregs.rip.getLong(), bkbuf);
-						ptrace.setregs(pid, Pointer.nativeValue(cregsbuf));
-						ptrace.detach(pid);
-
-						System.out.println("HOWGH!");
-
-						System.exit(1);
-					} else {
-						ptrace.syscall(pid);
-					}
-				}
-			}
-
-			/*
-			 * while(0xCC != (ptrace.read_by_reg(pid, cregs.rip.offset()) & 0xFF)) {
-			 * //if(unix.WIFSTOPPED(status.getValue())) {
-			 * System.out.println(StringFormat.hex((ptrace.read_by_reg(pid, cregs.rip.offset()) >> Long.BYTES*7) & 0xFF));
-			 * System.out.println(">2 RIP: " + StringFormat.hex(ptrace.peekuser(pid, cregs.rip.offset())));
-			 * ptrace.singlestep(pid);
-			 * Thread.sleep(1000);
-			 * //
-			 * while(!unix.WIFSTOPPED(status.getValue())) Thread.sleep(10);
-			 * }
-			 * 
-			 * ptrace.write(pid, cregs.rip.getLong(), bkbuf);
-			 * ptrace.pokeuser(pid, cregs.rip.offset(), ptrace.peekuser(pid, cregs.rip.offset()) + 1);
-			 * ptrace.detach(pid);
-			 */
-
-			// PatternScanner.getAddressForPattern(examplemod, "89 C7 E8 A6 FE FF FF 83 45 F8 01 8B 45 F8 89 C7 E8 55 00 00 00 84 C0 75 D4 B8 00 00 00 00 C9 C3");
-			// examplemod.read(examplemod.start(), 4);
-
-			ProfilerUtil.measure("Looping.");
-
-			step = 0;
-			while (step < 1000) {
-				if (-1 == unix.waitpid(pid, status, 0)) {
-					System.out.println("An error has occured while waiting for pid " + pid + " (" + StringFormat.hex(status.getValue()) + ")");
-				}
-				if (unix.WIFEXITED(status.getValue())) {
-					System.out.println("The victim program has exited..");
-				}
-				if (unix.WIFSTOPPED(status.getValue())) {
-					if (0 == step && (1 == ptrace.peekuser(pid, cregs.orig_rax.offset()))) {
-						ProfilerUtil.measure("Step 0");
-						ptrace.syscall(pid);
-						step++;
-					} else if (step == 1) {
-						ProfilerUtil.measure("Step 1");
-						ptrace.getregs(pid, Pointer.nativeValue(cregsbuf));
-						// System.out.println(cregs.toString());
-
-						System.out.printf("Injecting %d bytes into the victim process.", shellcode_size);
-
-						ptrace.read(pid, cregs.rip.getLong(), backupbuf);
-						ptrace.write(pid, cregs.rip.getLong(), shellcodebuf);
-
-						ptrace.singlestep(pid);
-						step++;
-					} else if (step == 2) {
-						if (0xCC == (ptrace.read_by_reg(pid, cregs.rip.offset()) & 0xFF)) {
-							ProfilerUtil.measure("Step 2");
-							System.out.printf("breakpoint: signal = %d\n", unix.WSTOPSIG(status.getValue()));
-							// ptrace.pokeuser(pid, cregs.rip.offset(), ptrace.peekuser(pid, cregs.rip.offset()) + 1);
-							System.out.println("Injected code has allocated memory at " + StringFormat.hex(ptrace.peekuser(pid, cregs.rax.offset())) + ".");
-							System.out.println("Injected code is going to copy the remote thread procedure.");
-							ptrace.singlestep(pid);
-							step++;
-						} else {
-							ptrace.singlestep(pid);
-						}
-					} else if (step == 3) {
-						if (0xCC == (ptrace.read_by_reg(pid, cregs.rip.offset()) & 0xFF)) {
-							ProfilerUtil.measure("Step 3");
-							System.out.println("Remote thread has been created.");
-							// ptrace.pokeuser(pid, cregs.rip.offset(), ptrace.peekuser(pid, cregs.rip.offset()) + 1);
-							ptrace.singlestep(pid);
-							step++;
-						} else {
-							ptrace.singlestep(pid);
-						}
-					} else if (step == 4) {
-
-						if (0xCC != (ptrace.read_by_reg(pid, cregs.rip.offset()) & 0xFF)) {
-							ptrace.singlestep(pid);
-							continue;
-						}
-						ProfilerUtil.measure("Step 4");
-
-						ptrace.write(pid, cregs.rip.getLong(), backupbuf);
-						ptrace.setregs(pid, Pointer.nativeValue(cregsbuf));
-						ptrace.detach(pid);
-
-						System.out.println("HOWGH!");
-						System.exit(0);
-					} else {
-						ptrace.syscall(pid);
-					}
-				}
-			}
-
-		}
-
-		//bsp = new BSPRenderer(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/maps/jb_citrus_v2_d.bsp"));
-		//bsp.parse();
-		/*
-		 * setupWindow(bsp);
-		 * boolean cyka = true;
-		 * while(cyka) {
-		 * Thread.sleep(500);
-		 * }
-		 */
-		//System.exit(0);
-
-		/*
-		 * ExampleBufStruct bufstr1 = new ExampleBufStruct();
-		 * ExampleBufStruct bufstr2 = new ExampleBufStruct();
-		 * System.out.println("size: " + bufstr1.size());
-		 * int[] contents = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160 };
-		 * ByteBuffer buf = ByteBuffer.allocate(contents.length * Integer.BYTES);
-		 * for (int x : contents) {
-		 * System.out.print(x + ", ");
-		 * buf.putInt(x);
-		 * }
-		 * buf.rewind();
-		 * bufstr1.readFrom(buf);
-		 * bufstr2.readFrom(buf);
-		 * 
-		 * System.out.println(StringFormat.dumpObj(bufstr1));
-		 * System.out.println(StringFormat.dumpObj(bufstr2));
-		 */
 
 		if (DrawUtils.enableOverlay)
 			setupWindow(new JOGL2Renderer());
 
 		String processName = "csgo_linux64";
-		String clientName = "client_client.so";
+		String clientName = "client_panorama_client.so";
 		String engineName = "engine_client.so";
 
 		waitUntilFound("process", () -> (process = Processes.byName(processName)) != null);
-		waitUntilFound("client module", () -> (clientModule = process.findModule(clientName)) != null);
-		waitUntilFound("engine module", () -> (engineModule = process.findModule(engineName)) != null);
-		System.out.println("process: " + processName);
-		System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
-		System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+		waitUntilFound("client module", () -> (clientModule = new ElfModule(process.findModule(clientName))) != null);
+		waitUntilFound("engine module", () -> (engineModule = new ElfModule(process.findModule(engineName))) != null);
+		waitUntilFound("material_system module", () -> (materialModule = new ElfModule(process.findModule("materialsystem_client.so"))) != null);
+		
+		//System.out.println("process: " + processName);
+		//System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
+		//System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
 
-		loadOffsets();
-
-		System.out.println("Engine initialization complete! Starting client...");
+		loadOffsets(false);
+		Convars.init(materialModule);
+		
 		Client.theClient.startClient();
 
 		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
@@ -549,12 +253,10 @@ public final class Engine {
 		
 	}
 
-	public static void initAll() {
-		loadOffsets();
-	}
-
-	public static void loadOffsets() {
+	public static void loadOffsets(boolean dump) {
 		Offsets.load();
+		if (!dump)
+			return;
 		System.out.println();
 		System.out.println("m_dwGlowObject: " + StringFormat.hex(Offsets.m_dwGlowObject));
 		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.input.alt1));
@@ -573,12 +275,16 @@ public final class Engine {
 		return process;
 	}
 
-	public static Module clientModule() {
+	public static ElfModule clientModule() {
 		return clientModule;
 	}
 
-	public static Module engineModule() {
+	public static ElfModule engineModule() {
 		return engineModule;
+	}
+	
+	public static ElfModule materialModule() {
+		return materialModule;
 	}
 	
 	public static boolean IsInGame() {
@@ -587,7 +293,6 @@ public final class Engine {
 	}
 
 	private static void waitUntilFound(String message, Clause clause) {
-		System.out.print("Looking for " + message + ". Please wait.");
 		while (!clause.get())
 			try {
 				Thread.sleep(1000);
@@ -595,7 +300,6 @@ public final class Engine {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		System.out.println("\nFound " + message + "!");
 	}
 
 	@FunctionalInterface
