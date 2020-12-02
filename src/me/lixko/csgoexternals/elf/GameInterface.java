@@ -26,7 +26,7 @@ public class GameInterface {
 		long strptr = module.readLong(this.ifregbase + 8);
 		this.ifname = module.readString(strptr, 256);
 		this.instantiateIfFn = module.readLong(this.ifregbase);
-		System.out.println(this.ifname + ": " + (module.readByte(this.instantiateIfFn) != 0x48));
+
 		if (module.readByte(this.instantiateIfFn) != 0x48) {
 			this.vftptr = this.instantiateIfFn + module.readInt(this.instantiateIfFn + 1 + 3) + 8;
 		} else {
@@ -42,7 +42,7 @@ public class GameInterface {
 				break;
 			funcs.add(fptr);
 		}
-		System.out.println("Found " + funcs.size() + " fcs in " + this.ifname);
+		//System.out.println("Found " + funcs.size() + " fcs in " + this.ifname);
 	}
 	
 	public String getName() {
@@ -59,6 +59,10 @@ public class GameInterface {
 	
 	public long getFunction(int index) {
 		return this.funcs.get(index);
+	}
+	
+	public ArrayList<Long> getFunctions() {
+		return this.funcs;
 	}
 	
 	public long getVFTPointer() {
