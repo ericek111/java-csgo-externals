@@ -1,6 +1,7 @@
 package me.lixko.csgoexternals.offsets;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import com.github.jonatino.misc.MemoryBuffer;
@@ -10,16 +11,17 @@ import me.lixko.csgoexternals.structs.ClientClassBufStruct;
 import me.lixko.csgoexternals.structs.RecvProp;
 import me.lixko.csgoexternals.structs.RecvTable;
 import me.lixko.csgoexternals.util.FileUtil;
+import me.lixko.csgoexternals.util.StringFormat;
 
 public class NetvarDumper {
-	public static HashMap<String, HashMap<String, Integer>> tables = new HashMap<>();
 	
 	private RecvProp prop = new RecvProp();
 	MemoryBuffer tablebuf = new MemoryBuffer(new RecvTable().size());
 	private MemoryBuffer propbuf = new MemoryBuffer(prop.size());
 	
-	public static boolean DUMP = true;
-	public static boolean JAVASTYLE = true;
+	private RecvProp prop2 = new RecvProp();
+	private MemoryBuffer prop2buf = new MemoryBuffer(prop2.size());
+	
 	final String packagename = this.getClass().getPackage().getName();
 	String classname = "Netvars";
 	StringBuilder sb = new StringBuilder();
@@ -29,136 +31,132 @@ public class NetvarDumper {
 		MemoryBuffer ccbsbuf = new MemoryBuffer(ccbs.size());
 		Engine.clientModule().read(Offsets.m_dwClientClassHead, ccbsbuf);
 		
-		File netvarsjava = null;
-		if(JAVASTYLE && DUMP) {
-			netvarsjava = new File(new File(FileUtil.formatPath("")).getParent() + "/src/" + packagename.replace('.', File.separatorChar) + "/" + classname + ".java");
-			appendln("package " + packagename + ";\n");
-			appendln("public class " + classname + " { ");
-		}
+		File netvarsjava = new File(new File(FileUtil.formatPath("")).getParent() + "/src/" + packagename.replace('.', File.separatorChar) + "/" + classname + ".java");
+		appendln("package " + packagename + ";\n");
+		appendln("public class " + classname + " { ");
+
 		while(true) {
 			ccbs.readFrom(ccbsbuf);
 
 			String className = Engine.clientModule().readString(ccbs.m_pNetworkName, 64);
-			walkTable(ccbs.m_pRecvTable, 2, className);
+			javaWalkTable(ccbs.m_pRecvTable, 2, className, null);
+			appendln("");
 
 			if(ccbs.m_pNext == 0) break;
 			Engine.clientModule().read(ccbs.m_pNext, ccbsbuf);
 		}
-		if(JAVASTYLE && DUMP) {
-			appendln("}");
-			FileUtil.writeToFile(sb.toString(), netvarsjava);
-		}
-			
+
+		appendln("}");
+		FileUtil.writeToFile(sb.toString(), netvarsjava);
+				
 		ccbsbuf.free();
 		tablebuf.free();
 		propbuf.free();
 	}
-	
-	public void walkTable(long m_pRecvTable, int level, String className) {
+
+	public void dumbWalkTable(long m_pRecvTable, int level) {
 		RecvTable table = new RecvTable();
 		
 		Engine.clientModule().read(m_pRecvTable, tablebuf);
 		table.readFrom(tablebuf);
-		if(table.m_nProps == 0) {
-			return;
-		}
 		
-		String tablemapkey = className;
-		HashMap<String, Integer> maptable = new HashMap<>();
-		
-		//System.out.println(className + " / " + table.m_nProps);
-		table.readFrom(Engine.clientModule(), m_pRecvTable, tablebuf);
-		String tableName = Engine.clientModule().readString(table.m_pNetTableName, 64);
-		
-		for(int x = 1; x < level; x++)
-			append("\t");
-		
-		if (JAVASTYLE)
-			append("public static class ");
-		else
-			append("struct ");
-		
-		if(className == "") {
-			appendln(tableName + " {");
-			tablemapkey = tableName;
-		} else {
-			appendln(className + " { // " + tableName);
-		}
-		
-		for(int i = 1; i < table.m_nProps; i++) {
+		for (int i = 0; i < table.m_nProps; i++) {
 			prop.readFrom(Engine.clientModule(), table.m_pProps + i * prop.size(), propbuf);
-			
-			if(prop.m_pVarName == 0) continue;
-			
-			String propName = Engine.clientModule().readString(prop.m_pVarName, 64);
-			if(Character.isDigit(propName.charAt(0))) continue;
-
-			if(SendPropType.values()[prop.m_RecvType] == SendPropType.DPT_DataTable) {
-				if(Character.isDigit(propName.charAt(0))) continue;
-				dumpDataTable(prop.m_pDataTable, level, prop.m_Offset);
-				//walkTable(prop.m_pDataTable, level, "");
-				if(JAVASTYLE)
-					appendln(propName);
-				else
-					appendln(" // " + "0x" + Integer.toHexString(prop.m_Offset) + (propName != "" ? " - " + propName : ""));
-				maptable.put(propName, prop.m_Offset);
+			if (prop.m_pVarName == 0) 
 				continue;
-			}
+			String propName = Engine.clientModule().readString(prop.m_pVarName, 64);
 			
-			for(int x = 0; x < level; x++)
+			if (Character.isDigit(propName.charAt(0)) || propName.startsWith("baseclass"))
+				continue;
+			
+			for(int x = 1; x < level; x++)
 				append("\t");
 			
-			maptable.put(propName, prop.m_Offset);
-			if(JAVASTYLE) {
+			SendPropType type = SendPropType.values()[Engine.clientModule().readInt(table.m_pProps + (table.m_nProps-1) * prop.size() + 8)];
+			
+			append("\t" + propName + " [0x" + StringFormat.hex(prop.m_Offset) + "] " + type.name() + "\n");
+			
+			if (prop.m_pDataTable != 0) {
+				// prop.m_nElements
+				dumbWalkTable(prop.m_pDataTable, level + 1);
+			}
+
+		}
+	}
+	
+	public void javaWalkTable(long m_pRecvTable, int level, String className, RecvProp parent) {
+		RecvTable table = new RecvTable();
+		
+		Engine.clientModule().read(m_pRecvTable, tablebuf);
+		table.readFrom(tablebuf);
+		String tableName = Engine.clientModule().readString(table.m_pNetTableName, 64);	
+		
+		boolean foundProp = false;
+		
+		for (int i = 0; i < table.m_nProps; i++) {
+			prop.readFrom(Engine.clientModule(), table.m_pProps + i * prop.size(), propbuf);
+			if (prop.m_pVarName == 0) 
+				continue;
+			String propName = Engine.clientModule().readString(prop.m_pVarName, 64);
+			
+			if (Character.isDigit(propName.charAt(0)) || propName.startsWith("baseclass"))
+				continue;
+			
+			if (!foundProp) {
+				foundProp = true;
+				appendPadding(level - 1);
+				appendln("public static final class " + className + " { // " + tableName);
+				if (parent != null) {
+					appendPadding(level);
+					appendln("public static final long BASE_OFFSET = 0x" + Integer.toHexString(parent.m_Offset) + ";");
+				}
+			}
+
+			if (prop.m_pDataTable == 0) {
+				appendPadding(level);
 				appendln("public static final long " + propName.replace('.', '_').replace("]", "").replace('[', '_').replace('"', ' ') + " = " + "0x" + Integer.toHexString(prop.m_Offset) + "; // " + SendPropType.values()[prop.m_RecvType].typename + (prop.m_nElements > 1 ? " elements: " + prop.m_nElements : ""));
 			} else {
-				appendln(SendPropType.values()[prop.m_RecvType].typename + " " + propName +"; // " + "0x" + Integer.toHexString(prop.m_Offset) + (prop.m_nElements > 1 ? " elements: " + prop.m_nElements : ""));
+				// appendln(StringFormat.dumpObj(prop));
+				RecvProp parentProp = new RecvProp();
+				parentProp.readFrom(propbuf);
+				javaWalkTable(prop.m_pDataTable, level + 1, propName, parentProp);
 			}
-			
-			if(prop.m_pDataTable == 0) continue;
-			walkTable(prop.m_pDataTable, level + 1, tableName);
 		}
-		for(int x = 1; x < level; x++)
-			append("\t");
-		appendln("}\n");
-		tables.put(tablemapkey, maptable);
+		
+		if (foundProp) {
+			appendPadding(level - 1);
+			appendln("}");
+		} else {
+			// head table with no props
+			if (parent == null) {
+				appendPadding(level - 1);
+				appendln("public static final class " + className + " { // " + tableName);
+				appendPadding(level - 1);
+				appendln("}");
+			} else {
+				appendPadding(level - 1);
+				append("public static final long " + className + " = 0x" + Integer.toHexString(parent.m_Offset) + ";");
+				append(" // " + SendPropType.values()[prop.m_RecvType].typename + "[" + table.m_nProps + "]");
+				appendln("");
+			}
+		}
 	}
-	
-	public void dumpDataTable(long m_pRecvTable, int level, int offset) {
-		RecvTable table = new RecvTable();
-		table.readFrom(Engine.clientModule(), m_pRecvTable, tablebuf);
-		String tableName = Engine.clientModule().readString(table.m_pNetTableName, 64);
-		SendPropType type = SendPropType.values()[Engine.clientModule().readInt(table.m_pProps + (table.m_nProps-1) * prop.size() + 8)];
-		if(type == SendPropType.DPT_DataTable) {
-			walkTable(Engine.clientModule().readLong(table.m_pProps + (table.m_nProps-1) * prop.size() + 64), level + 1, tableName);
-		}
-	
-		for(int y = 0; y < level; y++)
-			append("\t");
-		if(JAVASTYLE)
-			append("public static final long " + tableName + " = 0x" + Integer.toHexString(offset) + "; // " + type.typename + "[" + (table.m_nProps - 1) + "] / ");
-		else
-			append(type.typename + " " + tableName + "[" + (table.m_nProps - 1) + "];");
-	}
-	
-	public int get(String classname, String netvar) {
-		HashMap<String, Integer> classtable = tables.get(classname);
-		if(classtable == null) {
-			throw new IllegalArgumentException("Unknown class: " + classname + " / " + netvar);
-		}
-		Integer offset = classtable.get(netvar);
-		if(offset == null) {
-			throw new IllegalArgumentException("Unknown netvar: " + classname + " / " + netvar);
-		}
-		return offset;
-	}
-	
+
 	public void append(String str) {
-		if(DUMP) sb.append(str);
+		sb.append(str);
+	}
+	
+	public void appendln() {
+		sb.append('\n');
 	}
 	
 	public void appendln(String str) {
-		if(DUMP) sb.append(str + "\n");
+		sb.append(str + "\n");
+	}
+	
+	private void appendPadding(int times) {
+		for(int x = 0; x < times; x++)
+			sb.append('\t');
 	}
 	
 	public static enum SendPropType {
@@ -177,4 +175,6 @@ public class NetvarDumper {
         	this.typename = str;
         }
 	}
+	
+
 }
