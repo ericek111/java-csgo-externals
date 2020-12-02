@@ -1,5 +1,6 @@
 package me.lixko.csgoexternals;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.github.jonatino.misc.MemoryBuffer;
@@ -19,10 +20,12 @@ import com.sun.jna.platform.unix.X11.XSetWindowAttributes;
 
 import me.lixko.csgoexternals.elf.ElfModule;
 import me.lixko.csgoexternals.offsets.Convars;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.StringFormat;
+import me.lixko.csgoexternals.util.bsp.BSPParser;
 import me.lixko.csgoexternals.util.bsp.BSPRenderer;
 
 import com.jogamp.newt.event.WindowAdapter;
@@ -36,7 +39,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 public final class Engine {
 
 	private static Process process, localprocess = Processes.byId(MemoryUtils.getPID());
-	private static ElfModule clientModule, engineModule, materialModule;
+	private static ElfModule clientModule, engineModule, materialModule, launcherModule;
 
 	private static final int TARGET_TPS = 200;
 	private long tps_sleep = (long) ((1f / TARGET_TPS) * 1000);
@@ -62,13 +65,14 @@ public final class Engine {
 			setupWindow(new JOGL2Renderer());
 
 		String processName = "csgo_linux64";
-		String clientName = "client_panorama_client.so";
+		String clientName = "client_client.so";
 		String engineName = "engine_client.so";
 
 		waitUntilFound("process", () -> (process = Processes.byName(processName)) != null);
 		waitUntilFound("client module", () -> (clientModule = new ElfModule(process.findModule(clientName))) != null);
 		waitUntilFound("engine module", () -> (engineModule = new ElfModule(process.findModule(engineName))) != null);
-		waitUntilFound("material_system module", () -> (materialModule = new ElfModule(process.findModule("materialsystem_client.so"))) != null);
+		waitUntilFound("materialsystem module", () -> (materialModule = new ElfModule(process.findModule("materialsystem_client.so"))) != null);
+		waitUntilFound("launcher module", () -> (launcherModule = new ElfModule(process.findModule("launcher_client.so"))) != null);
 		
 		//System.out.println("process: " + processName);
 		//System.out.println("client: " + StringFormat.hex(clientModule.start()) + " - " + StringFormat.hex(clientModule.end()));
@@ -77,8 +81,11 @@ public final class Engine {
 		loadOffsets(false);
 		Convars.init(materialModule);
 		
+		//bsp = new BSPRenderer(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/maps/jb_spy_vs_spy_beta7b.bsp"));
+		//bsp.parse();
+		
 		Client.theClient.startClient();
-
+		
 		Client.theClient.commandManager.executeCommand("exec autoexec.txt");
 		Client.theClient.eventHandler.onEngineLoaded();
 		Client.theClient.commandManager.executeCommand("recoilcross toggle");
@@ -122,9 +129,9 @@ public final class Engine {
 				ex.printStackTrace();
 				Thread.sleep(100);
 			}
-			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3998);
+			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_iFOV);
 			if (DrawUtils.lppos.fov == 0)
-				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + 0x3AF4);
+				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_iDefaultFOV);			
 			
 			if (tick % 1000 == 0)
 				Engine.clientModule.read(Offsets.m_dwEntityList, entlistbuffer);
@@ -197,7 +204,7 @@ public final class Engine {
 		window.setAlwaysOnTop(true);
 		window.setUndecorated(true);
 
-		final FPSAnimator animator = new FPSAnimator(window, 60, true);
+		final FPSAnimator animator = new FPSAnimator(window, 75, true);
 
 		window.addWindowListener(new WindowAdapter() {
 			@Override
@@ -255,8 +262,6 @@ public final class Engine {
 
 	public static void loadOffsets(boolean dump) {
 		Offsets.load();
-		if (!dump)
-			return;
 		System.out.println();
 		System.out.println("m_dwGlowObject: " + StringFormat.hex(Offsets.m_dwGlowObject));
 		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.input.alt1));
@@ -266,6 +271,7 @@ public final class Engine {
 		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResourcesPointer));
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.input.attack));
 		System.out.println("m_dwEntityList: " + StringFormat.hex(Offsets.m_dwEntityList));
+		System.out.println("m_dwLocalPlayer: " + StringFormat.hex(Offsets.m_dwLocalPlayer));
 		System.out.println("m_dwLocalPlayerPointer: " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer) + " / " + StringFormat.hex(Offsets.m_dwLocalPlayerPointer - clientModule().start()));
 		System.out.println("m_dwGlobalVars: " + StringFormat.hex(Offsets.m_dwGlobalVars));
 		System.out.println();
@@ -285,6 +291,10 @@ public final class Engine {
 	
 	public static ElfModule materialModule() {
 		return materialModule;
+	}
+	
+	public static ElfModule launcherModule() {
+		return launcherModule;
 	}
 	
 	public static boolean IsInGame() {
