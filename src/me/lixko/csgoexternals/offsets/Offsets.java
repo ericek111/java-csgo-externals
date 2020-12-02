@@ -1,26 +1,9 @@
 package me.lixko.csgoexternals.offsets;
 
-import java.util.Arrays;
-
-import com.github.jonatino.misc.MemoryBuffer;
-
 import me.lixko.csgoexternals.Engine;
-import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.StringFormat;
 
 public final class Offsets {
-
-	/*public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ?? ?? ?? ?? 89 BD 18 FF FF FF 80 3D ?? ?? ?? ?? 00 89 B5 14 FF FF FF";
-	public static String ENTITYLIST_SIGNATURE = "55 48 89 E5 48 83 EC 10 8B 47 34 48 8D 75 F0 89 45 F0 48 8B 05 ?? ?? ?? ?? 48 8B 38";
-	public static String GLOWOBJECT_SIGNATURE = "E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? BE 01 00 00 00 C7";
-	public static String PLAYERRESOURCES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 48 85 C0 74 10 48";
-	public static String ALT1_SIGNATURE = "89 D8 80 CC 40 F6 C2 03 0F 45 D8 44 89 ?? C1 E0 11 C1 F8 1F 83 E8 03";
-	public static String FORCEATTACK_SIGNATURE = "89 D8 83 C8 01 F6 C2 03 0F 45 D8 44 89 ?? 83 E0 01 F7 D8 83 E8 03";
-	public static String LOCALPLAYER_SIGNATURE = "48 89 e5 74 0e 48 8d 05 ?? ?? ?? ??";
-	public static String GLOBALVARS_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 00 F3 0F 10 40 10";
-	public static String GAMERULES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
-	public static String CLIENTCLASSHEAD_SIGNATURE = "44 89 EA B8 01 00 00 00 44 89 E9 C1 FA 05 D3 E0 48 63 D2 41 09 04 91 48 8B 05 ?? ?? ?? ?? 8B 53 14 48 8B 00 48 85 C0 75 1B E9 F9 01 00 00";
-	*/
 	
 	public static String OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE = "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 81 EC ?? ?? ?? ?? 89 BD 18 FF FF FF 80 3D ?? ?? ?? ?? 00 89 B5 14 FF FF FF";
 	public static String ENTITYLIST_SIGNATURE = "55 48 89 E5 48 83 EC 10 8B 47 34 48 8D 75 F0 89 45 F0 48 8B 05 ?? ?? ?? ?? 48 8B 38";
@@ -32,9 +15,12 @@ public final class Offsets {
 	public static String GLOBALVARS_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 8B 00 F3 0F 10 40 10";
 	public static String GAMERULES_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 48 8B ?? 0F 84";
 	public static String CLIENTCLASSHEAD_SIGNATURE = "44 89 EA B8 01 00 00 00 44 89 E9 C1 FA 05 D3 E0 48 63 D2 41 09 04 91 48 8B 05 ?? ?? ?? ?? 8B 53 14 48 8B 00 48 85 C0 75 1B E9";
+	public static String INCROSS_SIGNATURE = "31 C0 0F 2F 83 ?? ?? ?? ?? 76 14 8B 83 ?? ?? ?? ?? 85 C0 75 0A 8B 93";
+	public static String VIEWANGLES_SIGNATURE = "e8 ?? ?? ?? ?? f3 0f ?? ?? ?? ?? 00 00 f3 0f";
 	
 	public static String GAMEDIRECTORY_SIGNATURE = "55 BA 04 01 00 00 48 89 E5 48 81 EC 10 01 00 00 48 8B 3D ?? ?? ?? ?? 48 8D B5 F0 FE FF FF";
-	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 8D 3D ?? ?? ?? ?? 48 89 E5 FF 50 28";
+	public static String ENGINEPOINTER_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 48 89 E5 5D 48 83 C0 08 C3";
+	public static String CLIENTSTATE_SIGNATURE =   "48 8B 05 ?? ?? ?? ?? 55 48 8D 3D ?? ?? ?? ?? 48 89 E5 FF 50 28";
 	public static String MDLCACHE_SIGNATURE = "48 8B 05 ?? ?? ?? ?? 55 31 F6 48 89 E5 5D 48 8B 38 48 8B 07 48 8B 40 48 FF E0"; // _g_pMDLCache
 	
 	/**
@@ -55,7 +41,6 @@ public final class Offsets {
 	public static long m_dwGameRules;
 	public static long m_dwClientClassHead;
 	public static long m_dwServerDetail;
-	public static long m_dwViewAngleBasePointer;
 
 	public static long m_dwClientState;
 	public static long m_dwModelCache;
@@ -72,22 +57,12 @@ public final class Offsets {
 	 * Static offsets
 	 */
 
-	public static long m_dwEntityLoopDistance = 0x20;
-	public static long m_dwBoneDistance = 0x30;
-
-	public static long m_viewPunchAngle = 0x68;
-	public static long m_aimPunchAngle = 0x74;
 	public static long m_bDormant = 0x121;
-	public static long m_vecViewOffset = 0x13c;
-	public static long m_vecVelocity = 0x148;
-	public static long m_vecBaseVelocity = 0x154;
-	public static long m_bSpotted = 0xECD;
 	// CBaseAnimating->m_pStudioBones 0x2C44 + 2C, DT_BaseAnimating->m_nForceBone + 2C
-	public static long m_dwBoneMatrix = 0x2C70;
+	public static long m_dwBoneMatrix = Netvars.CBaseAnimating.m_nForceBone + 0x2c;
 
-	public static long m_Local = 0x36f0;
 	public static long m_iLastCrosshairIndex = 0xBBD4; // outdated
-	public static long m_iCrosshairIndex = 0xBBE0;
+	public static long m_iCrosshairIndex = 0xBBF0;
 	public static long m_vecViewAngles = 0x8E20;
 
 	public static long m_nDeltaTick = 0x20C;
@@ -112,7 +87,7 @@ public final class Offsets {
 			
 			netvars.initialize();	
 		} catch (Exception ex) {
-			
+			ex.printStackTrace();
 		}
 		
 		
@@ -127,10 +102,20 @@ public final class Offsets {
 		// call $unk(-1)
 		// p/f *($unk(0)+0x8E20)
 		// p/f *(((int64_t(*)(int64_t)) $engine_addr+0x2FBC70)(0)+0x8E20)
-		long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), ENGINEPOINTER_SIGNATURE);
+		
+		/*GameInterface engineIf = Engine.engineModule().getInterfacePartially("VEngineClient0");
+		long GetLocalPlayer = engineIf.getFunction(12);
+		long GetLocalClient = Engine.engineModule().GetAbsoluteAddress(GetLocalPlayer + 9, 1, 5);
+		System.out.print(StringFormat.hex(GetLocalClient - Engine.engineModule().start()));*/
+		
+		long foundSplitScreenMgrlea = PatternScanner.getAddressForPattern(Engine.engineModule(), CLIENTSTATE_SIGNATURE);
 		long g_SplitScreenMgr = Engine.engineModule().GetAbsoluteAddress(foundSplitScreenMgrlea, 3, 7);
 		m_dwClientState = Engine.engineModule().readLong(g_SplitScreenMgr + 8) + 8;
+		
 
+		
+		long foundViewAngles = PatternScanner.getAddressForPattern(Engine.engineModule(), VIEWANGLES_SIGNATURE) + 9;
+		m_vecViewAngles = Engine.engineModule().readUnsignedInt(foundViewAngles);
 		
 		/*boolean ispaused = Engine.engineModule().readBoolean(clientstate + 0x220);
 		
@@ -165,7 +150,6 @@ public final class Offsets {
 
 		long foundattackmov = PatternScanner.getAddressForPattern(Engine.clientModule(), FORCEATTACK_SIGNATURE);
 		input.attack = Engine.clientModule().GetAbsoluteAddress(foundattackmov - 7, 3, 7);
-
 		input.init();
 
 		long overridepostprocessingdisablemov = PatternScanner.getAddressForPattern(Engine.clientModule(), OVERRIDEPOSTPROCESSINGDISABLE_SIGNATURE) + 26;
@@ -192,6 +176,10 @@ public final class Offsets {
 		long gamerulesptrptr = Engine.clientModule().GetAbsoluteAddress(gamerulesmov, 3, 7);
 		long gamerulesptr = Engine.clientModule().readLong(gamerulesptrptr);
 		m_dwGameRules = Engine.clientModule().readLong(gamerulesptr);
+		
+		/*long inCross = PatternScanner.getAddressForPattern(Engine.clientModule(), INCROSS_SIGNATURE);
+		m_iCrosshairIndex = Engine.clientModule().readInt(inCross + 13);
+		System.out.println(StringFormat.hex(m_iCrosshairIndex));*/
 
 		/*long gamedirlea = PatternScanner.getAddressForPattern(Engine.engineModule(), GAMEDIRECTORY_SIGNATURE) + 16;
 		long gamedirptr = Engine.engineModule().GetAbsoluteAddress(gamedirlea, 3, 7);
@@ -199,5 +187,9 @@ public final class Offsets {
 		modDirectory = Engine.engineModule().readString(m_szGameDirectory, 256);*/
 		// System.out.println(modDirectory);
 		
+		/*System.out.println(">>>>> Launcher module:");
+		Engine.launcherModule().getInterfaces().forEach((k, v) -> System.out.println(k + ": " + v.getName()));
+		long fnCreateGameWindow = Engine.launcherModule().readLong(Engine.launcherModule().start() + 0x25EA90 + 8 * 9);
+		System.out.print(StringFormat.hex(fnCreateGameWindow - Engine.launcherModule().start()));*/
 	}
 }
