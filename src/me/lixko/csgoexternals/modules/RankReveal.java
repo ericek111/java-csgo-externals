@@ -301,7 +301,7 @@ public class RankReveal extends Module {
 			// DrawUtils.drawString(DrawUtils.getScreenWidth() / 4 + 400 , y + 2, ChatColor.MEDIUM + "" + resid);
 		}
 
-		if (autodefusemod.defuser == resid) {
+		if (autodefusemod != null && autodefusemod.defuser == resid) {
 			if (autodefusemod.hastimetodefuse)
 				DrawUtils.setColor(0.15f, 0.8f, 0.1f, 0.8f);
 			else

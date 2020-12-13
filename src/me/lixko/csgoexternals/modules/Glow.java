@@ -74,7 +74,7 @@ public class Glow extends Module {
 			// if(i < 5)System.out.println(i + ": " + StringFormat.hex(g_glow.lastReadAddress() + i * glowobj.size()));
 
 			// Radar
-			Engine.clientModule().writeBoolean(entityaddr + Offsets.m_bSpotted, true);
+			Engine.clientModule().writeBoolean(entityaddr + Netvars.CBaseEntity.m_bSpotted, true);
 
 			glowobj.m_bRenderWhenOccluded.set(true);
 			glowobj.m_bRenderWhenUnoccluded.set(false);
@@ -136,19 +136,22 @@ public class Glow extends Module {
 				glowobj.m_bRenderWhenUnoccluded.set(false);
 				glowobj.m_bFullBloomRender.set(false);
 			}
-
-			if (issabomb) {
-				autodefusemod.bombentityaddr = entityaddr;
-				autodefusemod.autodefuset = true;
-				lastbombglow = System.currentTimeMillis();
-			} else if (System.currentTimeMillis() > lastbombglow + 500) {
-				autodefusemod.autodefuset = false;
+			
+			if (autodefusemod != null) {
+				if (issabomb) {
+					autodefusemod.bombentityaddr = entityaddr;
+					autodefusemod.autodefuset = true;
+					lastbombglow = System.currentTimeMillis();
+				} else if (System.currentTimeMillis() > lastbombglow + 500) {
+					autodefusemod.autodefuset = false;
+				}				
 			}
+
 
 			// glowobj.m_bFullBloomRender.set(true);
 			// glowobj.m_flGlowAlpha.set(0.5f);
 			// glowobj.m_nGlowStyle.set(3);
-			glowobj.m_flGlowAlpha.set(0.35f);
+			glowobj.m_flGlowAlpha.set(0.45f);
 
 			long glowptr = Pointer.nativeValue(g_glow);
 

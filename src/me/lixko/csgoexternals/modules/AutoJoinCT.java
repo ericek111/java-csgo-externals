@@ -87,12 +87,13 @@ public class AutoJoinCT extends Module {
 
 	@Override
 	public void onUIRender() {
-		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0)
+		if (!this.isToggled() || Offsets.m_dwLocalPlayer == 0 || rankreveal == null)
 			return;
 		loopc++;
 		if (loopc == 90) {
 			loopc = 0;
 		}
+		
 		if (rankreveal.canJoinCT) {
 			DrawUtils.setStyle(ChatColor.LARGE);
 			DrawUtils.setTextColor(0.54f, 0.9f, 1.0f);
