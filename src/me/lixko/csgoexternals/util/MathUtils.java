@@ -76,7 +76,14 @@ public class MathUtils {
 		}
 		return vec;
 	}
-
+	
+	public static float[] cfindMidpoint(float[] a, float[] b) {
+		float[] x = new float[a.length];
+		for (int i = 0; i < x.length; i++)
+			x[i] = (a[i] + b[i]) / 2;
+		return x;
+	}
+	
 	public static float[] subtract(float[] a, float[] b) {
 		for (int i = 0; i < a.length; i++)
 			a[i] -= b[i];
