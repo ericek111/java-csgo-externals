@@ -407,8 +407,8 @@ public class Netvars {
 			public static final long m_totalRoundsPlayed = 0x7c; // int
 			public static final long m_nOvertimePlaying = 0x80; // int
 			public static final long m_timeUntilNextPhaseStarts = 0x74; // float
-			public static final long m_flCMMItemDropRevealStartTime = 0x888; // float
-			public static final long m_flCMMItemDropRevealEndTime = 0x88c; // float
+			public static final long m_flCMMItemDropRevealStartTime = 0x890; // float
+			public static final long m_flCMMItemDropRevealEndTime = 0x894; // float
 			public static final long m_fRoundStartTime = 0x64; // float
 			public static final long m_bGameRestart = 0x6c; // int
 			public static final long m_flRestartRoundTime = 0x68; // float
@@ -419,63 +419,64 @@ public class Netvars {
 			public static final long m_bMapHasRescueZone = 0x8a; // int
 			public static final long m_bMapHasBuyZone = 0x8b; // int
 			public static final long m_bIsQueuedMatchmaking = 0x8c; // int
-			public static final long m_bIsValveDS = 0x8d; // int
-			public static final long m_bIsQuestEligible = 0x891; // int
-			public static final long m_bLogoMap = 0x8e; // int
-			public static final long m_bPlayAllStepSoundsOnServer = 0x8f; // int
-			public static final long m_iNumGunGameProgressiveWeaponsCT = 0x90; // int
-			public static final long m_iNumGunGameProgressiveWeaponsT = 0x94; // int
-			public static final long m_iSpectatorSlotCount = 0x98; // int
-			public static final long m_bBombDropped = 0x9b4; // int
-			public static final long m_bBombPlanted = 0x9b5; // int
-			public static final long m_iRoundWinStatus = 0x9b8; // int
-			public static final long m_eRoundWinReason = 0x9bc; // int
-			public static final long m_flDMBonusStartTime = 0x464; // float
-			public static final long m_flDMBonusTimeLength = 0x468; // float
-			public static final long m_unDMBonusWeaponLoadoutSlot = 0x46c; // int
-			public static final long m_bDMBonusActive = 0x46e; // int
-			public static final long m_bTCantBuy = 0x9c0; // int
-			public static final long m_bCTCantBuy = 0x9c1; // int
-			public static final long m_flGuardianBuyUntilTime = 0x9c4; // float
-			public static final long m_iMatchStats_RoundResults = 0x9c8; // int[30]
-			public static final long m_iMatchStats_PlayersAlive_T = 0xab8; // int[30]
-			public static final long m_iMatchStats_PlayersAlive_CT = 0xa40; // int[30]
-			public static final long m_GGProgressiveWeaponOrderCT = 0x9c; // int[60]
-			public static final long m_GGProgressiveWeaponOrderT = 0x18c; // int[60]
-			public static final long m_GGProgressiveWeaponKillUpgradeOrderCT = 0x27c; // int[60]
-			public static final long m_GGProgressiveWeaponKillUpgradeOrderT = 0x36c; // int[60]
-			public static final long m_MatchDevice = 0x45c; // int
-			public static final long m_bHasMatchStarted = 0x460; // int
-			public static final long m_TeamRespawnWaveTimes = 0xb30; // float[32]
-			public static final long m_flNextRespawnWave = 0xbb0; // float[32]
-			public static final long m_nNextMapInMapgroup = 0x470; // int
-			public static final long m_nEndMatchMapGroupVoteTypes = 0xc38; // int[10]
-			public static final long m_nEndMatchMapGroupVoteOptions = 0xc60; // int[10]
-			public static final long m_nEndMatchMapVoteWinner = 0xc88; // int
-			public static final long m_bIsDroppingItems = 0x890; // int
-			public static final long m_iActiveAssassinationTargetMissionID = 0xc30; // int
+			public static final long m_nQueuedMatchmakingMode = 0x90; // int
+			public static final long m_bIsValveDS = 0x94; // int
+			public static final long m_bIsQuestEligible = 0x899; // int
+			public static final long m_bLogoMap = 0x95; // int
+			public static final long m_bPlayAllStepSoundsOnServer = 0x96; // int
+			public static final long m_iNumGunGameProgressiveWeaponsCT = 0x98; // int
+			public static final long m_iNumGunGameProgressiveWeaponsT = 0x9c; // int
+			public static final long m_iSpectatorSlotCount = 0xa0; // int
+			public static final long m_bBombDropped = 0x9bc; // int
+			public static final long m_bBombPlanted = 0x9bd; // int
+			public static final long m_iRoundWinStatus = 0x9c0; // int
+			public static final long m_eRoundWinReason = 0x9c4; // int
+			public static final long m_flDMBonusStartTime = 0x46c; // float
+			public static final long m_flDMBonusTimeLength = 0x470; // float
+			public static final long m_unDMBonusWeaponLoadoutSlot = 0x474; // int
+			public static final long m_bDMBonusActive = 0x476; // int
+			public static final long m_bTCantBuy = 0x9c8; // int
+			public static final long m_bCTCantBuy = 0x9c9; // int
+			public static final long m_flGuardianBuyUntilTime = 0x9cc; // float
+			public static final long m_iMatchStats_RoundResults = 0x9d0; // int[30]
+			public static final long m_iMatchStats_PlayersAlive_T = 0xac0; // int[30]
+			public static final long m_iMatchStats_PlayersAlive_CT = 0xa48; // int[30]
+			public static final long m_GGProgressiveWeaponOrderCT = 0xa4; // int[60]
+			public static final long m_GGProgressiveWeaponOrderT = 0x194; // int[60]
+			public static final long m_GGProgressiveWeaponKillUpgradeOrderCT = 0x284; // int[60]
+			public static final long m_GGProgressiveWeaponKillUpgradeOrderT = 0x374; // int[60]
+			public static final long m_MatchDevice = 0x464; // int
+			public static final long m_bHasMatchStarted = 0x468; // int
+			public static final long m_TeamRespawnWaveTimes = 0xb38; // float[32]
+			public static final long m_flNextRespawnWave = 0xbb8; // float[32]
+			public static final long m_nNextMapInMapgroup = 0x478; // int
+			public static final long m_nEndMatchMapGroupVoteTypes = 0xc40; // int[10]
+			public static final long m_nEndMatchMapGroupVoteOptions = 0xc68; // int[10]
+			public static final long m_nEndMatchMapVoteWinner = 0xc90; // int
+			public static final long m_bIsDroppingItems = 0x898; // int
+			public static final long m_iActiveAssassinationTargetMissionID = 0xc38; // int
 			public static final long m_fMatchStartTime = 0x60; // float
-			public static final long m_szTournamentEventName = 0x474; // const char *
-			public static final long m_szTournamentEventStage = 0x578; // const char *
-			public static final long m_szTournamentPredictionsTxt = 0x780; // const char *
-			public static final long m_nTournamentPredictionsPct = 0x884; // int
-			public static final long m_szMatchStatTxt = 0x67c; // const char *
-			public static final long m_nGuardianModeWaveNumber = 0x894; // int
-			public static final long m_nGuardianModeSpecialKillsRemaining = 0x898; // int
-			public static final long m_nGuardianModeSpecialWeaponNeeded = 0x89c; // int
-			public static final long m_nHalloweenMaskListSeed = 0x9b0; // int
-			public static final long m_numGlobalGiftsGiven = 0x8a8; // int
-			public static final long m_numGlobalGifters = 0x8ac; // int
-			public static final long m_numGlobalGiftsPeriodSeconds = 0x8b0; // int
-			public static final long m_arrFeaturedGiftersAccounts = 0x8b4; // int[4]
-			public static final long m_arrFeaturedGiftersGifts = 0x8c4; // int[4]
-			public static final long m_arrProhibitedItemIndices = 0x8d4; // int[100]
-			public static final long m_numBestOfMaps = 0x9ac; // int
-			public static final long m_arrTournamentActiveCasterAccounts = 0x99c; // int[4]
-			public static final long m_iNumConsecutiveCTLoses = 0xc8c; // int
-			public static final long m_iNumConsecutiveTerroristLoses = 0xc90; // int
+			public static final long m_szTournamentEventName = 0x47c; // const char *
+			public static final long m_szTournamentEventStage = 0x580; // const char *
+			public static final long m_szTournamentPredictionsTxt = 0x788; // const char *
+			public static final long m_nTournamentPredictionsPct = 0x88c; // int
+			public static final long m_szMatchStatTxt = 0x684; // const char *
+			public static final long m_nGuardianModeWaveNumber = 0x89c; // int
+			public static final long m_nGuardianModeSpecialKillsRemaining = 0x8a0; // int
+			public static final long m_nGuardianModeSpecialWeaponNeeded = 0x8a4; // int
+			public static final long m_nHalloweenMaskListSeed = 0x9b8; // int
+			public static final long m_numGlobalGiftsGiven = 0x8b0; // int
+			public static final long m_numGlobalGifters = 0x8b4; // int
+			public static final long m_numGlobalGiftsPeriodSeconds = 0x8b8; // int
+			public static final long m_arrFeaturedGiftersAccounts = 0x8bc; // int[4]
+			public static final long m_arrFeaturedGiftersGifts = 0x8cc; // int[4]
+			public static final long m_arrProhibitedItemIndices = 0x8dc; // int[100]
+			public static final long m_numBestOfMaps = 0x9b4; // int
+			public static final long m_arrTournamentActiveCasterAccounts = 0x9a4; // int[4]
+			public static final long m_iNumConsecutiveCTLoses = 0xc94; // int
+			public static final long m_iNumConsecutiveTerroristLoses = 0xc98; // int
 			public static final class m_SurvivalRules { // DT_SurvivalGameRules
-				public static final long BASE_OFFSET = 0xd48;
+				public static final long BASE_OFFSET = 0xd50;
 				public static final long m_vecPlayAreaMins = 0x0; // Vector
 				public static final long m_vecPlayAreaMaxs = 0xc; // Vector
 				public static final long m_iPlayerSpawnHexIndices = 0x18; // int[64]
@@ -493,6 +494,13 @@ public class Netvars {
 				public static final long m_SurvivalGameRuleDecisionTypes = 0x628; // int[16]
 				public static final long m_SurvivalGameRuleDecisionValues = 0x668; // int[16]
 				public static final long m_flSurvivalStartTime = 0x6a8; // float
+			}
+			public static final class m_RetakeRules { // DT_RetakeGameRules
+				public static final long BASE_OFFSET = 0x1420;
+				public static final long m_bBlockersPresent = 0x178; // int
+				public static final long m_bRoundInProgress = 0x179; // int
+				public static final long m_iFirstSecondHalfRound = 0x17c; // int
+				public static final long m_iBombSite = 0x180; // int
 			}
 		}
 	}
@@ -744,6 +752,7 @@ public class Netvars {
 		public static final long m_hPlayer = 0xf80; // int
 		public static final long m_hPingedEntity = 0xf84; // int
 		public static final long m_iType = 0xf88; // int
+		public static final long m_bUrgent = 0xf90; // int
 	}
 
 	public static final class CCSRagdoll { // DT_CSRagdoll
@@ -1461,6 +1470,24 @@ public class Netvars {
 	}
 
 	public static final class CBaseTempEntity { // DT_BaseTempEntity
+	}
+
+	public static final class CMapVetoPickController { // DT_MapVetoPickController
+		public static final long m_nDraftType = 0xf80; // int
+		public static final long m_nTeamWinningCoinToss = 0xf84; // int
+		public static final long m_nTeamWithFirstChoice = 0xf88; // int[64]
+		public static final long m_nVoteMapIdsList = 0x1088; // int[7]
+		public static final long m_nAccountIDs = 0x10a4; // int[64]
+		public static final long m_nMapId0 = 0x11a4; // int[64]
+		public static final long m_nMapId1 = 0x12a4; // int[64]
+		public static final long m_nMapId2 = 0x13a4; // int[64]
+		public static final long m_nMapId3 = 0x14a4; // int[64]
+		public static final long m_nMapId4 = 0x15a4; // int[64]
+		public static final long m_nMapId5 = 0x16a4; // int[64]
+		public static final long m_nStartingSide0 = 0x17a4; // int[64]
+		public static final long m_nCurrentPhase = 0x18a4; // int
+		public static final long m_nPhaseStartTick = 0x18a8; // int
+		public static final long m_nPhaseDurationTicks = 0x18ac; // int
 	}
 
 	public static final class CVoteController { // DT_VoteController
