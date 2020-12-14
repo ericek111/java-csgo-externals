@@ -15,7 +15,10 @@ public class LocalPlayerPosition {
 	private float pitch, yaw, origyaw;
 	public int fov, defaultfov;
 	private float[] viewangles = new float[3], viewpunch = new float[3], aimpunch = new float[3];
-
+	
+	MemoryBuffer engViewAnglesBuf = new MemoryBuffer(Float.BYTES * 3);
+	VectorMem engViewAngles = new VectorMem(engViewAnglesBuf);
+	
 	public LocalPlayerPosition() {
 		lpvec.setSource(lpvecbuf);
 	}
@@ -33,17 +36,18 @@ public class LocalPlayerPosition {
 			Engine.clientModule().read(lpaddr + Netvars.CBaseEntity.m_vecOrigin, lpvec.size(), lpvecbuf);
 			lpvec.copyTo(pos);
 			
-			Engine.clientModule().read(lpaddr + 0x3758, lpvec.size(), lpvecbuf);
+			Engine.clientModule().read(lpaddr + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_viewPunchAngle, lpvec.size(), lpvecbuf);
 			lpvec.copyTo(viewpunch);
 			
 			Engine.clientModule().read(lpaddr + 0x3764, lpvec.size(), lpvecbuf);
 			lpvec.copyTo(aimpunch);
 			
-			Engine.clientModule().read(lpaddr + Offsets.m_vecViewOffset, lpvec.size(), lpvecbuf);
+			Engine.clientModule().read(lpaddr + Netvars.CBasePlayer.localdata.m_vecViewOffset_0, lpvec.size(), lpvecbuf);
 			viewoffset = lpvec.getVector();
 			vieworigin = MathUtils.cadd(pos, viewoffset);
 			
-			Engine.clientModule().read(Offsets.m_dwClientState + Offsets.m_vecViewAngles, lpvecbuf.size(), lpvecbuf);
+			Engine.clientModule().read(lpaddr + Netvars.CCSPlayer.m_angEyeAngles, lpvec.size(), lpvecbuf);
+			//Engine.clientModule().read(Offsets.m_dwClientState + Offsets.m_vecViewAngles, lpvecbuf.size(), lpvecbuf);
 			origyaw = lpvec.y.getFloat();
 			yaw = 90 - lpvec.y.getFloat();
 			pitch = lpvec.x.getFloat();
@@ -57,7 +61,12 @@ public class LocalPlayerPosition {
 			yaw = 90 - lpvec.y.getFloat();
 			pitch = lpvec.x.getFloat();
 		}
-
+	}
+	
+	public void setEngineAngles(float[] va) {
+		MathUtils.ClampAngle(va);
+		this.engViewAngles.readFrom(va);
+		Engine.engineModule().write(Offsets.m_dwClientState + Offsets.m_vecViewAngles, this.engViewAnglesBuf);
 	}
 
 	public float getX() {

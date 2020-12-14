@@ -4,6 +4,7 @@ import com.github.jonatino.misc.MemoryBuffer;
 
 import me.lixko.csgoexternals.Client;
 import me.lixko.csgoexternals.Engine;
+import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.VectorMem;
 import me.lixko.csgoexternals.util.DrawUtils;
@@ -32,7 +33,7 @@ public class RecoilCross extends Module {
 					if (!needsDataUpdate || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
-					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
+					Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
 					float pvecy = punchvec.y.getFloat();
 					float pvecx = punchvec.x.getFloat();
 					crosshairX = (int) (sx - (dx * pvecy));
