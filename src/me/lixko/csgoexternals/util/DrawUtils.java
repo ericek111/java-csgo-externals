@@ -515,6 +515,10 @@ public class DrawUtils {
 
 	public static void draw3DString(String str, float x, float y, float z, float pitch, float roll, float scale) {
 
+		if (fontRenderer == null || fontRenderer.textRenderer == null) {
+			return;
+		}
+		
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glTranslatef(x, y, z);
@@ -537,10 +541,16 @@ public class DrawUtils {
 		return drawable.getSurfaceHeight();
 	}
 
-	public static void drawCube() {
+	public static void drawCube(float[] p1, float[] p2) {
+		float[] mid = MathUtils.cfindMidpoint(p1, p2);
+		
 		gl.glPushMatrix();
-		gl.glTranslatef(0f, 0f, 0f);
-		gl.glScalef(1f, 2f, 1f);
+
+		gl.glTranslatef(mid[0], mid[2], -mid[1]);
+		
+		float[] size = MathUtils.csubtract(p1, p2);
+		MathUtils.abs(size);
+		gl.glScalef(size[0] * 0.5f, size[1] * 0.5f, size[2] * 0.5f);
 
 		// giving different colors to different sides
 		gl.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
