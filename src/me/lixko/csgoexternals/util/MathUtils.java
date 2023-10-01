@@ -84,6 +84,24 @@ public class MathUtils {
 		return x;
 	}
 	
+	public static float[] crotateVector(float[] start, float[] angles, float length) {
+		float[] res = start.clone();
+		float[] angle = angles.clone();
+		float[] diff = {0f, 0f, 0f};
+		
+		angle[0] *= -1;
+
+		MathUtils.toRadians(angle);
+		diff[0] = (float) Math.cos(angle[1]) * (float) Math.cos(angle[0]);
+		diff[1] = (float) Math.sin(angle[1]) * (float) Math.cos(angle[0]);
+		diff[2] = (float) Math.sin(angle[0]);
+		MathUtils.multiply(diff, length);
+		MathUtils.add(res, diff);
+		
+		return res;
+		
+	}
+	
 	public static float[] subtract(float[] a, float[] b) {
 		for (int i = 0; i < a.length; i++)
 			a[i] -= b[i];
@@ -280,6 +298,21 @@ public class MathUtils {
 		}
 
 		return flNew;
+	}
+	
+	public static float[] toRadians(float[] angles) {
+		for (int i = 0; i < angles.length; i++) {
+			angles[i] = (float) Math.toRadians(angles[i]);
+		}
+		return angles;
+	}
+	
+	public static float[] ctoRadians(float[] angles) {
+		float[] res = angles.clone();
+		for (int i = 0; i < angles.length; i++) {
+			res[i] = (float) Math.toRadians(angles[i]);
+		}
+		return res;
 	}
 
 	public static double exp(double val) {
