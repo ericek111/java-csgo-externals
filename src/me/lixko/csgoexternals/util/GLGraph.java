@@ -146,8 +146,9 @@ public class GLGraph {
 			gl.glEnd();
 		}
 		
-		DrawUtils.setColor(0.8f, 0.8f, 0.8f, 0.8f);
+		/* DrawUtils.setColor(0.8f, 0.8f, 0.8f, 0.8f);
 		DrawUtils.drawLinew((int) startX, (int) startY, (int) sizeX, 1);
+		DrawUtils.drawLinew((int) startX, (int) startY, 1, (int) sizeY); */
 				
 		/*gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		//gl.glEnableClientState(GL2.GL_COLOR_ARRAY);

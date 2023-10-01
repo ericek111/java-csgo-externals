@@ -494,6 +494,9 @@ public class DrawUtils {
 	}
 
 	public static void drawRectangleAroundString(String str, int x, int y) {
+		if (DrawUtils.fontRenderer == null)
+			return;
+		
 		float txtw = DrawUtils.fontRenderer.getStringWidth(str);
 		float txth = DrawUtils.fontRenderer.getStringHeight(str);
 
@@ -514,10 +517,12 @@ public class DrawUtils {
 	}
 
 	public static void draw3DString(String str, float x, float y, float z, float pitch, float roll, float scale) {
-
+		
+		getFont(fontname, textstyle, textsize);
 		if (fontRenderer == null || fontRenderer.textRenderer == null) {
 			return;
 		}
+		
 		
 		gl.glPushMatrix();
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
