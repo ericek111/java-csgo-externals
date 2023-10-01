@@ -1,7 +1,15 @@
 package me.lixko.csgoexternals.modules;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,12 +51,13 @@ public class PianoBot extends Module {
 	// HashMap<Integer, float[]> keysPos = new HashMap<>();
 	float[][] keysPos = new float[25][3];
 	boolean runningSequencer = false;
+	long lastMidiNote = 0;
 	Sequencer sequencer;
 	List<Integer> noteQueue = Collections.synchronizedList(new ArrayList<Integer>());
 	int transposeOctaves = -5;
 	boolean onlyInclude = false;
 	boolean skipD2 = true;
-	int[] skipChannels = new int[] {};	
+	int[] skipChannels = new int[] {};
 
 	Thread queueLoop = new Thread(new Runnable() {
 		@Override
@@ -56,8 +65,8 @@ public class PianoBot extends Module {
 			while (Client.theClient.isRunning) {
 				try {
 					Thread.sleep(5);
-					if (!runningSequencer)
-						continue;
+					/* if (!runningSequencer && sequencer != null)
+						continue; */
 					
 					int noteKey = 0;
 
@@ -65,37 +74,87 @@ public class PianoBot extends Module {
 						if (noteQueue.isEmpty())
 							continue;
 						
-						noteKey = noteQueue.remove(0);						
+						noteKey = noteQueue.remove(0);
 					}
 					
 					System.out.println("Playing " + noteKey);
 					aimToKeyByIdx(noteKey);
-					Thread.sleep(5);
+					Thread.sleep(4);
 					aimToKeyByIdx(noteKey);
-					Thread.sleep(5);
+					Thread.sleep(4);
 					aimToKeyByIdx(noteKey);
-					Thread.sleep(5);
-					aimToKeyByIdx(noteKey);
-					Thread.sleep(5);
-					pressUse();
 					Thread.sleep(10);
+					aimToKeyByIdx(noteKey);
+					Thread.sleep(5);
+					aimToKeyByIdx(noteKey);
+					Thread.sleep(5);
+					// pressUse();
+					pressUse();
+					// Thread.sleep(40);
 				} catch (Exception e) {
 					e.printStackTrace();
-					return;
+					return;	
 				}
 			}
 		}
 	});
+	
+	Thread serverLoop = new Thread(new Runnable() {
+		@Override
+		public void run() {
+	        try (ServerSocket serverSocket = new ServerSocket(6969)) {	        	
+	            while (true) {
+	                Socket socket = serverSocket.accept();
+	                
+	                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+	                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	                String line = in.readLine();
+	                if (line == null || line.length() == 0) {
+	                	continue;
+	                }
+	                int n = 0;
+	                try {
+	                	n = Integer.parseInt(line);	                	
+	                } catch (Exception ex) {
+	                }
+	                
+	                int octave = n / 12 + 1;
+				    int note = n % 12;
+	                octave += transposeOctaves;
+	                
+	                int keyIdx = octave * 12 + note;
+	                System.out.println("MIDI: " + n + " -> " + "o: " + octave + " n: " + note + " -> " + keyIdx);
+	                
+	                if (keysPos.length <= keyIdx || keyIdx < 0) {
+	                	continue;
+		            }
+	                
+	                synchronized(noteQueue) {
+						noteQueue.add(keyIdx);
+					}
+	                lastMidiNote = System.currentTimeMillis();
+	            }
+	 
+	        } catch (IOException ex) {
+	            System.out.println("Server exception: " + ex.getMessage());
+	            ex.printStackTrace();
+	        }
+	        
+		}
+	});
+	
+	
 
 	@Override
 	public void onEngineLoaded() {
 		queueLoop.start();
+		serverLoop.start();
 	}
 
 	@Override
 	public void onRegister() {
 		try {
-			bsp = new BSPParser(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/maps/jb_undertale_v1e.bsp"));
+			bsp = new BSPParser(new File("/media/games/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/csgo/maps/jb_undertale_v1e.bsp"));
 			bsp.parse();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -144,18 +203,48 @@ public class PianoBot extends Module {
 			// keysPos.put(keyNote, new float[] { minX, zMid, maxY });
 		}
 		
+		// use MIDI keyboard
+		if (false) {
+			return;
+		}
+		
 		try {
 			sequencer = MidiSystem.getSequencer(false);
 			sequencer.open();
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/Various Artists/"));
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/UNSORTED MIDI/SimplePlan_Welcome-to-my-life.mid")); onlyInclude = true; skipChannels = new int[] { 4 };
 			
-			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/beethoven_ode_to_joy.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/Anthems/world-anthems/slovakia.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/HitSongs/NineInchNails/Hurt.mid"));skipChannels = new int[] {9};
+			
+			// Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/still_alive.mid"));skipChannels = new int[] {6};transposeOctaves = -6;
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/beethoven_ode_to_joy.mid"));
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/gauntlet.mid"));
 			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/Ecce_homo_qui_est_faba.mid"));skipChannels = new int[] {6}; skipD2 = true;transposeOctaves = -6;
 			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/mices.mid"));
-			Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/wet_hands.mid"));
-			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/sg_end.mid"));skipD2 = false;
-			//meh Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/jurassic2.mid"));skipD2 = true;skipChannels = new int[] {0, 1}; onlyInclude = true; transposeOctaves = -6;
-			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/jurassic.mid"));skipD2 = true;skipChannels = new int[] {0, 1}; onlyInclude = true;
-			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/mario.mid"));skipD2 = true;skipChannels = new int[] {0, 1}; onlyInclude = true; transposeOctaves = -6;
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/wet_hands.mid"));
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/sg_end.mid"));skipD2 = true;
+			
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/jurassic2.mid"));skipD2 = true;skipChannels = new int[] {0, 1}; onlyInclude = true; transposeOctaves = -6;
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/jurassic.mid"));skipChannels = new int[] {0, 1}; onlyInclude = true;
+			Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/mario.mid"));skipChannels = new int[] {0, 1}; onlyInclude = true; transposeOctaves = -6;
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/megalovania.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/Various Artists/FURELISE.MID"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/wander.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/Fruhlingsstimmen_Op.410.mid"));
+			
+			// Sequence sequence = MidiSystem.getSequence(new File("/media/erik/DATA/Backup4/Documents/midi/ievan_polkka.mid"));skipChannels = new int[] {3}; onlyInclude = true;
+			//Sequence sequence = MidiSystem.getSequence(new File("/media/erik/DATA/Backup4/Documents/midi/soviet.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Downloads/50000 MIDI FILES/ClassicRock/Survivor/Eye_of_the_Tiger.mid"));
+			
+			// Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/coconut.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/guns4hands.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/interstellar.mid"));
+			//Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/revenge.mid"));skipChannels = new int[] {9, 1};
+			// Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/sherlock.mid")); transposeOctaves = -4;
+			// Sequence sequence = MidiSystem.getSequence(new File("/media/DATA/Backup4/Documents/midi/sg-1.mid"));
+			// Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/xfiles.mid")); transposeOctaves = -6;
+			//Sequence sequence = MidiSystem.getSequence(new File("/home/erik/Documents/MIDI/sam_and_jack.mid")); transposeOctaves = -4; skipD2 = false;
 			sequencer.setSequence(sequence);
 			this.prepareSequencer();
 		} catch (MidiUnavailableException | InvalidMidiDataException | IOException e1) {
@@ -216,6 +305,12 @@ public class PianoBot extends Module {
 						noteQueue.add(keyIdx);
 					}
 					
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
 					
 				}
 			}
@@ -264,7 +359,8 @@ public class PianoBot extends Module {
 	
 	@Override
 	public void onUIRender() {
-		if (!Client.theClient.isRunning || !this.runningSequencer)
+		
+		if (!Client.theClient.isRunning || (!this.runningSequencer && (System.currentTimeMillis() - 1000 * 15 > lastMidiNote)))
 			return;
 		
 		int w = 250;
@@ -276,11 +372,14 @@ public class PianoBot extends Module {
 		int y1 = DrawUtils.getScreenHeight() / 2 - h / 2 + 230;
 		int y2 = DrawUtils.getScreenHeight() / 2 + h / 2 + 230;
 		
-		DrawUtils.setColor(0x000000A0);
-		DrawUtils.fillRectangle(x1, y1, x2, y2);
-		
 		DrawUtils.setTextColor(0xFFFFFFFF);
 		DrawUtils.drawString(x2 + 10, y1, this.transposeOctaves + "");
+		
+		if (!this.runningSequencer)
+			return;
+		
+		DrawUtils.setColor(0x000000A0);
+		DrawUtils.fillRectangle(x1, y1, x2, y2);
 		
 		x1 += border;
 		y1 += border;
@@ -308,8 +407,9 @@ public class PianoBot extends Module {
 	@Override
 	public void onKeyPress(KeySym key) {
 		
-		if (key.intValue() == XKeySym.XK_g) {
-			
+		float distance = MathUtils.VecDist(this.keysPos[0], DrawUtils.lppos.getOrigin());
+		
+		if (key.intValue() == XKeySym.XK_g && distance < 800f) {
 			try {
 				this.aimToKeyByIdx(keyi);
 				Thread.sleep(10);
@@ -343,10 +443,19 @@ public class PianoBot extends Module {
 			return;
 		}
 		
+		if (sequencer == null) {
+			return;
+		}
+		
 		if (runningSequencer) {
 			this.haltSequencer();
 		} else {
 			this.haltSequencer();
+		
+			if (distance > 800f) {
+				return;
+			}
+			
 			sequencer.start();
 			runningSequencer = true;
 		}
