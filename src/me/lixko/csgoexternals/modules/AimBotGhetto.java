@@ -53,7 +53,7 @@ public class AimBotGhetto extends Module {
 		MemoryBuffer entityBonesBfr = new MemoryBuffer(matrixstr.size());
 		matrixstr.setSource(entityBonesBfr);
 		long boneMatrixPtr = Engine.clientModule().readLong(entityptr + Offsets.m_dwBoneMatrix);
-		Engine.clientModule().read(boneMatrixPtr + Offsets.m_dwBoneDistance * bone, entityBonesBfr);
+		Engine.clientModule().read(boneMatrixPtr + matrixstr.size() * bone, entityBonesBfr);
 		float[] x = new float[3];
 		x[0] = matrixstr.f03.getFloat();
 		x[1] = matrixstr.f13.getFloat();
@@ -145,9 +145,9 @@ public class AimBotGhetto extends Module {
 		//xErrGraph.putSample((float) Math.sin(((float) (loopi % 500) / 100f) * Math.PI) * 100f);
 		//xErrGraph.putSample(loopi % 100);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, vectorbuf);
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecViewOffset, vectorbuf2);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.localdata.m_vecViewOffset_0, vectorbuf2);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_angRotation, vectorbuf3);
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, vectorbuf4);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_aimPunchAngle, vectorbuf4);
 		float[] posOffset = MathUtils.add(vectorbuf.getFloatArray(0, 3), vectorbuf2.getFloatArray(0, 3));
 		float[] viewAngle = vectorbuf3.getFloatArray(0, 3);
 		float[] punchAngle = vectorbuf4.getFloatArray(0, 3);

@@ -2,8 +2,8 @@ package me.lixko.csgoexternals.offsets;
 
 public class Netvars { 
 	public static final class CChicken { // DT_CChicken
-		public static final long m_jumpedThisFrame = 0x306c; // int
-		public static final long m_leader = 0x3070; // int
+		public static final long m_jumpedThisFrame = 0x3074; // int
+		public static final long m_leader = 0x3078; // int
 	}
 
 	public static final class CFireCrackerBlast { // DT_FireCrackerBlast
@@ -28,15 +28,15 @@ public class Netvars {
 	}
 
 	public static final class CPhysPropLootCrate { // DT_PhysPropLootCrate
-		public static final long m_bRenderInPSPM = 0x3078; // int
-		public static final long m_bRenderInTablet = 0x3079; // int
+		public static final long m_bRenderInPSPM = 0x3080; // int
+		public static final long m_bRenderInTablet = 0x3081; // int
 		public static final long m_iHealth = 0x138; // int
-		public static final long m_iMaxHealth = 0x307c; // int
+		public static final long m_iMaxHealth = 0x3084; // int
 	}
 
 	public static final class CItemDogtags { // DT_ItemDogtags
-		public static final long m_OwningPlayer = 0x3eb4; // int
-		public static final long m_KillingPlayer = 0x3eb8; // int
+		public static final long m_OwningPlayer = 0x3ebc; // int
+		public static final long m_KillingPlayer = 0x3ec0; // int
 	}
 
 	public static final class CSensorGrenadeProjectile { // DT_SensorGrenadeProjectile
@@ -46,12 +46,12 @@ public class Netvars {
 	}
 
 	public static final class CWeaponBaseItem { // DT_WeaponBaseItem
-		public static final long m_bRedraw = 0x3c88; // int
+		public static final long m_bRedraw = 0x3c90; // int
 	}
 
 	public static final class CSmokeGrenadeProjectile { // DT_SmokeGrenadeProjectile
-		public static final long m_bDidSmokeEffect = 0x30a8; // int
-		public static final long m_nSmokeEffectTickBegin = 0x30a4; // int
+		public static final long m_bDidSmokeEffect = 0x30b0; // int
+		public static final long m_nSmokeEffectTickBegin = 0x30ac; // int
 	}
 
 	public static final class CDecoyProjectile { // DT_DecoyProjectile
@@ -64,11 +64,11 @@ public class Netvars {
 	}
 
 	public static final class CMolotovProjectile { // DT_MolotovProjectile
-		public static final long m_bIsIncGrenade = 0x30a1; // int
+		public static final long m_bIsIncGrenade = 0x30a9; // int
 	}
 
 	public static final class CWeaponNOVA { // DT_WeaponNOVA
-		public static final long m_reloadState = 0x3c78; // int
+		public static final long m_reloadState = 0x3c80; // int
 	}
 
 	public static final class CSensorGrenade { // DT_SensorGrenade
@@ -84,21 +84,22 @@ public class Netvars {
 	}
 
 	public static final class CWeaponShield { // DT_WeaponShield
+		public static final long m_flDisplayHealth = 0x3c9c; // float
 	}
 
 	public static final class CWeaponZoneRepulsor { // DT_WeaponZoneRepulsor
 	}
 
 	public static final class CWeaponTaser { // DT_WeaponTaser
-		public static final long m_fFireTime = 0x3c94; // float
+		public static final long m_fFireTime = 0x3c9c; // float
 	}
 
 	public static final class CWeaponSawedoff { // DT_WeaponSawedoff
-		public static final long m_reloadState = 0x3c78; // int
+		public static final long m_reloadState = 0x3c80; // int
 	}
 
 	public static final class CWeaponXM1014 { // DT_WeaponXM1014
-		public static final long m_reloadState = 0x3c78; // int
+		public static final long m_reloadState = 0x3c80; // int
 	}
 
 	public static final class CSmokeGrenade { // DT_SmokeGrenade
@@ -108,55 +109,55 @@ public class Netvars {
 	}
 
 	public static final class CWeaponM3 { // DT_WeaponM3
-		public static final long m_reloadState = 0x3c78; // int
+		public static final long m_reloadState = 0x3c80; // int
 	}
 
 	public static final class CBumpMine { // DT_WeaponBumpMine
 	}
 
 	public static final class CBumpMineProjectile { // DT_BumpMineProjectile
-		public static final long m_nParentBoneIndex = 0x306c; // int
-		public static final long m_vecParentBonePos = 0x3070; // Vector
-		public static final long m_bArmed = 0x307c; // int
+		public static final long m_nParentBoneIndex = 0x3074; // int
+		public static final long m_vecParentBonePos = 0x3078; // Vector
+		public static final long m_bArmed = 0x3084; // int
 	}
 
 	public static final class CBreachCharge { // DT_WeaponBreachCharge
 	}
 
 	public static final class CBreachChargeProjectile { // DT_BreachChargeProjectile
-		public static final long m_bShouldExplode = 0x3068; // int
-		public static final long m_weaponThatThrewMe = 0x306c; // int
-		public static final long m_nParentBoneIndex = 0x3070; // int
-		public static final long m_vecParentBonePos = 0x3074; // Vector
+		public static final long m_bShouldExplode = 0x3070; // int
+		public static final long m_weaponThatThrewMe = 0x3074; // int
+		public static final long m_nParentBoneIndex = 0x3078; // int
+		public static final long m_vecParentBonePos = 0x307c; // Vector
 	}
 
 	public static final class CTablet { // DT_WeaponTablet
-		public static final long m_flUpgradeExpirationTime_0 = 0x3c88; // float
+		public static final long m_flUpgradeExpirationTime_0 = 0x3c90; // float
 		public static final long m_flUpgradeExpirationTime = 0x0; // array elements: 4
-		public static final long m_vecLocalHexFlags_0 = 0x3c98; // int
+		public static final long m_vecLocalHexFlags_0 = 0x3ca0; // int
 		public static final long m_vecLocalHexFlags = 0x0; // array elements: 42
-		public static final long m_nContractKillGridIndex = 0x3d40; // int
-		public static final long m_nContractKillGridHighResIndex = 0x3d44; // int
-		public static final long m_bTabletReceptionIsBlocked = 0x3d48; // int
-		public static final long m_flScanProgress = 0x3d4c; // float
-		public static final long m_flBootTime = 0x3d50; // float
-		public static final long m_flShowMapTime = 0x3d54; // float
-		public static final long m_vecNotificationIds_0 = 0x3d64; // int
+		public static final long m_nContractKillGridIndex = 0x3d48; // int
+		public static final long m_nContractKillGridHighResIndex = 0x3d4c; // int
+		public static final long m_bTabletReceptionIsBlocked = 0x3d50; // int
+		public static final long m_flScanProgress = 0x3d54; // float
+		public static final long m_flBootTime = 0x3d58; // float
+		public static final long m_flShowMapTime = 0x3d5c; // float
+		public static final long m_vecNotificationIds_0 = 0x3d6c; // int
 		public static final long m_vecNotificationIds = 0x0; // array elements: 8
-		public static final long m_vecNotificationTimestamps_0 = 0x3d84; // float
+		public static final long m_vecNotificationTimestamps_0 = 0x3d8c; // float
 		public static final long m_vecNotificationTimestamps = 0x0; // array elements: 8
-		public static final long m_vecPlayerPositionHistory_0 = 0x3da8; // Vector
+		public static final long m_vecPlayerPositionHistory_0 = 0x3db0; // Vector
 		public static final long m_vecPlayerPositionHistory = 0x0; // array elements: 24
-		public static final long m_nLastPurchaseIndex = 0x3da4; // int
-		public static final long m_vecNearestMetalCratePos = 0x3d58; // Vector
+		public static final long m_nLastPurchaseIndex = 0x3dac; // int
+		public static final long m_vecNearestMetalCratePos = 0x3d60; // Vector
 	}
 
 	public static final class CFists { // DT_WeaponFists
-		public static final long m_bPlayingUninterruptableAct = 0x3c74; // int
+		public static final long m_bPlayingUninterruptableAct = 0x3c7c; // int
 	}
 
 	public static final class CMelee { // DT_WeaponMelee
-		public static final long m_flThrowAt = 0x3c74; // float
+		public static final long m_flThrowAt = 0x3c7c; // float
 	}
 
 	public static final class CKnifeGG { // DT_WeaponKnifeGG
@@ -277,41 +278,42 @@ public class Netvars {
 	}
 
 	public static final class CWeaponCSBaseGun { // DT_WeaponCSBaseGun
-		public static final long m_zoomLevel = 0x3c74; // int
-		public static final long m_iBurstShotsRemaining = 0x3c78; // int
+		public static final long m_zoomLevel = 0x3c7c; // int
+		public static final long m_iBurstShotsRemaining = 0x3c80; // int
 	}
 
 	public static final class CWeaponCSBase { // DT_WeaponCSBase
-		public static final long m_weaponMode = 0x3bac; // int
-		public static final long m_fAccuracyPenalty = 0x3bc4; // float
-		public static final long m_fLastShotTime = 0x3c50; // float
-		public static final long m_iRecoilIndex = 0x3bd4; // int
-		public static final long m_flRecoilIndex = 0x3bd8; // float
-		public static final long m_hPrevOwner = 0x3c1c; // int
-		public static final long m_bBurstMode = 0x3bdc; // int
-		public static final long m_flPostponeFireReadyTime = 0x3be0; // float
-		public static final long m_bReloadVisuallyComplete = 0x3be4; // int
-		public static final long m_bSilencerOn = 0x3be5; // int
-		public static final long m_flDoneSwitchingSilencer = 0x3be8; // float
-		public static final long m_iOriginalTeamNumber = 0x3bf0; // int
-		public static final long m_iIronSightMode = 0x3c70; // int
+		public static final long m_weaponMode = 0x3bb4; // int
+		public static final long m_fAccuracyPenalty = 0x3bcc; // float
+		public static final long m_fLastShotTime = 0x3c58; // float
+		public static final long m_iRecoilIndex = 0x3bdc; // int
+		public static final long m_flRecoilIndex = 0x3be0; // float
+		public static final long m_hPrevOwner = 0x3c24; // int
+		public static final long m_bBurstMode = 0x3be4; // int
+		public static final long m_flPostponeFireReadyTime = 0x3be8; // float
+		public static final long m_bReloadVisuallyComplete = 0x3bec; // int
+		public static final long m_bSilencerOn = 0x3bed; // int
+		public static final long m_flDoneSwitchingSilencer = 0x3bf0; // float
+		public static final long m_iOriginalTeamNumber = 0x3bf8; // int
+		public static final long m_iIronSightMode = 0x3c78; // int
 	}
 
 	public static final class CC4 { // DT_WeaponC4
-		public static final long m_bStartedArming = 0x3c94; // int
-		public static final long m_bBombPlacedAnimation = 0x3c9c; // int
-		public static final long m_fArmedTime = 0x3c98; // float
-		public static final long m_bShowC4LED = 0x3c9d; // int
-		public static final long m_bIsPlantingViaUse = 0x3c9e; // int
+		public static final long m_bStartedArming = 0x3c9c; // int
+		public static final long m_bBombPlacedAnimation = 0x3ca4; // int
+		public static final long m_fArmedTime = 0x3ca0; // float
+		public static final long m_bShowC4LED = 0x3ca5; // int
+		public static final long m_bIsPlantingViaUse = 0x3ca6; // int
 	}
 
 	public static final class CBaseCSGrenade { // DT_BaseCSGrenade
-		public static final long m_bRedraw = 0x3c74; // int
-		public static final long m_bIsHeldByPlayer = 0x3c75; // int
-		public static final long m_bPinPulled = 0x3c76; // int
-		public static final long m_fThrowTime = 0x3c78; // float
-		public static final long m_bLoopingSoundPlaying = 0x3c7c; // int
-		public static final long m_flThrowStrength = 0x3c80; // float
+		public static final long m_bRedraw = 0x3c7c; // int
+		public static final long m_bIsHeldByPlayer = 0x3c7d; // int
+		public static final long m_bPinPulled = 0x3c7e; // int
+		public static final long m_fThrowTime = 0x3c80; // float
+		public static final long m_bLoopingSoundPlaying = 0x3c84; // int
+		public static final long m_flThrowStrength = 0x3c88; // float
+		public static final long m_fDropTime = 0x3c8c; // float
 	}
 
 	public static final class CInfoMapRegion { // DT_InfoMapRegion
@@ -320,36 +322,36 @@ public class Netvars {
 	}
 
 	public static final class CEnvGasCanister { // DT_EnvGasCanister
-		public static final long m_flFlightSpeed = 0x30b4; // float
-		public static final long m_flLaunchTime = 0x30b8; // float
-		public static final long m_vecParabolaDirection = 0x30cc; // Vector
-		public static final long m_flFlightTime = 0x30b0; // float
-		public static final long m_flWorldEnterTime = 0x30d8; // float
-		public static final long m_flInitialZSpeed = 0x30bc; // float
-		public static final long m_flZAcceleration = 0x30c0; // float
-		public static final long m_flHorizSpeed = 0x30c4; // float
-		public static final long m_bLaunchedFromWithinWorld = 0x30c8; // int
-		public static final long m_vecImpactPosition = 0x3074; // Vector
-		public static final long m_vecStartPosition = 0x3080; // Vector
-		public static final long m_vecEnterWorldPosition = 0x308c; // Vector
-		public static final long m_vecDirection = 0x3098; // Vector
-		public static final long m_vecStartAngles = 0x30a4; // Vector
-		public static final long m_vecSkyboxOrigin = 0x30dc; // Vector
-		public static final long m_flSkyboxScale = 0x30e8; // float
-		public static final long m_bInSkybox = 0x30ec; // int
-		public static final long m_bDoImpactEffects = 0x30ed; // int
-		public static final long m_bLanded = 0x3018; // int
-		public static final long m_hSkyboxCopy = 0x3068; // int
-		public static final long m_nMyZoneIndex = 0x30f0; // int
+		public static final long m_flFlightSpeed = 0x30bc; // float
+		public static final long m_flLaunchTime = 0x30c0; // float
+		public static final long m_vecParabolaDirection = 0x30d4; // Vector
+		public static final long m_flFlightTime = 0x30b8; // float
+		public static final long m_flWorldEnterTime = 0x30e0; // float
+		public static final long m_flInitialZSpeed = 0x30c4; // float
+		public static final long m_flZAcceleration = 0x30c8; // float
+		public static final long m_flHorizSpeed = 0x30cc; // float
+		public static final long m_bLaunchedFromWithinWorld = 0x30d0; // int
+		public static final long m_vecImpactPosition = 0x307c; // Vector
+		public static final long m_vecStartPosition = 0x3088; // Vector
+		public static final long m_vecEnterWorldPosition = 0x3094; // Vector
+		public static final long m_vecDirection = 0x30a0; // Vector
+		public static final long m_vecStartAngles = 0x30ac; // Vector
+		public static final long m_vecSkyboxOrigin = 0x30e4; // Vector
+		public static final long m_flSkyboxScale = 0x30f0; // float
+		public static final long m_bInSkybox = 0x30f4; // int
+		public static final long m_bDoImpactEffects = 0x30f5; // int
+		public static final long m_bLanded = 0x3020; // int
+		public static final long m_hSkyboxCopy = 0x3070; // int
+		public static final long m_nMyZoneIndex = 0x30f8; // int
 		public static final long m_vecOrigin = 0x170; // VectorXY
 		public static final long m_vecOrigin_2 = 0x178; // float
 	}
 
 	public static final class CDronegun { // DT_Dronegun
-		public static final long m_vecAttentionTarget = 0x3018; // Vector
-		public static final long m_vecTargetOffset = 0x3024; // Vector
+		public static final long m_vecAttentionTarget = 0x3020; // Vector
+		public static final long m_vecTargetOffset = 0x302c; // Vector
 		public static final long m_iHealth = 0x138; // int
-		public static final long m_bHasTarget = 0x3030; // int
+		public static final long m_bHasTarget = 0x3038; // int
 	}
 
 	public static final class CItemCash { // DT_ItemCash
@@ -358,7 +360,7 @@ public class Netvars {
 	public static final class CParadropChopper { // DT_ParadropChopper
 		public static final long m_vecOrigin = 0x170; // VectorXY
 		public static final long m_vecOrigin_2 = 0x178; // float
-		public static final long m_hCallingPlayer = 0x3028; // int
+		public static final long m_hCallingPlayer = 0x3030; // int
 	}
 
 	public static final class CSurvivalSpawnChopper { // DT_SurvivalSpawnChopper
@@ -367,19 +369,19 @@ public class Netvars {
 	}
 
 	public static final class CBRC4Target { // DT_BRC4Target
-		public static final long m_bBrokenOpen = 0x3020; // int
-		public static final long m_flRadius = 0x3024; // float
+		public static final long m_bBrokenOpen = 0x3028; // int
+		public static final long m_flRadius = 0x302c; // float
 	}
 
 	public static final class CDrone { // DT_Drone
-		public static final long m_hMoveToThisEntity = 0x3070; // int
-		public static final long m_hDeliveryCargo = 0x3074; // int
-		public static final long m_bPilotTakeoverAllowed = 0x3078; // int
-		public static final long m_hPotentialCargo = 0x307c; // int
-		public static final long m_hCurrentPilot = 0x3080; // int
-		public static final long m_vecTagPositions_0 = 0x3084; // Vector
+		public static final long m_hMoveToThisEntity = 0x3078; // int
+		public static final long m_hDeliveryCargo = 0x307c; // int
+		public static final long m_bPilotTakeoverAllowed = 0x3080; // int
+		public static final long m_hPotentialCargo = 0x3084; // int
+		public static final long m_hCurrentPilot = 0x3088; // int
+		public static final long m_vecTagPositions_0 = 0x308c; // Vector
 		public static final long m_vecTagPositions = 0x0; // array elements: 24
-		public static final long m_vecTagIncrements_0 = 0x31a4; // int
+		public static final long m_vecTagIncrements_0 = 0x31ac; // int
 		public static final long m_vecTagIncrements = 0x0; // array elements: 24
 	}
 
@@ -392,7 +394,7 @@ public class Netvars {
 		public static final class cs_gamerules_data { // DT_CSGameRules
 			public static final long BASE_OFFSET = 0x0;
 			public static final long m_bFreezePeriod = 0x38; // int
-			public static final long m_bMatchWaitingForResume = 0x58; // int
+			public static final long m_bMatchWaitingForResume = 0x59; // int
 			public static final long m_bWarmupPeriod = 0x39; // int
 			public static final long m_fWarmupPeriodEnd = 0x3c; // float
 			public static final long m_fWarmupPeriodStart = 0x40; // float
@@ -402,6 +404,7 @@ public class Netvars {
 			public static final long m_flCTTimeOutRemaining = 0x4c; // float
 			public static final long m_nTerroristTimeOuts = 0x50; // int
 			public static final long m_nCTTimeOuts = 0x54; // int
+			public static final long m_bTechnicalTimeOut = 0x58; // int
 			public static final long m_iRoundTime = 0x5c; // int
 			public static final long m_gamePhase = 0x78; // int
 			public static final long m_totalRoundsPlayed = 0x7c; // int
@@ -497,10 +500,11 @@ public class Netvars {
 			}
 			public static final class m_RetakeRules { // DT_RetakeGameRules
 				public static final long BASE_OFFSET = 0x1420;
-				public static final long m_bBlockersPresent = 0x178; // int
-				public static final long m_bRoundInProgress = 0x179; // int
-				public static final long m_iFirstSecondHalfRound = 0x17c; // int
-				public static final long m_iBombSite = 0x180; // int
+				public static final long m_nMatchSeed = 0x170; // int
+				public static final long m_bBlockersPresent = 0x174; // int
+				public static final long m_bRoundInProgress = 0x175; // int
+				public static final long m_iFirstSecondHalfRound = 0x178; // int
+				public static final long m_iBombSite = 0x17c; // int
 			}
 		}
 	}
@@ -538,14 +542,14 @@ public class Netvars {
 	}
 
 	public static final class CPlantedC4 { // DT_PlantedC4
-		public static final long m_bBombTicking = 0x3018; // int
-		public static final long m_nBombSite = 0x301c; // int
-		public static final long m_flC4Blow = 0x3028; // float
-		public static final long m_flTimerLength = 0x302c; // float
-		public static final long m_flDefuseLength = 0x3040; // float
-		public static final long m_flDefuseCountDown = 0x3044; // float
-		public static final long m_bBombDefused = 0x3048; // int
-		public static final long m_hBombDefuser = 0x304c; // int
+		public static final long m_bBombTicking = 0x3020; // int
+		public static final long m_nBombSite = 0x3024; // int
+		public static final long m_flC4Blow = 0x3030; // float
+		public static final long m_flTimerLength = 0x3034; // float
+		public static final long m_flDefuseLength = 0x3048; // float
+		public static final long m_flDefuseCountDown = 0x304c; // float
+		public static final long m_bBombDefused = 0x3050; // int
+		public static final long m_hBombDefuser = 0x3054; // int
 	}
 
 	public static final class CCSTeam { // DT_CSTeam
@@ -614,17 +618,24 @@ public class Netvars {
 			public static final long BASE_OFFSET = 0x0;
 			public static final long m_vecOrigin = 0x170; // VectorXY
 			public static final long m_vecOrigin_2 = 0x178; // float
-			public static final long m_flStamina = 0xacb8; // float
-			public static final long m_iDirection = 0xacbc; // int
-			public static final long m_iShotsFired = 0xacc0; // int
-			public static final long m_nNumFastDucks = 0xacc4; // int
-			public static final long m_bDuckOverride = 0xacc8; // int
-			public static final long m_flVelocityModifier = 0xaccc; // float
-			public static final long m_bPlayerDominated = 0xbe28; // int[65]
-			public static final long m_bPlayerDominatingMe = 0xbe69; // int[65]
-			public static final long m_iWeaponPurchasesThisRound = 0xbeac; // int[256]
-			public static final long m_unActiveQuestId = 0xbc6c; // int
-			public static final long m_nQuestProgressReason = 0xbc70; // int
+			public static final long m_flStamina = 0x10cf8; // float
+			public static final long m_iDirection = 0x10cfc; // int
+			public static final long m_iShotsFired = 0x10d00; // int
+			public static final long m_nNumFastDucks = 0x10d04; // int
+			public static final long m_bDuckOverride = 0x10d08; // int
+			public static final long m_flVelocityModifier = 0x10d0c; // float
+			public static final long m_bPlayerDominated = 0x12268; // int[65]
+			public static final long m_bPlayerDominatingMe = 0x122a9; // int[65]
+			public static final long m_iWeaponPurchasesThisRound = 0x11bb8; // int[256]
+			public static final long m_unActiveQuestId = 0x120ac; // int
+			public static final long m_nQuestProgressReason = 0x120b0; // int
+			public static final long m_iRetakesOffering = 0x126a8; // int
+			public static final long m_iRetakesOfferingCard = 0x126ac; // int
+			public static final long m_bRetakesHasDefuseKit = 0x126b0; // int
+			public static final long m_bRetakesMVPLastRound = 0x126b1; // int
+			public static final long m_iRetakesMVPBoostItem = 0x126b4; // int
+			public static final long m_RetakesMVPBoostExtraUtility = 0x126b8; // int
+			public static final long m_unPlayerTvControlFlags = 0x120b4; // int
 		}
 		public static final class csnonlocaldata { // DT_CSNonLocalPlayerExclusive
 			public static final long BASE_OFFSET = 0x0;
@@ -633,119 +644,119 @@ public class Netvars {
 		}
 		public static final class csteamdata { // DT_CSTeamExclusive
 			public static final long BASE_OFFSET = 0x0;
-			public static final long m_iWeaponPurchasesThisMatch = 0xb3ac; // int[499]
-			public static final long m_EquippedLoadoutItemDefIndices = 0xbb90; // int[57]
+			public static final long m_iWeaponPurchasesThisMatch = 0x113ec; // int[499]
+			public static final long m_EquippedLoadoutItemDefIndices = 0x11fd0; // int[57]
 		}
-		public static final long m_angEyeAngles_0 = 0xbcc0; // float
-		public static final long m_angEyeAngles_1 = 0xbcc4; // float
-		public static final long m_iAddonBits = 0xaca4; // int
-		public static final long m_iPrimaryAddon = 0xaca8; // int
-		public static final long m_iSecondaryAddon = 0xacac; // int
-		public static final long m_iThrowGrenadeCounter = 0x426c; // int
-		public static final long m_bWaitForNoAttack = 0x4270; // int
-		public static final long m_bIsRespawningForDMBonus = 0x4271; // int
-		public static final long m_iPlayerState = 0x422c; // int
-		public static final long m_iAccount = 0xbca8; // int
-		public static final long m_iStartAccount = 0xacd4; // int
-		public static final long m_totalHitsOnServer = 0xacd8; // int
-		public static final long m_bInBombZone = 0x4268; // int
-		public static final long m_bInBuyZone = 0x4269; // int
-		public static final long m_bInNoDefuseArea = 0x426a; // int
-		public static final long m_bKilledByTaser = 0x4281; // int
-		public static final long m_iMoveState = 0x4284; // int
-		public static final long m_iClass = 0xbcb8; // int
-		public static final long m_ArmorValue = 0xbcbc; // int
-		public static final long m_angEyeAngles = 0xbcc0; // Vector
-		public static final long m_bHasDefuser = 0xbccc; // int
-		public static final long m_bNightVisionOn = 0xacc9; // int
-		public static final long m_bHasNightVision = 0xacca; // int
-		public static final long m_bInHostageRescueZone = 0xbccd; // int
-		public static final long m_bIsDefusing = 0x4230; // int
-		public static final long m_bIsGrabbingHostage = 0x4231; // int
-		public static final long m_iBlockingUseActionInProgress = 0x4234; // int
-		public static final long m_bIsScoped = 0x4228; // int
-		public static final long m_bIsWalking = 0x4229; // int
-		public static final long m_nIsAutoMounting = 0x43a0; // int
-		public static final long m_bResumeZoom = 0x422a; // int
-		public static final long m_fImmuneToGunGameDamageTime = 0x423c; // float
-		public static final long m_bGunGameImmunity = 0x4244; // int
-		public static final long m_bHasMovedSinceSpawn = 0x4245; // int
-		public static final long m_bMadeFinalGunGameProgressiveKill = 0x4246; // int
-		public static final long m_iGunGameProgressiveWeaponIndex = 0x4248; // int
-		public static final long m_iNumGunGameTRKillPoints = 0x424c; // int
-		public static final long m_iNumGunGameKillsWithCurrentWeapon = 0x4250; // int
-		public static final long m_iNumRoundKills = 0x4254; // int
-		public static final long m_fMolotovUseTime = 0x4260; // float
-		public static final long m_fMolotovDamageTime = 0x4264; // float
-		public static final long m_szArmsModel = 0x428b; // const char *
-		public static final long m_hCarriedHostage = 0xad28; // int
-		public static final long m_hCarriedHostageProp = 0xad2c; // int
-		public static final long m_bIsRescuing = 0x4238; // int
-		public static final long m_flGroundAccelLinearFracLastTime = 0xacd0; // float
-		public static final long m_bCanMoveDuringFreezePeriod = 0x4288; // int
-		public static final long m_isCurrentGunGameLeader = 0x4289; // int
-		public static final long m_isCurrentGunGameTeamLeader = 0x428a; // int
-		public static final long m_flGuardianTooFarDistFrac = 0x4274; // float
-		public static final long m_flDetectedByEnemySensorTime = 0x4278; // float
-		public static final long m_bIsPlayerGhost = 0x439d; // int
-		public static final long m_iMatchStats_Kills = 0xad94; // int[30]
-		public static final long m_iMatchStats_Damage = 0xae0c; // int[30]
-		public static final long m_iMatchStats_EquipmentValue = 0xae84; // int[30]
-		public static final long m_iMatchStats_MoneySaved = 0xaefc; // int[30]
-		public static final long m_iMatchStats_KillReward = 0xaf74; // int[30]
-		public static final long m_iMatchStats_LiveTime = 0xafec; // int[30]
-		public static final long m_iMatchStats_Deaths = 0xb064; // int[30]
-		public static final long m_iMatchStats_Assists = 0xb0dc; // int[30]
-		public static final long m_iMatchStats_HeadShotKills = 0xb154; // int[30]
-		public static final long m_iMatchStats_Objective = 0xb1cc; // int[30]
-		public static final long m_iMatchStats_CashEarned = 0xb244; // int[30]
-		public static final long m_iMatchStats_UtilityDamage = 0xb2bc; // int[30]
-		public static final long m_iMatchStats_EnemiesFlashed = 0xb334; // int[30]
-		public static final long m_rank = 0xbc7c; // int[6]
-		public static final long m_passiveItems = 0xbc94; // int[4]
-		public static final long m_bHasParachute = 0xbc94; // int
-		public static final long m_unMusicID = 0xbc98; // int
-		public static final long m_bHasHelmet = 0xbcb0; // int
-		public static final long m_bHasHeavyArmor = 0xbcb1; // int
-		public static final long m_nHeavyAssaultSuitCooldownRemaining = 0xbcb4; // int
-		public static final long m_flFlashDuration = 0xad50; // float
-		public static final long m_flFlashMaxAlpha = 0xad4c; // float
-		public static final long m_iProgressBarDuration = 0xacb0; // int
-		public static final long m_flProgressBarStartTime = 0xacb4; // float
-		public static final long m_hRagdoll = 0xad1c; // int
-		public static final long m_hPlayerPing = 0xad20; // int
-		public static final long m_cycleLatch = 0xbe20; // int
-		public static final long m_unCurrentEquipmentValue = 0xbc74; // int
-		public static final long m_unRoundStartEquipmentValue = 0xbc76; // int
-		public static final long m_unFreezetimeEndEquipmentValue = 0xbc78; // int
-		public static final long m_bIsControllingBot = 0xc38d; // int
-		public static final long m_bHasControlledBotThisRound = 0xc39c; // int
-		public static final long m_bCanControlObservedBot = 0xc38e; // int
-		public static final long m_iControlledBotEntIndex = 0xc390; // int
-		public static final long m_vecAutomoveTargetEnd = 0x43b0; // Vector
-		public static final long m_flAutoMoveStartTime = 0x43c0; // float
-		public static final long m_flAutoMoveTargetTime = 0x43c4; // float
-		public static final long m_bIsAssassinationTarget = 0xc38c; // int
-		public static final long m_bHud_MiniScoreHidden = 0xbcee; // int
-		public static final long m_bHud_RadarHidden = 0xbcef; // int
-		public static final long m_nLastKillerIndex = 0xbcf0; // int
-		public static final long m_nLastConcurrentKilled = 0xbcf4; // int
-		public static final long m_nDeathCamMusic = 0xbcf8; // int
-		public static final long m_bIsHoldingLookAtWeapon = 0xc2b5; // int
-		public static final long m_bIsLookingAtWeapon = 0xc2b4; // int
-		public static final long m_iNumRoundKillsHeadshots = 0x4258; // int
-		public static final long m_unTotalRoundDamageDealt = 0x425c; // int
-		public static final long m_flLowerBodyYawTarget = 0x4398; // float
-		public static final long m_bStrafing = 0x439c; // int
-		public static final long m_flThirdpersonRecoil = 0xc32c; // float
-		public static final long m_bHideTargetID = 0xc330; // int
-		public static final long m_bIsSpawnRappelling = 0xacdd; // int
-		public static final long m_vecSpawnRappellingRopeOrigin = 0xace0; // Vector
-		public static final long m_nSurvivalTeam = 0xacf0; // int
-		public static final long m_hSurvivalAssassinationTarget = 0xacf4; // int
-		public static final long m_flHealthShotBoostExpirationTime = 0xacf8; // float
-		public static final long m_flLastExoJumpTime = 0x43c8; // float
-		public static final long m_vecPlayerPatchEconIndices = 0xc304; // int[5]
+		public static final long m_angEyeAngles_0 = 0x12104; // float
+		public static final long m_angEyeAngles_1 = 0x12108; // float
+		public static final long m_iAddonBits = 0x10ce4; // int
+		public static final long m_iPrimaryAddon = 0x10ce8; // int
+		public static final long m_iSecondaryAddon = 0x10cec; // int
+		public static final long m_iThrowGrenadeCounter = 0xa2ac; // int
+		public static final long m_bWaitForNoAttack = 0xa2b0; // int
+		public static final long m_bIsRespawningForDMBonus = 0xa2b1; // int
+		public static final long m_iPlayerState = 0xa26c; // int
+		public static final long m_iAccount = 0x120ec; // int
+		public static final long m_iStartAccount = 0x10d14; // int
+		public static final long m_totalHitsOnServer = 0x10d18; // int
+		public static final long m_bInBombZone = 0xa2a8; // int
+		public static final long m_bInBuyZone = 0xa2a9; // int
+		public static final long m_bInNoDefuseArea = 0xa2aa; // int
+		public static final long m_bKilledByTaser = 0xa2c1; // int
+		public static final long m_iMoveState = 0xa2c4; // int
+		public static final long m_iClass = 0x120fc; // int
+		public static final long m_ArmorValue = 0x12100; // int
+		public static final long m_angEyeAngles = 0x12104; // Vector
+		public static final long m_bHasDefuser = 0x12110; // int
+		public static final long m_bNightVisionOn = 0x10d09; // int
+		public static final long m_bHasNightVision = 0x10d0a; // int
+		public static final long m_bInHostageRescueZone = 0x12111; // int
+		public static final long m_bIsDefusing = 0xa270; // int
+		public static final long m_bIsGrabbingHostage = 0xa271; // int
+		public static final long m_iBlockingUseActionInProgress = 0xa274; // int
+		public static final long m_bIsScoped = 0xa268; // int
+		public static final long m_bIsWalking = 0xa269; // int
+		public static final long m_nIsAutoMounting = 0xa3e0; // int
+		public static final long m_bResumeZoom = 0xa26a; // int
+		public static final long m_fImmuneToGunGameDamageTime = 0xa27c; // float
+		public static final long m_bGunGameImmunity = 0xa284; // int
+		public static final long m_bHasMovedSinceSpawn = 0xa285; // int
+		public static final long m_bMadeFinalGunGameProgressiveKill = 0xa286; // int
+		public static final long m_iGunGameProgressiveWeaponIndex = 0xa288; // int
+		public static final long m_iNumGunGameTRKillPoints = 0xa28c; // int
+		public static final long m_iNumGunGameKillsWithCurrentWeapon = 0xa290; // int
+		public static final long m_iNumRoundKills = 0xa294; // int
+		public static final long m_fMolotovUseTime = 0xa2a0; // float
+		public static final long m_fMolotovDamageTime = 0xa2a4; // float
+		public static final long m_szArmsModel = 0xa2cb; // const char *
+		public static final long m_hCarriedHostage = 0x10d68; // int
+		public static final long m_hCarriedHostageProp = 0x10d6c; // int
+		public static final long m_bIsRescuing = 0xa278; // int
+		public static final long m_flGroundAccelLinearFracLastTime = 0x10d10; // float
+		public static final long m_bCanMoveDuringFreezePeriod = 0xa2c8; // int
+		public static final long m_isCurrentGunGameLeader = 0xa2c9; // int
+		public static final long m_isCurrentGunGameTeamLeader = 0xa2ca; // int
+		public static final long m_flGuardianTooFarDistFrac = 0xa2b4; // float
+		public static final long m_flDetectedByEnemySensorTime = 0xa2b8; // float
+		public static final long m_bIsPlayerGhost = 0xa3dd; // int
+		public static final long m_iMatchStats_Kills = 0x10dd4; // int[30]
+		public static final long m_iMatchStats_Damage = 0x10e4c; // int[30]
+		public static final long m_iMatchStats_EquipmentValue = 0x10ec4; // int[30]
+		public static final long m_iMatchStats_MoneySaved = 0x10f3c; // int[30]
+		public static final long m_iMatchStats_KillReward = 0x10fb4; // int[30]
+		public static final long m_iMatchStats_LiveTime = 0x1102c; // int[30]
+		public static final long m_iMatchStats_Deaths = 0x110a4; // int[30]
+		public static final long m_iMatchStats_Assists = 0x1111c; // int[30]
+		public static final long m_iMatchStats_HeadShotKills = 0x11194; // int[30]
+		public static final long m_iMatchStats_Objective = 0x1120c; // int[30]
+		public static final long m_iMatchStats_CashEarned = 0x11284; // int[30]
+		public static final long m_iMatchStats_UtilityDamage = 0x112fc; // int[30]
+		public static final long m_iMatchStats_EnemiesFlashed = 0x11374; // int[30]
+		public static final long m_rank = 0x120c0; // int[6]
+		public static final long m_passiveItems = 0x120d8; // int[4]
+		public static final long m_bHasParachute = 0x120d8; // int
+		public static final long m_unMusicID = 0x120dc; // int
+		public static final long m_bHasHelmet = 0x120f4; // int
+		public static final long m_bHasHeavyArmor = 0x120f5; // int
+		public static final long m_nHeavyAssaultSuitCooldownRemaining = 0x120f8; // int
+		public static final long m_flFlashDuration = 0x10d90; // float
+		public static final long m_flFlashMaxAlpha = 0x10d8c; // float
+		public static final long m_iProgressBarDuration = 0x10cf0; // int
+		public static final long m_flProgressBarStartTime = 0x10cf4; // float
+		public static final long m_hRagdoll = 0x10d5c; // int
+		public static final long m_hPlayerPing = 0x10d60; // int
+		public static final long m_cycleLatch = 0x12260; // int
+		public static final long m_unCurrentEquipmentValue = 0x120b8; // int
+		public static final long m_unRoundStartEquipmentValue = 0x120ba; // int
+		public static final long m_unFreezetimeEndEquipmentValue = 0x120bc; // int
+		public static final long m_bIsControllingBot = 0x123cd; // int
+		public static final long m_bHasControlledBotThisRound = 0x123dc; // int
+		public static final long m_bCanControlObservedBot = 0x123ce; // int
+		public static final long m_iControlledBotEntIndex = 0x123d0; // int
+		public static final long m_vecAutomoveTargetEnd = 0xa3f0; // Vector
+		public static final long m_flAutoMoveStartTime = 0xa400; // float
+		public static final long m_flAutoMoveTargetTime = 0xa404; // float
+		public static final long m_bIsAssassinationTarget = 0x123cc; // int
+		public static final long m_bHud_MiniScoreHidden = 0x12132; // int
+		public static final long m_bHud_RadarHidden = 0x12133; // int
+		public static final long m_nLastKillerIndex = 0x12134; // int
+		public static final long m_nLastConcurrentKilled = 0x12138; // int
+		public static final long m_nDeathCamMusic = 0x1213c; // int
+		public static final long m_bIsHoldingLookAtWeapon = 0x122f5; // int
+		public static final long m_bIsLookingAtWeapon = 0x122f4; // int
+		public static final long m_iNumRoundKillsHeadshots = 0xa298; // int
+		public static final long m_unTotalRoundDamageDealt = 0xa29c; // int
+		public static final long m_flLowerBodyYawTarget = 0xa3d8; // float
+		public static final long m_bStrafing = 0xa3dc; // int
+		public static final long m_flThirdpersonRecoil = 0x1236c; // float
+		public static final long m_bHideTargetID = 0x12370; // int
+		public static final long m_bIsSpawnRappelling = 0x10d1d; // int
+		public static final long m_vecSpawnRappellingRopeOrigin = 0x10d20; // Vector
+		public static final long m_nSurvivalTeam = 0x10d30; // int
+		public static final long m_hSurvivalAssassinationTarget = 0x10d34; // int
+		public static final long m_flHealthShotBoostExpirationTime = 0x10d38; // float
+		public static final long m_flLastExoJumpTime = 0xa408; // float
+		public static final long m_vecPlayerPatchEconIndices = 0x12344; // int[5]
 	}
 
 	public static final class CPlayerPing { // DT_PlayerPing
@@ -753,22 +764,24 @@ public class Netvars {
 		public static final long m_hPingedEntity = 0xf84; // int
 		public static final long m_iType = 0xf88; // int
 		public static final long m_bUrgent = 0xf90; // int
+		public static final long m_szPlaceName = 0xf91; // const char *
 	}
 
 	public static final class CCSRagdoll { // DT_CSRagdoll
 		public static final long m_vecOrigin = 0x170; // Vector
-		public static final long m_vecRagdollOrigin = 0x30b0; // Vector
-		public static final long m_hPlayer = 0x3094; // int
+		public static final long m_vecRagdollOrigin = 0x30b8; // Vector
+		public static final long m_hPlayer = 0x309c; // int
 		public static final long m_nModelIndex = 0x290; // int
 		public static final long m_nForceBone = 0x2c54; // int
 		public static final long m_vecForce = 0x2c48; // Vector
-		public static final long m_vecRagdollVelocity = 0x30a4; // Vector
-		public static final long m_iDeathPose = 0x30bc; // int
-		public static final long m_iDeathFrame = 0x30c0; // int
+		public static final long m_vecRagdollVelocity = 0x30ac; // Vector
+		public static final long m_iDeathPose = 0x30c4; // int
+		public static final long m_iDeathFrame = 0x30c8; // int
 		public static final long m_iTeamNum = 0x12c; // int
-		public static final long m_bClientSideAnimation = 0x2ed8; // int
-		public static final long m_flDeathYaw = 0x30c4; // float
-		public static final long m_flAbsYaw = 0x30c8; // float
+		public static final long m_bClientSideAnimation = 0x2ee0; // int
+		public static final long m_flDeathYaw = 0x30cc; // float
+		public static final long m_flAbsYaw = 0x30d0; // float
+		public static final long m_bDiedAirborne = 0x30d4; // int
 	}
 
 	public static final class CTEPlayerAnimEvent { // DT_TEPlayerAnimEvent
@@ -778,29 +791,29 @@ public class Netvars {
 	}
 
 	public static final class CHostage { // DT_CHostage
-		public static final long m_isRescued = 0x3678; // int
-		public static final long m_jumpedThisFrame = 0x3679; // int
+		public static final long m_isRescued = 0x3680; // int
+		public static final long m_jumpedThisFrame = 0x3681; // int
 		public static final long m_iHealth = 0x138; // int
-		public static final long m_iMaxHealth = 0x365c; // int
+		public static final long m_iMaxHealth = 0x3664; // int
 		public static final long m_lifeState = 0x297; // int
 		public static final long m_fFlags = 0x13c; // int
-		public static final long m_nHostageState = 0x367c; // int
-		public static final long m_flRescueStartTime = 0x3680; // float
-		public static final long m_flGrabSuccessTime = 0x3684; // float
-		public static final long m_flDropStartTime = 0x3688; // float
-		public static final long m_vel = 0x366c; // Vector
-		public static final long m_leader = 0x3668; // int
+		public static final long m_nHostageState = 0x3684; // int
+		public static final long m_flRescueStartTime = 0x3688; // float
+		public static final long m_flGrabSuccessTime = 0x368c; // float
+		public static final long m_flDropStartTime = 0x3690; // float
+		public static final long m_vel = 0x3674; // Vector
+		public static final long m_leader = 0x3670; // int
 	}
 
 	public static final class CHostageCarriableProp { // DT_HostageCarriableProp
 	}
 
 	public static final class CBaseCSGrenadeProjectile { // DT_BaseCSGrenadeProjectile
-		public static final long m_vInitialVelocity = 0x3068; // Vector
-		public static final long m_nBounces = 0x3074; // int
-		public static final long m_nExplodeEffectIndex = 0x3078; // int
-		public static final long m_nExplodeEffectTickBegin = 0x307c; // int
-		public static final long m_vecExplodeEffectOrigin = 0x3080; // Vector
+		public static final long m_vInitialVelocity = 0x3070; // Vector
+		public static final long m_nBounces = 0x307c; // int
+		public static final long m_nExplodeEffectIndex = 0x3080; // int
+		public static final long m_nExplodeEffectTickBegin = 0x3084; // int
+		public static final long m_vecExplodeEffectOrigin = 0x3088; // Vector
 	}
 
 	public static final class CPredictedViewModel { // DT_PredictedViewModel
@@ -843,7 +856,7 @@ public class Netvars {
 
 	public static final class CBaseAttributableItem { // DT_BaseAttributableItem
 		public static final class m_AttributeManager { // DT_AttributeContainer
-			public static final long BASE_OFFSET = 0x34d0;
+			public static final long BASE_OFFSET = 0x34d8;
 			public static final long m_hOuter = 0x2c; // int
 			public static final long m_ProviderType = 0x34; // int
 			public static final long m_iReapplyProvisionParity = 0x28; // int
@@ -869,17 +882,17 @@ public class Netvars {
 				}
 			}
 		}
-		public static final long m_OriginalOwnerXuidLow = 0x3a20; // int
-		public static final long m_OriginalOwnerXuidHigh = 0x3a24; // int
-		public static final long m_nFallbackPaintKit = 0x3a28; // int
-		public static final long m_nFallbackSeed = 0x3a2c; // int
-		public static final long m_flFallbackWear = 0x3a30; // float
-		public static final long m_nFallbackStatTrak = 0x3a34; // int
+		public static final long m_OriginalOwnerXuidLow = 0x3a28; // int
+		public static final long m_OriginalOwnerXuidHigh = 0x3a2c; // int
+		public static final long m_nFallbackPaintKit = 0x3a30; // int
+		public static final long m_nFallbackSeed = 0x3a34; // int
+		public static final long m_flFallbackWear = 0x3a38; // float
+		public static final long m_nFallbackStatTrak = 0x3a3c; // int
 	}
 
 	public static final class CEconEntity { // DT_EconEntity
 		public static final class m_AttributeManager { // DT_AttributeContainer
-			public static final long BASE_OFFSET = 0x34d0;
+			public static final long BASE_OFFSET = 0x34d8;
 			public static final long m_hOuter = 0x2c; // int
 			public static final long m_ProviderType = 0x34; // int
 			public static final long m_iReapplyProvisionParity = 0x28; // int
@@ -905,12 +918,12 @@ public class Netvars {
 				}
 			}
 		}
-		public static final long m_OriginalOwnerXuidLow = 0x3a20; // int
-		public static final long m_OriginalOwnerXuidHigh = 0x3a24; // int
-		public static final long m_nFallbackPaintKit = 0x3a28; // int
-		public static final long m_nFallbackSeed = 0x3a2c; // int
-		public static final long m_flFallbackWear = 0x3a30; // float
-		public static final long m_nFallbackStatTrak = 0x3a34; // int
+		public static final long m_OriginalOwnerXuidLow = 0x3a28; // int
+		public static final long m_OriginalOwnerXuidHigh = 0x3a2c; // int
+		public static final long m_nFallbackPaintKit = 0x3a30; // int
+		public static final long m_nFallbackSeed = 0x3a34; // int
+		public static final long m_flFallbackWear = 0x3a38; // float
+		public static final long m_nFallbackStatTrak = 0x3a3c; // int
 	}
 
 	public static final class NextBotCombatCharacter { // DT_NextBot
@@ -1392,20 +1405,20 @@ public class Netvars {
 	}
 
 	public static final class CPropVehicleDriveable { // DT_PropVehicleDriveable
-		public static final long m_hPlayer = 0x3020; // int
-		public static final long m_nSpeed = 0x3024; // int
-		public static final long m_nRPM = 0x3028; // int
-		public static final long m_flThrottle = 0x302c; // float
-		public static final long m_nBoostTimeLeft = 0x3030; // int
-		public static final long m_nHasBoost = 0x3034; // int
-		public static final long m_nScannerDisabledWeapons = 0x3038; // int
-		public static final long m_nScannerDisabledVehicle = 0x303c; // int
-		public static final long m_bEnterAnimOn = 0x305c; // int
-		public static final long m_bExitAnimOn = 0x305d; // int
-		public static final long m_bUnableToFire = 0x30c5; // int
-		public static final long m_vecEyeExitEndpoint = 0x30b8; // Vector
-		public static final long m_bHasGun = 0x30c4; // int
-		public static final long m_vecGunCrosshair = 0x3064; // Vector
+		public static final long m_hPlayer = 0x3028; // int
+		public static final long m_nSpeed = 0x302c; // int
+		public static final long m_nRPM = 0x3030; // int
+		public static final long m_flThrottle = 0x3034; // float
+		public static final long m_nBoostTimeLeft = 0x3038; // int
+		public static final long m_nHasBoost = 0x303c; // int
+		public static final long m_nScannerDisabledWeapons = 0x3040; // int
+		public static final long m_nScannerDisabledVehicle = 0x3044; // int
+		public static final long m_bEnterAnimOn = 0x3064; // int
+		public static final long m_bExitAnimOn = 0x3065; // int
+		public static final long m_bUnableToFire = 0x30cd; // int
+		public static final long m_vecEyeExitEndpoint = 0x30c0; // Vector
+		public static final long m_bHasGun = 0x30cc; // int
+		public static final long m_vecGunCrosshair = 0x306c; // Vector
 	}
 
 	public static final class ParticleSmokeGrenade { // DT_ParticleSmokeGrenade
@@ -1551,20 +1564,20 @@ public class Netvars {
 	}
 
 	public static final class CRagdollPropAttached { // DT_Ragdoll_Attached
-		public static final long m_boneIndexAttached = 0x3388; // int
-		public static final long m_ragdollAttachedObjectIndex = 0x3384; // int
-		public static final long m_attachmentPointBoneSpace = 0x3360; // Vector
-		public static final long m_attachmentPointRagdollSpace = 0x3378; // Vector
+		public static final long m_boneIndexAttached = 0x3390; // int
+		public static final long m_ragdollAttachedObjectIndex = 0x338c; // int
+		public static final long m_attachmentPointBoneSpace = 0x3368; // Vector
+		public static final long m_attachmentPointRagdollSpace = 0x3380; // Vector
 	}
 
 	public static final class CRagdollProp { // DT_Ragdoll
-		public static final long m_ragAngles_0 = 0x3138; // Vector
+		public static final long m_ragAngles_0 = 0x3140; // Vector
 		public static final long m_ragAngles = 0x0; // array elements: 24
-		public static final long m_ragPos_0 = 0x3018; // Vector
+		public static final long m_ragPos_0 = 0x3020; // Vector
 		public static final long m_ragPos = 0x0; // array elements: 24
-		public static final long m_hUnragdoll = 0x334c; // int
-		public static final long m_flBlendWeight = 0x3350; // float
-		public static final long m_nOverlaySequence = 0x3358; // int
+		public static final long m_hUnragdoll = 0x3354; // int
+		public static final long m_flBlendWeight = 0x3358; // float
+		public static final long m_nOverlaySequence = 0x3360; // int
 	}
 
 	public static final class CPoseController { // DT_PoseController
@@ -1645,25 +1658,25 @@ public class Netvars {
 	}
 
 	public static final class CPropJeep { // DT_PropJeep
-		public static final long m_bHeadlightIsOn = 0x3190; // int
+		public static final long m_bHeadlightIsOn = 0x3198; // int
 	}
 
 	public static final class CPropVehicleChoreoGeneric { // DT_PropVehicleChoreoGeneric
-		public static final long m_hPlayer = 0x3080; // int
-		public static final long m_bEnterAnimOn = 0x3088; // int
-		public static final long m_bExitAnimOn = 0x3089; // int
-		public static final long m_bForceEyesToAttachment = 0x3098; // int
-		public static final long m_vecEyeExitEndpoint = 0x308c; // Vector
-		public static final long m_vehicleView_bClampEyeAngles = 0x3128; // int
-		public static final long m_vehicleView_flPitchCurveZero = 0x312c; // float
-		public static final long m_vehicleView_flPitchCurveLinear = 0x3130; // float
-		public static final long m_vehicleView_flRollCurveZero = 0x3134; // float
-		public static final long m_vehicleView_flRollCurveLinear = 0x3138; // float
-		public static final long m_vehicleView_flFOV = 0x313c; // float
-		public static final long m_vehicleView_flYawMin = 0x3140; // float
-		public static final long m_vehicleView_flYawMax = 0x3144; // float
-		public static final long m_vehicleView_flPitchMin = 0x3148; // float
-		public static final long m_vehicleView_flPitchMax = 0x314c; // float
+		public static final long m_hPlayer = 0x3088; // int
+		public static final long m_bEnterAnimOn = 0x3090; // int
+		public static final long m_bExitAnimOn = 0x3091; // int
+		public static final long m_bForceEyesToAttachment = 0x30a0; // int
+		public static final long m_vecEyeExitEndpoint = 0x3094; // Vector
+		public static final long m_vehicleView_bClampEyeAngles = 0x3130; // int
+		public static final long m_vehicleView_flPitchCurveZero = 0x3134; // float
+		public static final long m_vehicleView_flPitchCurveLinear = 0x3138; // float
+		public static final long m_vehicleView_flRollCurveZero = 0x313c; // float
+		public static final long m_vehicleView_flRollCurveLinear = 0x3140; // float
+		public static final long m_vehicleView_flFOV = 0x3144; // float
+		public static final long m_vehicleView_flYawMin = 0x3148; // float
+		public static final long m_vehicleView_flYawMax = 0x314c; // float
+		public static final long m_vehicleView_flPitchMin = 0x3150; // float
+		public static final long m_vehicleView_flPitchMax = 0x3154; // float
 	}
 
 	public static final class CTriggerSoundOperator { // DT_TriggerSoundOperator
@@ -1823,10 +1836,10 @@ public class Netvars {
 	}
 
 	public static final class CPhysicsPropMultiplayer { // DT_PhysicsPropMultiplayer
-		public static final long m_iPhysicsMode = 0x3050; // int
-		public static final long m_fMass = 0x3054; // float
-		public static final long m_collisionMins = 0x3058; // Vector
-		public static final long m_collisionMaxs = 0x3064; // Vector
+		public static final long m_iPhysicsMode = 0x3058; // int
+		public static final long m_fMass = 0x305c; // float
+		public static final long m_collisionMins = 0x3060; // Vector
+		public static final long m_collisionMaxs = 0x306c; // Vector
 	}
 
 	public static final class CPhysBoxMultiplayer { // DT_PhysBoxMultiplayer
@@ -1841,17 +1854,17 @@ public class Netvars {
 	}
 
 	public static final class CDynamicProp { // DT_DynamicProp
-		public static final long m_bUseHitboxesForRenderBox = 0x3034; // int
-		public static final long m_flGlowMaxDist = 0x3054; // float
-		public static final long m_bShouldGlow = 0x3058; // int
-		public static final long m_clrGlow = 0x3059; // int
-		public static final long m_nGlowStyle = 0x3060; // int
+		public static final long m_bUseHitboxesForRenderBox = 0x303c; // int
+		public static final long m_flGlowMaxDist = 0x305c; // float
+		public static final long m_bShouldGlow = 0x3060; // int
+		public static final long m_clrGlow = 0x3061; // int
+		public static final long m_nGlowStyle = 0x3068; // int
 	}
 
 	public static final class CProp_Hallucination { // DT_Prop_Hallucination
-		public static final long m_bEnabled = 0x3031; // int
-		public static final long m_fVisibleTime = 0x3034; // float
-		public static final long m_fRechargeTime = 0x3038; // float
+		public static final long m_bEnabled = 0x3039; // int
+		public static final long m_fVisibleTime = 0x303c; // float
+		public static final long m_fRechargeTime = 0x3040; // float
 	}
 
 	public static final class CPostProcessController { // DT_PostProcessController
@@ -1866,14 +1879,14 @@ public class Netvars {
 	}
 
 	public static final class CPointCommentaryNode { // DT_PointCommentaryNode
-		public static final long m_bActive = 0x3018; // int
-		public static final long m_flStartTime = 0x301c; // float
-		public static final long m_iszCommentaryFile = 0x3020; // const char *
-		public static final long m_iszCommentaryFileNoHDR = 0x3124; // const char *
-		public static final long m_iszSpeakers = 0x3228; // const char *
-		public static final long m_iNodeNumber = 0x3328; // int
-		public static final long m_iNodeNumberMax = 0x332c; // int
-		public static final long m_hViewPosition = 0x3338; // int
+		public static final long m_bActive = 0x3020; // int
+		public static final long m_flStartTime = 0x3024; // float
+		public static final long m_iszCommentaryFile = 0x3028; // const char *
+		public static final long m_iszCommentaryFileNoHDR = 0x312c; // const char *
+		public static final long m_iszSpeakers = 0x3230; // const char *
+		public static final long m_iNodeNumber = 0x3330; // int
+		public static final long m_iNodeNumberMax = 0x3334; // int
+		public static final long m_hViewPosition = 0x3340; // int
 	}
 
 	public static final class CPointCamera { // DT_PointCamera
@@ -1915,16 +1928,16 @@ public class Netvars {
 	}
 
 	public static final class CPhysicsProp { // DT_PhysicsProp
-		public static final long m_bAwake = 0x302d; // int
+		public static final long m_bAwake = 0x3035; // int
 		public static final long m_spawnflags = 0x314; // int
 	}
 
 	public static final class CStatueProp { // DT_StatueProp
-		public static final long m_hInitBaseAnimating = 0x3048; // int
-		public static final long m_bShatter = 0x304c; // int
-		public static final long m_nShatterFlags = 0x3050; // int
-		public static final long m_vShatterPosition = 0x3054; // Vector
-		public static final long m_vShatterForce = 0x3060; // Vector
+		public static final long m_hInitBaseAnimating = 0x3050; // int
+		public static final long m_bShatter = 0x3054; // int
+		public static final long m_nShatterFlags = 0x3058; // int
+		public static final long m_vShatterPosition = 0x305c; // Vector
+		public static final long m_vShatterForce = 0x3068; // Vector
 	}
 
 	public static final class CPhysBox { // DT_PhysBox
@@ -1995,12 +2008,12 @@ public class Netvars {
 	}
 
 	public static final class CItemAssaultSuitUseable { // DT_ItemAssaultSuitUseable
-		public static final long m_nArmorValue = 0x3eb4; // int
-		public static final long m_bIsHeavyAssaultSuit = 0x3eb8; // int
+		public static final long m_nArmorValue = 0x3ebc; // int
+		public static final long m_bIsHeavyAssaultSuit = 0x3ec0; // int
 	}
 
 	public static final class CItem { // DT_Item
-		public static final long m_bShouldGlow = 0x3ab0; // int
+		public static final long m_bShouldGlow = 0x3ab8; // int
 	}
 
 	public static final class CInfoOverlayAccessor { // DT_InfoOverlayAccessor
@@ -2121,14 +2134,14 @@ public class Netvars {
 	}
 
 	public static final class CFish { // DT_CFish
-		public static final long m_poolOrigin = 0x3080; // Vector
-		public static final long m_x = 0x3068; // float
-		public static final long m_y = 0x306c; // float
-		public static final long m_z = 0x3070; // float
-		public static final long m_angle = 0x3078; // float
+		public static final long m_poolOrigin = 0x3088; // Vector
+		public static final long m_x = 0x3070; // float
+		public static final long m_y = 0x3074; // float
+		public static final long m_z = 0x3078; // float
+		public static final long m_angle = 0x3080; // float
 		public static final long m_nModelIndex = 0x290; // int
 		public static final long m_lifeState = 0x297; // int
-		public static final long m_waterLevel = 0x308c; // float
+		public static final long m_waterLevel = 0x3094; // float
 	}
 
 	public static final class CFireSmoke { // DT_FireSmoke
@@ -2211,7 +2224,7 @@ public class Netvars {
 	}
 
 	public static final class CEnvParticleScript { // DT_EnvParticleScript
-		public static final long m_flSequenceScale = 0x3148; // float
+		public static final long m_flSequenceScale = 0x3150; // float
 	}
 
 	public static final class CFogController { // DT_FogController
@@ -2291,7 +2304,7 @@ public class Netvars {
 	}
 
 	public static final class CPropCounter { // DT_PropCounter
-		public static final long m_flDisplayValue = 0x3018; // float
+		public static final long m_flDisplayValue = 0x3020; // float
 	}
 
 	public static final class CGrassBurn { // DT_GrassBurn
@@ -2344,8 +2357,8 @@ public class Netvars {
 	}
 
 	public static final class CBreakableProp { // DT_BreakableProp
-		public static final long m_qPreferredPlayerCarryAngles = 0x3020; // Vector
-		public static final long m_bClientPhysics = 0x302c; // int
+		public static final long m_qPreferredPlayerCarryAngles = 0x3028; // Vector
+		public static final long m_bClientPhysics = 0x3034; // int
 	}
 
 	public static final class CBeamSpotlight { // DT_BeamSpotlight
@@ -2373,7 +2386,7 @@ public class Netvars {
 		public static final class localdata { // DT_LocalPlayerExclusive
 			public static final long BASE_OFFSET = 0x0;
 			public static final class m_Local { // DT_Local
-				public static final long BASE_OFFSET = 0x3700;
+				public static final long BASE_OFFSET = 0x3708;
 				public static final long m_chAreaBits = 0x8; // int[32]
 				public static final long m_chAreaPortalBits = 0x28; // int[24]
 				public static final long m_iHideHUD = 0x4c; // int
@@ -2386,6 +2399,7 @@ public class Netvars {
 				public static final long m_nDuckJumpTimeMsecs = 0x54; // int
 				public static final long m_nJumpTimeMsecs = 0x58; // int
 				public static final long m_flFallVelocity = 0x5c; // float
+				public static final long m_nOldButtons = 0x44; // int
 				public static final long m_viewPunchAngle = 0x68; // Vector
 				public static final long m_aimPunchAngle = 0x74; // Vector
 				public static final long m_aimPunchAngleVel = 0x80; // Vector
@@ -2422,76 +2436,76 @@ public class Netvars {
 			public static final long m_vecViewOffset_1 = 0x144; // float
 			public static final long m_vecViewOffset_2 = 0x148; // float
 			public static final long m_flFriction = 0x17c; // float
-			public static final long m_fOnTarget = 0x3b0c; // int
-			public static final long m_nTickBase = 0x3c50; // int
+			public static final long m_fOnTarget = 0x3b14; // int
+			public static final long m_nTickBase = 0x3c58; // int
 			public static final long m_nNextThinkTick = 0x134; // int
-			public static final long m_hLastWeapon = 0x3ad0; // int
+			public static final long m_hLastWeapon = 0x3ad8; // int
 			public static final long m_vecVelocity_0 = 0x14c; // float
 			public static final long m_vecVelocity_1 = 0x150; // float
 			public static final long m_vecVelocity_2 = 0x154; // float
 			public static final long m_vecBaseVelocity = 0x158; // Vector
-			public static final long m_hConstraintEntity = 0x3b30; // int
-			public static final long m_vecConstraintCenter = 0x3b34; // Vector
-			public static final long m_flConstraintRadius = 0x3b40; // float
-			public static final long m_flConstraintWidth = 0x3b44; // float
-			public static final long m_flConstraintSpeedFactor = 0x3b48; // float
-			public static final long m_bConstraintPastRadius = 0x3b4c; // int
-			public static final long m_flDeathTime = 0x3bbc; // float
-			public static final long m_flNextDecalTime = 0x3bc0; // float
-			public static final long m_fForceTeam = 0x3bc4; // float
-			public static final long m_flLaggedMovementValue = 0x3dd0; // float
-			public static final long m_hTonemapController = 0x3988; // int
+			public static final long m_hConstraintEntity = 0x3b38; // int
+			public static final long m_vecConstraintCenter = 0x3b3c; // Vector
+			public static final long m_flConstraintRadius = 0x3b48; // float
+			public static final long m_flConstraintWidth = 0x3b4c; // float
+			public static final long m_flConstraintSpeedFactor = 0x3b50; // float
+			public static final long m_bConstraintPastRadius = 0x3b54; // int
+			public static final long m_flDeathTime = 0x3bc4; // float
+			public static final long m_flNextDecalTime = 0x3bc8; // float
+			public static final long m_fForceTeam = 0x3bcc; // float
+			public static final long m_flLaggedMovementValue = 0x3dd8; // float
+			public static final long m_hTonemapController = 0x3990; // int
 		}
 		public static final class pl { // DT_PlayerState
-			public static final long BASE_OFFSET = 0x3990;
+			public static final long BASE_OFFSET = 0x3998;
 			public static final long deadflag = 0x8; // int
 		}
-		public static final long m_iFOV = 0x39a8; // int
-		public static final long m_iFOVStart = 0x39ac; // int
-		public static final long m_flFOVTime = 0x39cc; // float
-		public static final long m_iDefaultFOV = 0x3b14; // int
-		public static final long m_hZoomOwner = 0x3a10; // int
-		public static final long m_afPhysicsFlags = 0x3ac8; // int
-		public static final long m_hVehicle = 0x3acc; // int
-		public static final long m_hUseEntity = 0x3b10; // int
+		public static final long m_iFOV = 0x39b0; // int
+		public static final long m_iFOVStart = 0x39b4; // int
+		public static final long m_flFOVTime = 0x39d4; // float
+		public static final long m_iDefaultFOV = 0x3b1c; // int
+		public static final long m_hZoomOwner = 0x3a18; // int
+		public static final long m_afPhysicsFlags = 0x3ad0; // int
+		public static final long m_hVehicle = 0x3ad4; // int
+		public static final long m_hUseEntity = 0x3b18; // int
 		public static final long m_hGroundEntity = 0x188; // int
 		public static final long m_iHealth = 0x138; // int
 		public static final long m_lifeState = 0x297; // int
-		public static final long m_iAmmo = 0x34b8; // int[32]
-		public static final long m_iBonusProgress = 0x3a04; // int
-		public static final long m_iBonusChallenge = 0x3a08; // int
-		public static final long m_flMaxspeed = 0x3a0c; // float
+		public static final long m_iAmmo = 0x34c0; // int[32]
+		public static final long m_iBonusProgress = 0x3a0c; // int
+		public static final long m_iBonusChallenge = 0x3a10; // int
+		public static final long m_flMaxspeed = 0x3a14; // float
 		public static final long m_fFlags = 0x13c; // int
-		public static final long m_iObserverMode = 0x3b70; // int
-		public static final long m_bActiveCameraMan = 0x3b74; // int
-		public static final long m_bCameraManXRay = 0x3b75; // int
-		public static final long m_bCameraManOverview = 0x3b76; // int
-		public static final long m_bCameraManScoreBoard = 0x3b77; // int
-		public static final long m_uCameraManGraphs = 0x3b78; // int
-		public static final long m_iDeathPostEffect = 0x3b6c; // int
-		public static final long m_hObserverTarget = 0x3b84; // int
-		public static final long m_hViewModel_0 = 0x3ad4; // int
+		public static final long m_iObserverMode = 0x3b78; // int
+		public static final long m_bActiveCameraMan = 0x3b7c; // int
+		public static final long m_bCameraManXRay = 0x3b7d; // int
+		public static final long m_bCameraManOverview = 0x3b7e; // int
+		public static final long m_bCameraManScoreBoard = 0x3b7f; // int
+		public static final long m_uCameraManGraphs = 0x3b80; // int
+		public static final long m_iDeathPostEffect = 0x3b74; // int
+		public static final long m_hObserverTarget = 0x3b8c; // int
+		public static final long m_hViewModel_0 = 0x3adc; // int
 		public static final long m_hViewModel = 0x0; // array elements: 3
-		public static final long m_iCoachingTeam = 0x368c; // int
-		public static final long m_szLastPlaceName = 0x3df0; // const char *
-		public static final long m_vecLadderNormal = 0x39f4; // Vector
-		public static final long m_ladderSurfaceProps = 0x39c4; // int
-		public static final long m_ubEFNoInterpParity = 0x3e18; // int
-		public static final long m_hPostProcessCtrl = 0x4030; // int
-		public static final long m_hColorCorrectionCtrl = 0x4034; // int
-		public static final long m_PlayerFog_m_hCtrl = 0x4040; // int
-		public static final long m_vphysicsCollisionState = 0x3a30; // int
-		public static final long m_hViewEntity = 0x3b28; // int
-		public static final long m_bShouldDrawPlayerWhileUsingViewEntity = 0x3b2c; // int
-		public static final long m_flDuckAmount = 0x36f0; // float
-		public static final long m_flDuckSpeed = 0x36f4; // float
+		public static final long m_iCoachingTeam = 0x3694; // int
+		public static final long m_szLastPlaceName = 0x3df8; // const char *
+		public static final long m_vecLadderNormal = 0x39fc; // Vector
+		public static final long m_ladderSurfaceProps = 0x39cc; // int
+		public static final long m_ubEFNoInterpParity = 0x3e20; // int
+		public static final long m_hPostProcessCtrl = 0x4038; // int
+		public static final long m_hColorCorrectionCtrl = 0x403c; // int
+		public static final long m_PlayerFog_m_hCtrl = 0x4048; // int
+		public static final long m_vphysicsCollisionState = 0x3a38; // int
+		public static final long m_hViewEntity = 0x3b30; // int
+		public static final long m_bShouldDrawPlayerWhileUsingViewEntity = 0x3b34; // int
+		public static final long m_flDuckAmount = 0x36f8; // float
+		public static final long m_flDuckSpeed = 0x36fc; // float
 		public static final long m_nWaterLevel = 0x296; // int
 	}
 
 	public static final class CBaseFlex { // DT_BaseFlex
-		public static final long m_flexWeight = 0x30e8; // float[96]
-		public static final long m_blinktoggle = 0x32b0; // int
-		public static final long m_viewtarget = 0x3094; // Vector
+		public static final long m_flexWeight = 0x30f0; // float[96]
+		public static final long m_blinktoggle = 0x32b8; // int
+		public static final long m_viewtarget = 0x309c; // Vector
 	}
 
 	public static final class CBaseEntity { // DT_BaseEntity
@@ -2562,18 +2576,18 @@ public class Netvars {
 	public static final class CBaseCombatCharacter { // DT_BaseCombatCharacter
 		public static final class bcc_localdata { // DT_BCCLocalPlayerExclusive
 			public static final long BASE_OFFSET = 0x0;
-			public static final long m_flNextAttack = 0x34b0; // float
+			public static final long m_flNextAttack = 0x34b8; // float
 		}
 		public static final class bcc_nonlocaldata { // DT_BCCNonLocalPlayerExclusive
 			public static final long BASE_OFFSET = 0x0;
-			public static final long m_hMyWeapons = 0x3538; // int[64]
+			public static final long m_hMyWeapons = 0x3540; // int[64]
 		}
-		public static final long m_LastHitGroup = 0x34b4; // int
-		public static final long m_hActiveWeapon = 0x3638; // int
-		public static final long m_flTimeOfLastInjury = 0x363c; // float
-		public static final long m_nRelativeDirectionOfLastInjury = 0x3640; // int
-		public static final long m_hMyWeapons = 0x3538; // int[64]
-		public static final long m_hMyWearables = 0x3644; // int[1]
+		public static final long m_LastHitGroup = 0x34bc; // int
+		public static final long m_hActiveWeapon = 0x3640; // int
+		public static final long m_flTimeOfLastInjury = 0x3644; // float
+		public static final long m_nRelativeDirectionOfLastInjury = 0x3648; // int
+		public static final long m_hMyWeapons = 0x3540; // int[64]
+		public static final long m_hMyWearables = 0x364c; // int[1]
 	}
 
 	public static final class CBaseAnimatingOverlay { // DT_BaseAnimatingOverlay
@@ -2595,30 +2609,30 @@ public class Netvars {
 	}
 
 	public static final class CBaseAnimating { // DT_BaseAnimating
-		public static final long m_nSequence = 0x2ef8; // int
+		public static final long m_nSequence = 0x2f00; // int
 		public static final long m_nForceBone = 0x2c54; // int
 		public static final long m_vecForce = 0x2c48; // Vector
 		public static final long m_nSkin = 0xfd8; // int
 		public static final long m_nBody = 0xfdc; // int
 		public static final long m_nHitboxSet = 0xfa8; // int
-		public static final long m_flModelScale = 0x2d40; // float
-		public static final long m_flPoseParameter = 0x2d78; // float[24]
+		public static final long m_flModelScale = 0x2d48; // float
+		public static final long m_flPoseParameter = 0x2d80; // float[24]
 		public static final long m_flPlaybackRate = 0xfd4; // float
 		public static final long m_flEncodedController = 0x1010; // float[4]
-		public static final long m_bClientSideAnimation = 0x2ed8; // int
-		public static final long m_bClientSideFrameReset = 0x2c9c; // int
+		public static final long m_bClientSideAnimation = 0x2ee0; // int
+		public static final long m_bClientSideFrameReset = 0x2ca4; // int
 		public static final long m_bClientSideRagdoll = 0x2b1; // int
 		public static final long m_nNewSequenceParity = 0x1000; // int
 		public static final long m_nResetEventsParity = 0x1004; // int
 		public static final long m_nMuzzleFlashParity = 0x1020; // int
-		public static final long m_hLightingOrigin = 0x2fc8; // int
+		public static final long m_hLightingOrigin = 0x2fd0; // int
 		public static final class serveranimdata { // DT_ServerAnimationData
 			public static final long BASE_OFFSET = 0x0;
 			public static final long m_flCycle = 0xfd0; // float
 		}
-		public static final long m_flFrozen = 0x2ce0; // float
-		public static final long m_ScaleType = 0x2d44; // int
-		public static final long m_bSuppressAnimSounds = 0x2fce; // int
+		public static final long m_flFrozen = 0x2ce8; // float
+		public static final long m_ScaleType = 0x2d4c; // int
+		public static final long m_bSuppressAnimSounds = 0x2fd6; // int
 		public static final long m_nHighlightColorR = 0xff4; // int
 		public static final long m_nHighlightColorG = 0xff8; // int
 		public static final long m_nHighlightColorB = 0xffc; // int
@@ -2626,16 +2640,16 @@ public class Netvars {
 
 	public static final class CAI_BaseNPC { // DT_AI_BaseNPC
 		public static final long m_lifeState = 0x297; // int
-		public static final long m_bPerformAvoidance = 0x3660; // int
-		public static final long m_bIsMoving = 0x3661; // int
-		public static final long m_bFadeCorpse = 0x3662; // int
-		public static final long m_iDeathPose = 0x3650; // int
-		public static final long m_iDeathFrame = 0x3654; // int
-		public static final long m_iSpeedModRadius = 0x3658; // int
-		public static final long m_iSpeedModSpeed = 0x365c; // int
-		public static final long m_bSpeedModActive = 0x3663; // int
-		public static final long m_bImportanRagdoll = 0x3664; // int
-		public static final long m_flTimePingEffect = 0x364c; // float
+		public static final long m_bPerformAvoidance = 0x3668; // int
+		public static final long m_bIsMoving = 0x3669; // int
+		public static final long m_bFadeCorpse = 0x366a; // int
+		public static final long m_iDeathPose = 0x3658; // int
+		public static final long m_iDeathFrame = 0x365c; // int
+		public static final long m_iSpeedModRadius = 0x3660; // int
+		public static final long m_iSpeedModSpeed = 0x3664; // int
+		public static final long m_bSpeedModActive = 0x366b; // int
+		public static final long m_bImportanRagdoll = 0x366c; // int
+		public static final long m_flTimePingEffect = 0x3654; // float
 	}
 
 	public static final class CBeam { // DT_Beam
@@ -2667,29 +2681,29 @@ public class Netvars {
 
 	public static final class CBaseViewModel { // DT_BaseViewModel
 		public static final long m_nModelIndex = 0x290; // int
-		public static final long m_hWeapon = 0x3070; // int
+		public static final long m_hWeapon = 0x3078; // int
 		public static final long m_nSkin = 0xfd8; // int
 		public static final long m_nBody = 0xfdc; // int
-		public static final long m_nSequence = 0x2ef8; // int
-		public static final long m_nViewModelIndex = 0x3068; // int
+		public static final long m_nSequence = 0x2f00; // int
+		public static final long m_nViewModelIndex = 0x3070; // int
 		public static final long m_flPlaybackRate = 0xfd4; // float
 		public static final long m_fEffects = 0x128; // int
-		public static final long m_nAnimationParity = 0x306c; // int
-		public static final long m_hOwner = 0x3074; // int
+		public static final long m_nAnimationParity = 0x3074; // int
+		public static final long m_hOwner = 0x307c; // int
 		public static final long m_nNewSequenceParity = 0x1000; // int
 		public static final long m_nResetEventsParity = 0x1004; // int
 		public static final long m_nMuzzleFlashParity = 0x1020; // int
-		public static final long m_bShouldIgnoreOffsetAndAccuracy = 0x302c; // int
+		public static final long m_bShouldIgnoreOffsetAndAccuracy = 0x3034; // int
 	}
 
 	public static final class CBaseParticleEntity { // DT_BaseParticleEntity
 	}
 
 	public static final class CBaseGrenade { // DT_BaseGrenade
-		public static final long m_flDamage = 0x3030; // float
-		public static final long m_DmgRadius = 0x301c; // float
-		public static final long m_bIsLive = 0x3019; // int
-		public static final long m_hThrower = 0x3040; // int
+		public static final long m_flDamage = 0x3038; // float
+		public static final long m_DmgRadius = 0x3024; // float
+		public static final long m_bIsLive = 0x3021; // int
+		public static final long m_hThrower = 0x3048; // int
 		public static final long m_vecVelocity = 0x14c; // Vector
 		public static final long m_fFlags = 0x13c; // int
 	}
@@ -2697,31 +2711,31 @@ public class Netvars {
 	public static final class CBaseCombatWeapon { // DT_BaseCombatWeapon
 		public static final class LocalWeaponData { // DT_LocalWeaponData
 			public static final long BASE_OFFSET = 0x0;
-			public static final long m_iPrimaryAmmoType = 0x3adc; // int
-			public static final long m_iSecondaryAmmoType = 0x3ae0; // int
-			public static final long m_nViewModelIndex = 0x3ab4; // int
-			public static final long m_bFlipViewModel = 0x3b48; // int
-			public static final long m_iWeaponOrigin = 0x3b4c; // int
-			public static final long m_iWeaponModule = 0x3acc; // int
+			public static final long m_iPrimaryAmmoType = 0x3ae4; // int
+			public static final long m_iSecondaryAmmoType = 0x3ae8; // int
+			public static final long m_nViewModelIndex = 0x3abc; // int
+			public static final long m_bFlipViewModel = 0x3b50; // int
+			public static final long m_iWeaponOrigin = 0x3b54; // int
+			public static final long m_iWeaponModule = 0x3ad4; // int
 		}
 		public static final class LocalActiveWeaponData { // DT_LocalActiveWeaponData
 			public static final long BASE_OFFSET = 0x0;
-			public static final long m_flNextPrimaryAttack = 0x3ab8; // float
-			public static final long m_flNextSecondaryAttack = 0x3abc; // float
+			public static final long m_flNextPrimaryAttack = 0x3ac0; // float
+			public static final long m_flNextSecondaryAttack = 0x3ac4; // float
 			public static final long m_nNextThinkTick = 0x134; // int
-			public static final long m_flTimeWeaponIdle = 0x3af4; // float
+			public static final long m_flTimeWeaponIdle = 0x3afc; // float
 		}
-		public static final long m_iViewModelIndex = 0x3ac0; // int
-		public static final long m_iWorldModelIndex = 0x3ac4; // int
-		public static final long m_iWorldDroppedModelIndex = 0x3ac8; // int
-		public static final long m_iState = 0x3ad8; // int
-		public static final long m_hOwner = 0x3ab0; // int
-		public static final long m_iClip1 = 0x3ae4; // int
-		public static final long m_iClip2 = 0x3ae8; // int
-		public static final long m_iPrimaryReserveAmmoCount = 0x3aec; // int
-		public static final long m_iSecondaryReserveAmmoCount = 0x3af0; // int
-		public static final long m_hWeaponWorldModel = 0x3ad4; // int
-		public static final long m_iNumEmptyAttacks = 0x3ad0; // int
+		public static final long m_iViewModelIndex = 0x3ac8; // int
+		public static final long m_iWorldModelIndex = 0x3acc; // int
+		public static final long m_iWorldDroppedModelIndex = 0x3ad0; // int
+		public static final long m_iState = 0x3ae0; // int
+		public static final long m_hOwner = 0x3ab8; // int
+		public static final long m_iClip1 = 0x3aec; // int
+		public static final long m_iClip2 = 0x3af0; // int
+		public static final long m_iPrimaryReserveAmmoCount = 0x3af4; // int
+		public static final long m_iSecondaryReserveAmmoCount = 0x3af8; // int
+		public static final long m_hWeaponWorldModel = 0x3adc; // int
+		public static final long m_iNumEmptyAttacks = 0x3ad8; // int
 	}
 
 	public static final class CBaseWeaponWorldModel { // DT_BaseWeaponWorldModel
@@ -2729,7 +2743,7 @@ public class Netvars {
 		public static final long m_nBody = 0xfdc; // int
 		public static final long m_fEffects = 0x128; // int
 		public static final long moveparent = 0x180; // int
-		public static final long m_hCombatWeaponParent = 0x3094; // int
+		public static final long m_hCombatWeaponParent = 0x309c; // int
 	}
 
 	public static final class CFuncMonitor { // DT_FuncMonitor

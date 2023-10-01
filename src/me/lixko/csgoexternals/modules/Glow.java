@@ -11,7 +11,6 @@ import me.lixko.csgoexternals.Engine;
 import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
 import me.lixko.csgoexternals.structs.CEntInfo;
-import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.structs.CGlowObjectManager;
 import me.lixko.csgoexternals.structs.CUtlVector;
 import me.lixko.csgoexternals.structs.GlowObjectDefinition;
@@ -44,8 +43,6 @@ public class Glow extends Module {
 	boolean glowEnabled = true;
 	boolean glowOthers = true;
 	boolean glowJustDisabled = false;
-
-	CGlobalVars globalvars = new CGlobalVars();
 	
 	String classname = ""; // TODO: Optimize
 

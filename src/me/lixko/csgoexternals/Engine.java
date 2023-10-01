@@ -22,6 +22,7 @@ import me.lixko.csgoexternals.elf.ElfModule;
 import me.lixko.csgoexternals.offsets.Convars;
 import me.lixko.csgoexternals.offsets.Netvars;
 import me.lixko.csgoexternals.offsets.Offsets;
+import me.lixko.csgoexternals.structs.CGlobalVars;
 import me.lixko.csgoexternals.util.DrawUtils;
 import me.lixko.csgoexternals.util.MemoryUtils;
 import me.lixko.csgoexternals.util.StringFormat;
@@ -58,11 +59,16 @@ public final class Engine {
 	public static int isInGame = 0;
 	public static String[] cmdargs;
 
+	public static CGlobalVars globalVars = new CGlobalVars();
+	private MemoryBuffer globalVarsBuf = new MemoryBuffer(globalVars.size());
+	
 	public void init(String[] args) throws InterruptedException, IOException {
 		this.cmdargs = args;
 
 		if (DrawUtils.enableOverlay)
 			setupWindow(new JOGL2Renderer());
+		
+		globalVars.setSource(globalVarsBuf);
 
 		String processName = "csgo_linux64";
 		String clientName = "client_client.so";
@@ -79,9 +85,9 @@ public final class Engine {
 		//System.out.println("engine: " + StringFormat.hex(engineModule.start()) + " - " + StringFormat.hex(clientModule.end()));
 
 		loadOffsets(false);
-		Convars.init(materialModule);
+		// Convars.init(materialModule); // used to work
 		
-		//bsp = new BSPRenderer(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/maps/jb_spy_vs_spy_beta7b.bsp"));
+		//bsp = new BSPRenderer(new File("/home/erik/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/maps/de_nuke.bsp"));
 		//bsp.parse();
 		
 		Client.theClient.startClient();
@@ -94,7 +100,9 @@ public final class Engine {
 		Client.theClient.commandManager.executeCommand("namehud toggle");
 		Client.theClient.commandManager.executeCommand("spectators toggle");
 		Client.theClient.commandManager.executeCommand("bind KP_DELETE boneesp toggle");
+		Client.theClient.commandManager.executeCommand("bind KP_Insert fovchanger toggle");
 		Client.theClient.commandManager.executeCommand("bind Alt_L glow toggle");
+		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
 		Client.theClient.commandManager.executeCommand("bind kp_end disablepp toggle");
 		Client.theClient.commandManager.executeCommand("bind END autojoinct toggle");
 		Client.theClient.commandManager.executeCommand("bind HOME testmodule forceupdate");
@@ -122,6 +130,9 @@ public final class Engine {
 				continue;
 			}
 			Offsets.m_dwPlayerResources = Engine.clientModule().readLong(Offsets.m_dwPlayerResourcesPointer);
+					
+			
+			Engine.clientModule().read(Offsets.m_dwGlobalVars, globalVarsBuf);
 
 			try {
 				Client.theClient.eventHandler.onLoop();
@@ -129,13 +140,16 @@ public final class Engine {
 				ex.printStackTrace();
 				Thread.sleep(100);
 			}
-			DrawUtils.lppos.fov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_iFOV);
-			if (DrawUtils.lppos.fov == 0)
-				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_iDefaultFOV);			
 			
 			if (tick % 1000 == 0)
 				Engine.clientModule.read(Offsets.m_dwEntityList, entlistbuffer);
 
+			long entityptr = MemoryUtils.getLocalOrSpectated();			
+			DrawUtils.lppos.fov = Engine.clientModule().readInt(entityptr + Netvars.CBasePlayer.m_iFOV);
+			if (DrawUtils.lppos.fov == 0)
+				DrawUtils.lppos.defaultfov = Engine.clientModule().readInt(entityptr + Netvars.CBasePlayer.m_iDefaultFOV);			
+			
+			
 			if (tps_sleep > 0)
 				Thread.sleep(tps_sleep);
 
@@ -264,9 +278,6 @@ public final class Engine {
 		Offsets.load();
 		System.out.println();
 		System.out.println("m_dwGlowObject: " + StringFormat.hex(Offsets.m_dwGlowObject));
-		System.out.println("m_iAlt1: " + StringFormat.hex(Offsets.input.alt1));
-		System.out.println("m_iAlt2: " + StringFormat.hex(Offsets.input.alt2));
-		System.out.println("m_dwForceJump: " + StringFormat.hex(Offsets.input.jump));
 		System.out.println("m_dw_bOverridePostProcessingDisable: " + StringFormat.hex(Offsets.m_dw_bOverridePostProcessingDisable));
 		System.out.println("m_dwPlayerResources: " + StringFormat.hex(Offsets.m_dwPlayerResourcesPointer));
 		System.out.println("m_dwForceAttack: " + StringFormat.hex(Offsets.input.attack));

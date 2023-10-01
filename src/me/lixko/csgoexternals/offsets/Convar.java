@@ -39,11 +39,17 @@ public class Convar {
 		return this.cvarif.getModule().readString(strptr, 1024);
 	}
 	
-	public void setInt(int val) {
+	public void setInt(int val) throws Exception {
+		if (true) {
+			throw new Exception("This is detected! You must write into a backup register, too. See: https://www.unknowncheats.me/forum/3556676-post25.html");
+		}
 		this.cvarif.getModule().writeInt(this.base + 0x58, (int) (val ^ this.base));
 	}
 	
-	public void setFloat(float val) {
+	public void setFloat(float val) throws Exception {
+		if (true) {
+			throw new Exception("This is detected! You must write into a backup register, too.");
+		}
 		this.cvarif.getModule().writeInt(this.base + 0x58, (int) (Float.floatToIntBits(val) ^ this.base));
 	}
 	
@@ -51,3 +57,4 @@ public class Convar {
 		// TODO: Not yet implemented
 	}
 }
+ 

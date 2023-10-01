@@ -43,7 +43,6 @@ public class AimBot extends Module {
 	});
 	
 	public void onUIRender() {
-		if(true) return;
 		DrawUtils.setTextColor(DrawUtils.theme.textColor);
 		DrawUtils.setStyle(ChatColor.MEDIUM, ChatColor.AQUA);
 		
@@ -53,17 +52,19 @@ public class AimBot extends Module {
 		Engine.engineModule().read(Offsets.m_dwClientState + Offsets.m_vecViewAngles, viewanglesbuf);
 		viewangles.copyTo(va);
 		
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 90, StringFormat.dump(va));
+		
 		// MathUtils.subtract(va, MathUtils.cmultiply(DrawUtils.lppos.getAimPunch(), 2f));
 		targetAngles = getTargetAngles();
 		if(targetAngles == null) return;
-		//float[] anglesDiff = MathUtils.csubtract(va, dir);
+		float[] anglesDiff = MathUtils.csubtract(va, targetAngles);
 		
-		//DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 , StringFormat.dump(dir));
-		//DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 , StringFormat.dump(DrawUtils.lppos.getAimPunch()));
+		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50, StringFormat.dump(anglesDiff));
+		// DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 , StringFormat.dump(DrawUtils.lppos.getAimPunch()));
 		//DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 10 , StringFormat.dump(MathUtils.cmultiply(DrawUtils.lppos.getAimPunch(), new float[] {2, 2, 2})));
 		//MathUtils.subtract(va, MathUtils.cmultiply(DrawUtils.lppos.getAimPunch(), 2f));
 		va = targetAngles;
-		MathUtils.subtract(va, MathUtils.cmultiply(DrawUtils.lppos.getAimPunch(), 2f));
+		// MathUtils.subtract(va, MathUtils.cmultiply(DrawUtils.lppos.getAimPunch(), 2f));
 		
 		MathUtils.ClampAngle(va);
 		viewangles.readFrom(va);

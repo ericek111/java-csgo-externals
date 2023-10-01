@@ -26,7 +26,7 @@ public class BoneESP extends Module {
 		public void run() {
 			while (Client.theClient.isRunning) {
 				try {
-					Thread.sleep(15);
+					Thread.sleep(5);
 					if (!thismodule.isToggled() || Offsets.m_dwLocalPlayer == 0)
 						continue;
 
@@ -98,7 +98,10 @@ public class BoneESP extends Module {
 			}
 			
 			// C_LocalTempEntity::DrawStudioModel(int)
-			long studioModelptr = Engine.engineModule().readLong(entityptr + 0x2FC0);
+			long studioModelptr = Engine.engineModule().readLong(entityptr + Offsets.m_offsetModelInfo);
+			if (studioModelptr == 0)
+				continue;
+			
 			long studioModel = Engine.engineModule().readLong(studioModelptr);
 			// 0x9C = offsetof(studiohdr_t, numbones) > numBones, boneIndex
 			int[] studioHdrData = Engine.engineModule().read(studioModel + 0x9C, 2 * Integer.BYTES).getIntArray(0, 2);

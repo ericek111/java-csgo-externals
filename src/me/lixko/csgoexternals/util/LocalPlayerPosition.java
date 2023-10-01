@@ -24,22 +24,16 @@ public class LocalPlayerPosition {
 	}
 
 	public void updateData() {
-		int lpobstarget = Engine.clientModule().readInt(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.m_hObserverTarget) & Const.ENT_ENTRY_MASK;
-		long lpaddr = 0;
-		if(lpobstarget == Const.ENT_ENTRY_MASK) {
-			lpaddr = Offsets.m_dwLocalPlayer;
-		} else {
-			lpaddr = MemoryUtils.getEntity(lpobstarget);
-		}
+		long lpaddr = MemoryUtils.getLocalOrSpectated();
 		
-		if(true) {
+		if (true) {
 			Engine.clientModule().read(lpaddr + Netvars.CBaseEntity.m_vecOrigin, lpvec.size(), lpvecbuf);
 			lpvec.copyTo(pos);
 			
 			Engine.clientModule().read(lpaddr + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_viewPunchAngle, lpvec.size(), lpvecbuf);
 			lpvec.copyTo(viewpunch);
 			
-			Engine.clientModule().read(lpaddr + 0x3764, lpvec.size(), lpvecbuf);
+			Engine.clientModule().read(lpaddr + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
 			lpvec.copyTo(aimpunch);
 			
 			Engine.clientModule().read(lpaddr + Netvars.CBasePlayer.localdata.m_vecViewOffset_0, lpvec.size(), lpvecbuf);
@@ -52,7 +46,7 @@ public class LocalPlayerPosition {
 			yaw = 90 - lpvec.y.getFloat();
 			pitch = lpvec.x.getFloat();
 			lpvec.copyTo(viewangles);
-		} else {
+		} else if (false) {
 			Engine.clientModule().read(Offsets.g_vecCurrentRenderOrigin, lpvec.size(), lpvecbuf);
 			vieworigin = lpvec.getVector();
 			pos = vieworigin;
@@ -60,6 +54,17 @@ public class LocalPlayerPosition {
 			Engine.clientModule().read(Offsets.g_vecCurrentRenderAngles, lpvecbuf.size(), lpvecbuf);
 			yaw = 90 - lpvec.y.getFloat();
 			pitch = lpvec.x.getFloat();
+		} else {
+			
+			Engine.clientModule().read(Offsets.m_dwHLTVCamera + 24, lpvec.size(), lpvecbuf);
+			vieworigin = lpvec.getVector();
+			pos = vieworigin;
+			
+			Engine.clientModule().read(Offsets.m_dwHLTVCamera + 52, lpvecbuf.size(), lpvecbuf);
+			yaw = 90 - lpvec.y.getFloat();
+			pitch = lpvec.x.getFloat();
+			
+			
 		}
 	}
 	

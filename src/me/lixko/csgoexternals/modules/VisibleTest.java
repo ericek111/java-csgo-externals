@@ -28,8 +28,7 @@ public class VisibleTest extends Module {
 	
 	@Override
 	public void onWorldRender() {
-		if(true) return;
-		if (!Client.theClient.isRunning)
+		if (!Client.theClient.isRunning || Engine.bsp == null)
 			return;
 		
 		for (Entity e : Engine.bsp.pEntities) {
@@ -111,7 +110,7 @@ public class VisibleTest extends Module {
 			float roll = v[0];
 			float scale = Math.max(0.3f, distance / 1000f);
 
-			Engine.clientModule().read(entityptr + Offsets.m_vecViewOffset, vecbuf);
+			Engine.clientModule().read(entityptr + Netvars.CBasePlayer.localdata.m_vecViewOffset_0, vecbuf);
 			// System.out.println(entvec.z.f);
 			ey += entvec.z.getFloat();
 

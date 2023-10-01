@@ -378,24 +378,29 @@ public class RankReveal extends Module {
 	public void drawWeapons(long entityptr, int resid, int x, int y, float alpha) {	
 		if(entityptr == 0) return;
 		// String entweapons = "";
-		long weaponhandle = (Engine.clientModule().readInt(entityptr + 0x3628) & 0xFFF);
+		int activeWeapon = Engine.clientModule().readInt(entityptr + Netvars.CBaseCombatCharacter.m_hActiveWeapon) & Const.ENT_ENTRY_MASK;
 		// ArrayList<Integer> equipment = new ArrayList<Integer>();
 
 		int activeitem = 0;
 		int lastx = x + 25;
 		int grenades = 0;
 		for (int w = 0; w < 64; w++) {
-			int weaponentindex = Engine.clientModule().readInt(entityptr + 0x3528 + 4 * (w - 1)) & 0xFFF;
-			if (weaponentindex == 0)
+			int weaponIdx = Engine.clientModule().readInt(entityptr + Netvars.CBaseCombatCharacter.m_hActiveWeapon + 4 * (w - 1)) & Const.ENT_ENTRY_MASK;
+			if (weaponIdx == 0)
 				continue;
-			long weaponptr = MemoryUtils.getEntity(weaponentindex);
+			long weaponptr = MemoryUtils.getEntity(weaponIdx);
 			if (weaponptr == 0)
 				continue;
 
-			int m_iItemDefinitionIndex = Engine.clientModule().readInt(weaponptr + 0x34c0 + 0x60 + 0x268);
+			int m_iItemDefinitionIndex = Engine.clientModule().readInt(
+				weaponptr +
+				Netvars.CBaseAttributableItem.m_AttributeManager.BASE_OFFSET + 
+				Netvars.CBaseAttributableItem.m_AttributeManager.m_Item.BASE_OFFSET +
+				Netvars.CBaseAttributableItem.m_AttributeManager.m_Item.m_iItemDefinitionIndex
+			);
 			// String name = ItemDefinitionIndex.byValue(m_iItemDefinitionIndex).name().replace("WEAPON_", "");
 			// entweapons += name + ", ";
-			if (weaponhandle == weaponentindex)
+			if (activeWeapon == weaponIdx)
 				activeitem = m_iItemDefinitionIndex;
 			int size = 25;
 			int xoff = 0;
@@ -405,36 +410,36 @@ public class RankReveal extends Module {
 				continue;
 			if (ItemDefinitionIndex.WEAPON_HEGRENADE.id() == m_iItemDefinitionIndex) {
 				grenades |= (1 << 0);
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 0);
 				continue;
 			}
 			if (ItemDefinitionIndex.WEAPON_FLASHBANG.id() == m_iItemDefinitionIndex) {
 				grenades |= (1 << 1);
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 1);
 				continue;
 			}
 			if (ItemDefinitionIndex.WEAPON_SMOKEGRENADE.id() == m_iItemDefinitionIndex) {
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 2);
 				grenades |= (1 << 2);
 				continue;
 			}
 			if (ItemDefinitionIndex.WEAPON_DECOY.id() == m_iItemDefinitionIndex) {
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 3);
 				grenades |= (1 << 3);
 				continue;
 			}
 			if (ItemDefinitionIndex.WEAPON_INCGRENADE.id() == m_iItemDefinitionIndex) {
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 4);
 				grenades |= (1 << 4);
 				continue;
 			}
 			if (ItemDefinitionIndex.WEAPON_MOLOTOV.id() == m_iItemDefinitionIndex) {
-				if (weaponhandle == weaponentindex)
+				if (activeWeapon == weaponIdx)
 					grenades |= 1 << (8 + 5);
 				grenades |= (1 << 5);
 				continue;
@@ -467,11 +472,11 @@ public class RankReveal extends Module {
 				DrawUtils.setAlign(TextAlign.CENTER);
 			}
 			DrawUtils.setTextureColor(0.75f, 0.75f, 0.75f, 0.6f * alpha);
-			if (weaponhandle == weaponentindex)
+			if (activeWeapon == weaponIdx)
 				DrawUtils.setTextureColor(1f, 1f, 1f, 0.8f * alpha);
 			DrawUtils.drawTexture("weapon_" + m_iItemDefinitionIndex, xoff > 0 ? (x - xoff) : lastx, y - 10, -100, -size);
 			DrawUtils.setTextureColor(0f, 0f, 0f);
-			if (weaponhandle == weaponentindex)
+			if (activeWeapon == weaponIdx)
 				DrawUtils.setTextureColor(1.0f, 0.0f, 0f);
 			DrawUtils.drawTexture("weaponout_" + m_iItemDefinitionIndex, xoff > 0 ? (x - xoff) : lastx, y - 10, -100, -size);
 		}

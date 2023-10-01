@@ -89,7 +89,7 @@ public class TestModule extends Module {
 		// return;
 		VectorMem toread = lporigin;
 
-		DrawUtils.enableStringBackground();
+		/*DrawUtils.enableStringBackground();
 		DrawUtils.setTextColor(DrawUtils.theme.textColor);
 		DrawUtils.setStyle(ChatColor.MEDIUM, ChatColor.GOLD);
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_vecOrigin, lpvecbuf.size(), lpvecbuf);
@@ -102,38 +102,40 @@ public class TestModule extends Module {
 		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBaseEntity.m_angRotation, lpvecbuf.size(), lpvecbuf);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 2 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_vecVelocity, lpvecbuf.size(), lpvecbuf);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.veloc, lpvecbuf.size(), lpvecbuf);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 3 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
 
-		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Offsets.m_Local + Offsets.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
+		Engine.clientModule().read(Offsets.m_dwLocalPlayer + Netvars.CBasePlayer.localdata.m_Local.BASE_OFFSET + Netvars.CBasePlayer.localdata.m_Local.m_aimPunchAngle, lpvecbuf.size(), lpvecbuf);
 		DrawUtils.drawString(DrawUtils.getScreenWidth() / 2, 50 + 4 * 18, f.format(toread.x.getFloat()) + ", " + f.format(toread.y.getFloat()) + ", " + f.format(toread.z.getFloat()));
+	*/
 	}
 
 	@Override
-	public void onWorldRender() {
+	public void onWorldRender() {		
 		if (!Client.theClient.isRunning)
 			return;
-		if (true)	return;
 		
-		if(false) {
+		if (true) {
 		int x = 0;
 		DrawUtils.setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
 		TreeMap<Float, Integer> distmap = new TreeMap<>();
 
-		for(int i = 0; i < Engine.bsp.pEntities.length; i++) {
+		for (int i = 0; i < Engine.bsp.pEntities.length; i++) {
 			BSPParser.Entity e = Engine.bsp.pEntities[i];
 			
 			String originstr = e.properties.get("origin");
-			if(originstr == null) continue;
+			if (originstr == null) continue;
 			float[] origin = BSPParser.GetCoordsFromString(originstr);
 			float distance = MathUtils.VecDist(origin, DrawUtils.lppos.getOrigin());
-			if(distance > 300) continue;
-
+			if (distance > 300) continue;
+			
 			distmap.put(distance, i);			
 		}
 		distmapsize = distmap.size();
-		if(toshowi >= distmap.size())
+		if (toshowi >= distmap.size())
 			toshowi = 0;
+		
+		//System.out.println(distmap.size());
 		for (Entry<Float, Integer> entry : distmap.entrySet()) {
 			if( Math.abs(x++ - toshowi) > 90) continue;
 			BSPParser.Entity e = Engine.bsp.pEntities[entry.getValue()];
@@ -148,12 +150,13 @@ public class TestModule extends Module {
 			float ex = origin[0];
 			float ey = origin[2] + 5f * e.properties.size();
 			float ez = -origin[1];
-			
+						
 			for (Map.Entry<String, String> property : e.properties.entrySet()) {
 			    DrawUtils.draw3DString(property.getKey() + ": " + property.getValue(), ex, ey + scale * 20 * 1, ez, pitch, roll, scale);
 			    ey -= 5f;
 			}
 		}
+		return;
 		}
 		
 		MemoryBuffer vecbuf = new MemoryBuffer(lporigin.size());
@@ -186,7 +189,7 @@ public class TestModule extends Module {
 			float roll = v[0];
 			float scale = Math.max(0.3f, distance / 300f);
 
-			Engine.clientModule().read(entityptr + Offsets.m_vecViewOffset, vecbuf);
+			Engine.clientModule().read(entityptr + Netvars.CBasePlayer.localdata.m_vecViewOffset_0, vecbuf);
 			// System.out.println(entvec.z.f);
 			ey += entvec.z.getFloat();
 
@@ -259,7 +262,7 @@ public class TestModule extends Module {
 	@Override
 	public void onEngineLoaded() {
 		lporigin.setSource(lpvecbuf);
-		m_hObserverTarget = Offsets.netvars.get("CBasePlayer", "m_hObserverTarget");
+		//m_hObserverTarget = Offsets.netvars.get("CBasePlayer", "m_hObserverTarget");
 	}
 	
 	// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/game/shared/animation.cpp#L888
